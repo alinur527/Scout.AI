@@ -1,10 +1,10 @@
 import cv2
 import numpy as np
-import supervision as sv
 
 
 class AnnotationManager:
     def __init__(self):
+        import supervision as sv
         # Используем современные аннотаторы из supervision
         self.box_annotator = sv.BoxAnnotator()
         self.label_annotator = sv.LabelAnnotator(text_scale=0.5, text_thickness=1)

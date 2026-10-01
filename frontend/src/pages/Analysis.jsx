@@ -73,6 +73,7 @@ function Selection({ id, job, onRun }) {
   const gallery = useLoad(`/analyses/${id}/players`)
   const [selected, setSelected] = useState(job.selected_player_id)
   const [calibrate, setCalibrate] = useState(false)
+  const [stationary, setStationary] = useState(false)
   const [points, setPoints] = useState([])
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
@@ -88,6 +89,7 @@ function Selection({ id, job, onRun }) {
             points,
             field_length: Number(form.get('length')),
             field_width: Number(form.get('width')),
+            stationary_camera: stationary,
           }
         : null
       await api.post(`/analyses/${id}/run`, { calibration })
@@ -103,6 +105,12 @@ function Selection({ id, job, onRun }) {
   return (
     <form onSubmit={run} className="selection">
       <h2>Which player are you?</h2>
+      {!job.demo && (
+        <p>
+          The model detects people. Referees, staff and spectators can appear here; choose your
+          visible track carefully.
+        </p>
+      )}
       <div className="player-gallery">
         {gallery.data.players.map((player) => (
           <button
@@ -128,7 +136,9 @@ function Selection({ id, job, onRun }) {
           <p>
             Use a static camera. Identify the four corners of a known rectangle on the pitch in
             perimeter order: origin, along its length, opposite corner, along its width. Enter that
-            rectangle’s actual dimensions.
+            rectangle’s actual dimensions. Panning, zooming and camera shake invalidate one fixed
+            projection. Detected camera motion or uncertain camera stability keeps physical metrics
+            unavailable.
           </p>
           <label className="checkbox">
             <input
@@ -140,6 +150,14 @@ function Selection({ id, job, onRun }) {
           </label>
           {calibrate && (
             <div className="calibration">
+              <label className="checkbox">
+                <input
+                  type="checkbox"
+                  checked={stationary}
+                  onChange={(event) => setStationary(event.target.checked)}
+                />
+                I confirm the camera stayed fixed throughout this clip
+              </label>
               <div
                 className="calibration-image"
                 onClick={(event) => {
@@ -231,7 +249,7 @@ function Selection({ id, job, onRun }) {
       <ErrorBox message={error} />
       <button
         className="primary"
-        disabled={!selected || busy || (calibrate && points.length !== 4)}
+        disabled={!selected || busy || (calibrate && (points.length !== 4 || !stationary))}
       >
         {busy ? 'Starting…' : 'Build my report'}
       </button>
