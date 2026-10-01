@@ -27,18 +27,28 @@ def evaluate_labels(frames, annotation, threshold=0.5):
     per_identity = Counter()
     matched_identity = Counter()
     ground_errors = defaultdict(list)
-    for label in annotation["frames"]:
+    events = []
+    tested_labels = [label for label in annotation["frames"] if label["frame"] in indexed]
+    for label in tested_labels:
         roi = label.get("roi", annotation.get("roi"))
         truth = label["objects"]
         predictions = indexed.get(label["frame"], [])
         if roi:
-            predictions = [p for p in predictions if (
-                roi[0] <= (p["box"][0] + p["box"][2]) / 2 <= roi[2]
-                and roi[1] <= (p["box"][1] + p["box"][3]) / 2 <= roi[3]
-            )]
+            predictions = [
+                p
+                for p in predictions
+                if (
+                    roi[0] <= (p["box"][0] + p["box"][2]) / 2 <= roi[2]
+                    and roi[1] <= (p["box"][1] + p["box"][3]) / 2 <= roi[3]
+                )
+            ]
         candidates = sorted(
-            [(iou(t["box"], p["box"]), ti, pi)
-             for ti, t in enumerate(truth) for pi, p in enumerate(predictions)], reverse=True
+            [
+                (iou(t["box"], p["box"]), ti, pi)
+                for ti, t in enumerate(truth)
+                for pi, p in enumerate(predictions)
+            ],
+            reverse=True,
         )
         used_t, used_p, matches = set(), set(), {}
         for overlap, ti, pi in candidates:
@@ -61,8 +71,18 @@ def evaluate_labels(frames, annotation, threshold=0.5):
             pid = prediction["id"]
             if identity in previous and pid != previous[identity]:
                 switches += 1
+                events.append(
+                    {
+                        "kind": "id_switch",
+                        "frame": label["frame"],
+                        "gt_id": identity,
+                        "previous_id": previous[identity],
+                        "new_id": pid,
+                    }
+                )
             if identity in interrupted:
                 fragments += 1
+                events.append({"kind": "fragmentation", "frame": label["frame"], "gt_id": identity})
                 interrupted.remove(identity)
             previous[identity] = pid
             if "ground" in item:
@@ -72,13 +92,22 @@ def evaluate_labels(frames, annotation, threshold=0.5):
     precision = tp / (tp + fp) if tp + fp else 0
     recall = tp / (tp + fn) if tp + fn else 0
     return {
-        "labelled_frames": len(annotation["frames"]), "iou_threshold": threshold,
-        "tp": tp, "fp": fp, "fn": fn, "precision": precision, "recall": recall,
+        "labelled_frames": len(tested_labels),
+        "iou_threshold": threshold,
+        "tp": tp,
+        "fp": fp,
+        "fn": fn,
+        "precision": precision,
+        "recall": recall,
         "f1": 2 * precision * recall / (precision + recall) if precision + recall else 0,
-        "id_switches": switches, "fragmentations": fragments,
+        "id_switches": switches,
+        "fragmentations": fragments,
+        "events": events,
         "identity_coverage": {k: matched_identity[k] / n for k, n in per_identity.items()},
-        "ground_point_error_px": {k: {"n": len(v), "mean": float(np.mean(v)),
-                                      "median": float(np.median(v))} for k, v in ground_errors.items()},
+        "ground_point_error_px": {
+            k: {"n": len(v), "mean": float(np.mean(v)), "median": float(np.median(v))}
+            for k, v in ground_errors.items()
+        },
     }
 
 
@@ -93,7 +122,9 @@ def technical_metrics(frames):
     gaps = [b - a - 1 for indices in tracks.values() for a, b in zip(indices, indices[1:]) if b > a + 1]
     counts = [len(f["detections"]) for f in frames]
     return {
-        "frames": len(frames), "detections": sum(counts), "track_ids": len(tracks),
+        "frames": len(frames),
+        "detections": sum(counts),
+        "track_ids": len(tracks),
         "frames_with_detections": sum(n > 0 for n in counts),
         "frames_without_detections": sum(n == 0 for n in counts),
         "frame_detection_coverage": sum(n > 0 for n in counts) / len(frames) if frames else 0,
@@ -102,7 +133,10 @@ def technical_metrics(frames):
         "median_track_observations": float(np.median(lengths)) if lengths else 0,
         "longest_track_observations": max(lengths, default=0),
         "short_tracks_lt10_observations": sum(n < 10 for n in lengths),
-        "reacquired_same_id_gaps": len(gaps), "lost_frame_intervals": sum(gaps),
+        "reacquired_same_id_gaps": len(gaps),
+        "lost_frame_intervals": sum(gaps),
         "fragmentation_proxy_ids_per_100_frames": len(tracks) / len(frames) * 100 if frames else 0,
-        "confidence_quantiles": np.quantile(confidence, [0, .25, .5, .75, 1]).tolist() if confidence else [],
+        "confidence_quantiles": np.quantile(confidence, [0, 0.25, 0.5, 0.75, 1]).tolist()
+        if confidence
+        else [],
     }

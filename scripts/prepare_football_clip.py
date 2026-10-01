@@ -23,12 +23,17 @@ def main():
     args.output.mkdir(parents=True, exist_ok=True)
     cap = cv2.VideoCapture(str(args.source))
     fps = cap.get(cv2.CAP_PROP_FPS)
-    width, height = (int(cap.get(prop)) for prop in (cv2.CAP_PROP_FRAME_WIDTH, cv2.CAP_PROP_FRAME_HEIGHT))
+    width, height = (
+        int(cap.get(prop))
+        for prop in (cv2.CAP_PROP_FRAME_WIDTH, cv2.CAP_PROP_FRAME_HEIGHT)
+    )
     if not np.isfinite(fps) or fps <= 0 or not width or not height:
         parser.error("Source cannot be decoded")
     cap.set(cv2.CAP_PROP_POS_FRAMES, args.start)
     target = args.output / "clip.avi"
-    writer = cv2.VideoWriter(str(target), cv2.VideoWriter_fourcc(*"MJPG"), fps, (width, height))
+    writer = cv2.VideoWriter(
+        str(target), cv2.VideoWriter_fourcc(*"MJPG"), fps, (width, height)
+    )
     samples = set(map(int, np.linspace(0, args.frames - 1, args.samples, dtype=int)))
     tiles, actual = [], 0
     try:
@@ -44,16 +49,32 @@ def main():
                     x1, y1, x2, y2 = args.roi
                     frame = frame[y1:y2, x1:x2]
                 tile = cv2.resize(frame, (400, 225))
-                cv2.putText(tile, f"frame {index}", (8, 22), cv2.FONT_HERSHEY_SIMPLEX,
-                            .6, (0, 0, 0), 3, cv2.LINE_AA)
-                cv2.putText(tile, f"frame {index}", (8, 22), cv2.FONT_HERSHEY_SIMPLEX,
-                            .6, (255, 255, 255), 1, cv2.LINE_AA)
+                cv2.putText(
+                    tile,
+                    f"frame {index}",
+                    (8, 22),
+                    cv2.FONT_HERSHEY_SIMPLEX,
+                    0.6,
+                    (0, 0, 0),
+                    3,
+                    cv2.LINE_AA,
+                )
+                cv2.putText(
+                    tile,
+                    f"frame {index}",
+                    (8, 22),
+                    cv2.FONT_HERSHEY_SIMPLEX,
+                    0.6,
+                    (255, 255, 255),
+                    1,
+                    cv2.LINE_AA,
+                )
                 tiles.append(tile)
     finally:
         writer.release()
         cap.release()
     for offset in range(0, len(tiles), 10):
-        batch = tiles[offset:offset + 10]
+        batch = tiles[offset : offset + 10]
         batch += [np.zeros_like(tiles[0])] * (10 - len(batch))
         sheet = np.vstack([np.hstack(batch[:5]), np.hstack(batch[5:])])
         cv2.imwrite(str(args.output / f"contact-{offset // 10}.png"), sheet)
@@ -61,12 +82,25 @@ def main():
         source_hash = hashlib.file_digest(stream, "sha256").hexdigest()
     with target.open("rb") as stream:
         clip_hash = hashlib.file_digest(stream, "sha256").hexdigest()
-    (args.output / "metadata.json").write_text(json.dumps({
-        "source": str(args.source), "source_sha256": source_hash, "video_sha256": clip_hash,
-        "source_start_frame": args.start, "frames": actual, "fps": fps,
-        "width": width, "height": height, "sampled_frames": sorted(samples), "roi": args.roi,
-        "derivation": "OpenCV MJPG, original resolution/FPS; no generated or interpolated frames",
-    }, indent=2), encoding="utf-8")
+    (args.output / "metadata.json").write_text(
+        json.dumps(
+            {
+                "source": str(args.source),
+                "source_sha256": source_hash,
+                "video_sha256": clip_hash,
+                "source_start_frame": args.start,
+                "frames": actual,
+                "fps": fps,
+                "width": width,
+                "height": height,
+                "sampled_frames": sorted(samples),
+                "roi": args.roi,
+                "derivation": "OpenCV MJPG, original resolution/FPS; no generated or interpolated frames",
+            },
+            indent=2,
+        ),
+        encoding="utf-8",
+    )
 
 
 if __name__ == "__main__":
