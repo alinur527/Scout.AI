@@ -12,7 +12,7 @@ class AnnotationManager:
 
     def annotate_frame(self, frame, detections, labels):
         """Отрисовка боксов, меток и следов игроков на основном видео."""
-        if detections.empty:
+        if len(detections) == 0:
             return frame
 
         annotated_frame = frame.copy()
@@ -35,7 +35,7 @@ class RadarVisualizer:
 
         # 2. Отрисовка разметки (границы и центральная линия)
         cv2.rectangle(radar_img, (0, 0), (self.width, self.height), (255, 255, 255), 2)
-        cv2.line(radar_img, (0, self.height // 2), (self.width, self.height // 2), (255, 255, 255), 1)
+        cv2.line(radar_img, (self.width // 2, 0), (self.width // 2, self.height), (255, 255, 255), 1)
 
         f_len, f_wid = field_dim
 
@@ -60,7 +60,7 @@ class RadarVisualizer:
             cv2.circle(radar_img, (bx, by), 7, (0, 0, 0), 1, cv2.LINE_AA)
 
         # 5. РИСУЕМ ИГРОКОВ (красные точки с ID)
-        if points_meters and player_ids is not None:
+        if len(points_meters) > 0 and player_ids is not None:
             for i, (mx, my) in enumerate(points_meters):
                 rx = int(np.clip((mx / f_len) * self.width, 0, self.width))
                 ry = int(np.clip((my / f_wid) * self.height, 0, self.height))
