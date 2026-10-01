@@ -149,13 +149,13 @@ Set `SCOUTAI_DEMO_MODE=false` in `backend/.env`, keep MODEL_WEIGHTS correct, the
 ### How video analysis works
 
 1. Validate upload extension, MIME, actual decoding, FPS, duration, frame count and resolution; create a queued DB job.
-2. Worker streams OpenCV frames through YOLO pose and BoT-SORT, extracts ankle positions (bbox-bottom fallback), saves crops and approximately 10 observations/second per track.
+2. Worker streams every OpenCV frame through YOLO pose and BoT-SORT. Inference preserves native detail up to 1280px (minimum 640), extracts confident ankles with bbox-bottom fallback, saves crops and at most 10 timestamped observations/second per track.
 3. UI polls status and shows gallery. Select yourself. A track is not a verified personal identity; occlusion can split it.
-4. Optionally mark four visible corners of a known rectangular field region in perimeter order and enter its actual metre dimensions. Fixed camera is required. A first-frame preview and keyboard coordinate input are provided.
-5. Build the selected-track report from the saved observations. Manual homography + time-aware smoothing yields estimated distance/speed/sprints. Discontinuities are rejected, not clipped into fabricated metrics. Heatmap is specific to the selected player.
+4. Optionally mark four visible corners of a known rectangular field region in perimeter order and enter its actual metre dimensions. Confirm the camera stayed fixed. Motion detection, uncertain camera stability or unusable decoder timestamps block physical metrics even when corners are supplied. A first-frame preview and keyboard coordinate input are provided.
+5. Build the selected-track report from saved decoder timestamps. For supported fixed-camera clips, manual homography and time-aware smoothing yield estimates whose physical accuracy is not validated. Gaps >0.5s, invalid coordinates and >45km/h raw jumps split calibrated trajectories. The path renders separate segments. Heatmap is specific to the selected ID.
 6. Store the completed report. Scouts can view it on the player's detail page.
 
-Without calibration, **distance, speed and sprints are unavailable**, while image-space movement remains useful. Pose weights do not detect a football. Goals, assists and possession are not implemented.
+Without supported calibration, **distance, speed and sprints are unavailable**. Moving cameras are unsupported for physical measurement; image paths include camera movement. Observed-frame coverage is a technical visibility ratio, not accuracy. The person model also detects referees/staff/spectators. Pose weights do not detect a football. Goals, assists and possession are not implemented.
 
 ## API contract
 
@@ -186,9 +186,19 @@ E2E requires free ports 8000/5173 and starts isolated API/frontend/worker proces
 
 `smoke_real.py` requires CV dependencies and downloaded weights. It builds a short video from Ultralytics' bundled image of people, runs actual inference and verifies a persisted result. This confirms pipeline execution, **not football accuracy**. GitHub Actions runs backend/frontend/demo E2E without GPU or model weights. Actual run outcomes and warnings are recorded in [docs/VALIDATION.md](docs/VALIDATION.md).
 
+## Football validation
+
+[FOOTBALL_VALIDATION.md](docs/FOOTBALL_VALIDATION.md) records the original baseline, three real CC BY UVY football windows, frozen independent 50-frame visual ROI labels, separate publisher GT, controlled tracker/coordinate experiments and exact before/after results. Larger inference recovered useful HD observations, but distant/blurred players and spectator false positives remain serious failures. ByteTrack/lower tracker thresholds/image smoothing were measured and rejected as defaults. CPU HD processing was about 8.3–8.5 FPS on the documented machine; no realtime claim.
+
+The optional local harness uses existing weights, saves ignored annotated frames/tracks/JSON/CSV, and never runs in ordinary CI. `validate_football_cv.py` defaults to the original 640 baseline; `--production` uses the actual current processor. See its `--help` and the reproducible commands in the report. Real browser test after downloading/preparing the documented V04 window:
+
+```powershell
+.\.venv\Scripts\python.exe scripts/test_e2e.py --video test-artifacts/football/clips/steady/clip.avi
+```
+
 ## Known limitations
 
-* No football dataset, ground truth, accuracy benchmark, load benchmark or CUDA validation was available. Camera motion, occlusion, low resolution and bad calibration affect estimates.
+* Football validation covers three correlated short windows from one event, with agent visual labels awaiting expert review and publisher-assisted annotations. No fully fixed-camera football sample, physical movement reference, independent match holdout, load benchmark or CUDA validation. Results do not establish global football accuracy.
 * One worker, local media storage, no distributed lease/queue, cancellation or automatic retries. Requests need an external rate limit and TLS boundary before an internet-facing deployment.
 * Self-registration permits player/scout; admin is preserved as a role but cannot self-register. No advanced admin panel, password reset, email verification or refresh tokens.
 * Scout accounts can discover all registered player profiles and completed reports. Private profiles/consent controls are not yet implemented.
@@ -198,7 +208,7 @@ E2E requires free ports 8000/5173 and starts isolated API/frontend/worker proces
 
 ## Roadmap
 
-Calibrated football validation with ground truth; track correction/reidentification; profile privacy and account deletion; Alembic migrations and live PostgreSQL coverage; queue cancellation/retry; performance measurements. Telegram Mini App is a later integration, not part of this web restoration.
+Expert-checked independent football holdout and fixed-camera physical references; small-player detection/field filtering; measured track correction; profile privacy and account deletion; Alembic migrations and live PostgreSQL coverage; queue cancellation/retry. Telegram Mini App is a later integration, not part of this web restoration.
 
 ## Screenshots
 

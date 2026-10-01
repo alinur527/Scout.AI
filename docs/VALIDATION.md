@@ -1,5 +1,27 @@
 # Validation record — 2 October 2026
 
+## Football continuation
+
+The restoration results below describe the previous phase. The current football phase starts from `e65bbfd` on `cv/football-validation`; PR#1 was still open when work began. Full experiment definitions, source/licensing, baseline and after tables, limitations and reproduction commands are in [FOOTBALL_VALIDATION.md](FOOTBALL_VALIDATION.md); numeric evidence in [validation/results](../validation/results/football-2026-10-02.json).
+
+| Current command (root unless noted) | Executed result |
+|---|---|
+| `.venv\Scripts\python.exe -m pytest backend/tests -q` | PASS, 58 tests; synthetic math/camera and mocked CV require no ML weights |
+| `.venv\Scripts\python.exe -m ruff check backend scripts` | PASS |
+| `.venv\Scripts\python.exe -m compileall -q backend/app scripts` | PASS |
+| frontend `npm ci`, `npm run lint`, `npm run build` | PASS |
+| `.venv\Scripts\python.exe scripts/test_e2e.py` | PASS, demo still supported |
+| `.venv\Scripts\python.exe scripts/test_e2e.py --video test-artifacts/football/clips/steady/clip.avi` | PASS, real YOLO/worker/CPU, 200 football frames |
+| `.venv\Scripts\python.exe scripts/smoke_real.py` | PASS, CPU people smoke; artificial projection explicitly isolated |
+
+Football browser flow checks actual player/scout registration, login, profile save/refresh, upload202/queue, processing/selection refresh, gallery, longest-track selection, geometry submission, completed report/path/heatmap/refresh and scout directory/detail/report. Camera motion correctly blocks physical metrics even when test confirmation/corners are supplied. Selected ID1: 200 observed frames/67 saved samples. No happy-path console/page errors, HTTP≥400, broken images, worker crash or stuck job; expected invalid-JWT401 is separate. Screenshots at1440/768/390px and worker logs: ignored `test-artifacts/football/app-e2e/`. Representative [mobile report](football/report-mobile.png) was visually checked.
+
+Three short CC BY UVY windows, one event, 700 frames; frozen independent50-frame agent visual ROI subset plus separate publisher semi-automatic/CVAT labels. This does not establish global accuracy. HD input detail improved matched player observations; ByteTrack, lower tracker thresholds and image-coordinate EMA were rejected as defaults after measured tradeoffs. Severe blur remains unusable. Physical accuracy **NOT VALIDATED**, no completely fixed-camera football footage or measured movement reference, CUDA **NOT TESTED**. Final sequential production CPU:8.489/8.296/19.893FPS (V04/V02/V01), excluding model load/upload/DB work.
+
+Current remote CI evidence is recorded after the PR checks complete; the prior restoration CI below is historical, not a substitute for testing this branch.
+
+## Restoration phase record
+
 Only executed checks are marked PASS. Windows PowerShell, Python 3.12, Node 25.8.0, Chromium headless via Playwright 1.58.0. CI is configured for Python 3.12 / Node 22; remote run status is separate from these local results.
 
 ## Commands and outcomes
@@ -60,7 +82,7 @@ The smoke script uses `ultralytics/assets/bus.jpg` already distributed with the 
 
 An additional report calculation applies a deliberately artificial four-corner projection to the detected track. The real MatchAnalytics and RadarVisualizer execute and return metrics/radar. This checks code execution only: the scene is not a measured pitch, so its numbers are not physical accuracy evidence. The separate pytest real-mode test verifies missing weights persist `failed` with a useful error and no demo fallback.
 
-No suitable football ground-truth video was supplied. **Football tracking accuracy, metric accuracy, live-match speed, multi-video throughput and CUDA execution were not tested.** Windows lists an NVIDIA RTX 5060 Laptop GPU, but the project environment installed the small CPU Torch build; `torch.cuda.is_available()` is false there. Multi-gigabyte CUDA dependencies were not downloaded. GPU hardware presence is not presented as a CUDA test.
+At restoration time no suitable football ground-truth video was supplied. Football tracking and performance are now measured in the continuation report above. **Physical metric accuracy, live-match speed, multi-video throughput and CUDA execution remain untested.** Windows lists an NVIDIA RTX 5060 Laptop GPU, but the project environment installed the small CPU Torch build; `torch.cuda.is_available()` is false there. Multi-gigabyte CUDA dependencies were not downloaded. GPU hardware presence is not presented as a CUDA test.
 
 Nonfatal upstream warnings: Starlette deprecates its httpx-backed TestClient in favor of httpx2; Supervision/pyDeprecate emit API deprecation warnings during real inference. They are visible in logs and did not prevent the verified flows.
 
