@@ -1,85 +1,37 @@
-import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate, Link } from 'react-router-dom';
-import Login from './pages/Login';
-import Register from './pages/Register';
-import PlayerProfile from './pages/PlayerProfile'; // Страница редактирования
-import PlayerView from './pages/PlayerView';       // НОВАЯ: Просмотр профиля
-import VideoUpload from './pages/VideoUpload';     // НОВАЯ: Загрузка видео
-import Dashboard from './pages/Dashboard';
-import './styles/theme.css';
+import { useEffect, useState } from 'react'
+import { BrowserRouter, Link, NavLink, Navigate, Route, Routes } from 'react-router-dom'
+import { api } from './api/client'
+import { useLoad } from './hooks/useLoad'
+import { Loading } from './components/Common'
+import Auth from './pages/Auth'
+import Profile from './pages/Profile'
+import Upload from './pages/Upload'
+import Analysis from './pages/Analysis'
+import Scouting, { PlayerDetail } from './pages/Scouting'
 
-function App() {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-
+export default function App() {
+  const [user, setUser] = useState(null)
+  const [ready, setReady] = useState(false)
+  const [sessionError, setSessionError] = useState('')
+  const health = useLoad('/health', 15000)
   useEffect(() => {
-    const savedUser = localStorage.getItem('scout_user');
-    if (savedUser) {
-      setUser(JSON.parse(savedUser));
+    let active = true
+    async function restore() {
+      try {
+        if (sessionStorage.getItem('scout_token')) {
+          const { data } = await api.get('/profile/me')
+          if (active) setUser(data.user)
+        }
+      } catch { if (active) setSessionError('Your session could not be restored. Please log in again.') }
+      finally { if (active) setReady(true) }
     }
-    setLoading(false);
-  }, []);
-
-  const handleLogin = (userData) => {
-    setUser(userData);
-    localStorage.setItem('scout_user', JSON.stringify(userData));
-    localStorage.setItem('scout_token', userData.access_token);
-  };
-
-  const handleLogout = () => {
-    setUser(null);
-    localStorage.removeItem('scout_user');
-    localStorage.removeItem('scout_token');
-  };
-
-  if (loading) return <div className="loader">Загрузка ScoutAI...</div>;
-
-  return (
-      <Router>
-        {user && (
-            <nav className="navbar">
-              <div className="nav-content">
-                <Link to="/" className="logo">ScoutAI</Link>
-                <div className="nav-links">
-                  {/* Ссылки для Игрока */}
-                  {user.role === 'player' && (
-                      <>
-                        <Link to="/profile/view">Мой Профиль</Link>
-                        <Link to="/profile/edit">Редактировать</Link>
-                        <Link to="/upload">Анализ Видео</Link>
-                      </>
-                  )}
-                  {/* Ссылки для Скаута */}
-                  {(user.role === 'scout' || user.role === 'admin') && (
-                      <Link to="/dashboard">Поиск Игроков</Link>
-                  )}
-                  <button onClick={handleLogout} className="logout-btn">Выйти ({user.username})</button>
-                </div>
-              </div>
-            </nav>
-        )}
-
-        <Routes>
-          <Route path="/login" element={!user ? <Login onLogin={handleLogin} /> : <Navigate to="/" />} />
-          <Route path="/register" element={!user ? <Register /> : <Navigate to="/" />} />
-
-          {/* Главная перенаправляет в зависимости от роли */}
-          <Route path="/" element={
-            user ? (
-                user.role === 'player' ? <Navigate to="/profile/view" /> : <Navigate to="/dashboard" />
-            ) : <Navigate to="/login" />
-          } />
-
-          {/* Маршруты Игрока */}
-          <Route path="/profile/view" element={user?.role === 'player' ? <PlayerView /> : <Navigate to="/login" />} />
-          <Route path="/profile/edit" element={user?.role === 'player' ? <PlayerProfile user={user} /> : <Navigate to="/login" />} />
-          <Route path="/upload" element={user?.role === 'player' ? <VideoUpload /> : <Navigate to="/login" />} />
-
-          {/* Маршруты Скаута */}
-          <Route path="/dashboard" element={user?.role === 'scout' || user?.role === 'admin' ? <Dashboard user={user} /> : <Navigate to="/login" />} />
-        </Routes>
-      </Router>
-  );
+    function expired() { setUser(null); setSessionError('Your session has expired. Please log in again.') }
+    window.addEventListener('scout:unauthorized', expired)
+    restore()
+    return () => { active = false; window.removeEventListener('scout:unauthorized', expired) }
+  }, [])
+  function logout() { sessionStorage.removeItem('scout_token'); setUser(null); setSessionError('') }
+  const home = user?.role === 'player' ? '/profile/view' : '/dashboard'
+  if (!ready) return <Loading />
+  return <BrowserRouter><a href="#main" className="skip-link">Skip to content</a>{health.data?.demo_mode && <div className="mode-banner">Demo mode <span>Sample analysis for development. No AI inference.</span></div>}{health.error && <div role="alert" className="mode-banner offline">Server unavailable. Start the backend or check your connection.</div>}{user ? <div className="app-shell"><aside className="sidebar"><Link to={home} className="brand">Scout<span>AI</span><i /></Link><p className="workspace-label">{user.role === 'player' ? 'Player workspace' : 'Scout workspace'}</p><nav aria-label="Main navigation">{user.role === 'player' ? <><NavLink to="/profile/view">My profile</NavLink><NavLink to="/upload">Analyze a video</NavLink></> : <NavLink to="/dashboard">Scouting room</NavLink>}</nav><div className="account"><span>@{user.username}</span><button onClick={logout}>Log out</button></div></aside><main id="main" className="workspace">{health.data && !health.data.worker_online && <p className="notice">The analysis worker is offline. Uploads will stay queued until it starts.</p>}<Routes><Route path="/" element={<Navigate to={home} replace />} /><Route path="/profile/view" element={user.role === 'player' ? <Profile /> : <Navigate to={home} replace />} /><Route path="/profile/edit" element={user.role === 'player' ? <Profile edit /> : <Navigate to={home} replace />} /><Route path="/upload" element={user.role === 'player' ? <Upload health={health.data} /> : <Navigate to={home} replace />} /><Route path="/analyses/:id" element={user.role === 'player' ? <Analysis /> : <Navigate to={home} replace />} /><Route path="/dashboard" element={user.role !== 'player' ? <Scouting /> : <Navigate to={home} replace />} /><Route path="/players/:id" element={user.role !== 'player' ? <PlayerDetail /> : <Navigate to={home} replace />} /><Route path="/login" element={<Navigate to={home} replace />} /><Route path="/register" element={<Navigate to={home} replace />} /><Route path="*" element={<div className="empty"><h1>Page not found</h1><Link to={home}>Return to your workspace</Link></div>} /></Routes></main></div> : <main id="main">{sessionError && <p className="notice" role="alert">{sessionError}</p>}<Routes><Route path="/login" element={<Auth onLogin={value => { setUser(value); setSessionError('') }} />} /><Route path="/register" element={<Auth register />} /><Route path="*" element={<Navigate to="/login" replace />} /></Routes></main>}</BrowserRouter>
 }
-
-export default App;
