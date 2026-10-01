@@ -18,7 +18,7 @@ Football browser flow checks actual player/scout registration, login, profile sa
 
 Three short CC BY UVY windows, one event, 700 frames; frozen independent50-frame agent visual ROI subset plus separate publisher semi-automatic/CVAT labels. This does not establish global accuracy. HD input detail improved matched player observations; ByteTrack, lower tracker thresholds and image-coordinate EMA were rejected as defaults after measured tradeoffs. Severe blur remains unusable. Physical accuracy **NOT VALIDATED**, no completely fixed-camera football footage or measured movement reference, CUDA **NOT TESTED**. Final sequential production CPU:8.489/8.296/19.893FPS (V04/V02/V01), excluding model load/upload/DB work.
 
-Current remote CI evidence is recorded after the PR checks complete; the prior restoration CI below is historical, not a substitute for testing this branch.
+Remote football CI: implementation/evidence commit `9316049cccf106c191343074c8d60687f37a5280`, [Actions run36932896192](https://github.com/alinur527/Scout.AI/actions/runs/36932896192): **backend, frontend and demo E2E all SUCCESS** on Linux. Backend installed only requirements-dev, with no Torch/Ultralytics/weights/GPU. The final documentation-only follow-up records this observed run; PR#2 exposes its own latest checks. No merge performed. Prior restoration CI below is historical.
 
 ## Restoration phase record
 
