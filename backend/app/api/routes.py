@@ -130,7 +130,7 @@ async def upload(
     allowed = {
         ".mp4": {"video/mp4"},
         ".mov": {"video/quicktime", "video/mp4"},
-        ".avi": {"video/x-msvideo", "video/avi", "video/msvideo"},
+        ".avi": {"video/x-msvideo", "video/avi", "video/msvideo", "video/vnd.avi"},
     }
     if extension not in allowed or video.content_type not in allowed[extension]:
         await video.close()

@@ -188,3 +188,7 @@ def test_profile_role_and_search_empty(setup, auth):
     )
     assert client.get("/players?q=no_such_player", headers=scout).json() == []
     assert client.get("/players/999", headers=scout).status_code == 404
+
+
+def test_standard_avi_mime(setup, auth, video):
+    assert upload(setup[0], auth, video, mime="video/vnd.avi").status_code == 202

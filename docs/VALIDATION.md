@@ -10,7 +10,7 @@ Paths below start from the repository root unless a working directory is noted.
 |---|---|
 | `py -3.12 -m venv .venv` | PASS |
 | `.venv\Scripts\python.exe -m pip install -r backend/requirements-dev.txt` | PASS; subsequent security updates reflected in final requirements |
-| `..\.venv\Scripts\python.exe -m pytest -q --tb=short` (backend/) | PASS, **15 tests** |
+| `..\.venv\Scripts\python.exe -m pytest -q --tb=short` (backend/) | PASS, **16 tests** |
 | `.venv\Scripts\python.exe -m ruff check backend scripts` | PASS |
 | `.venv\Scripts\python.exe -m compileall -q backend/app` | PASS |
 | `npm ci` (frontend/) | PASS |
@@ -49,6 +49,8 @@ The successful happy path produced **zero console/page errors and zero HTTP resp
 Screenshots and horizontal-overflow assertions ran at **1440×1000**, **768×1024**, and **390×844** for login, profile, report, scout directory and player detail. Desktop login, tablet directory and mobile report were visually reviewed. Repository screenshots are copied from that run, explicitly using demo data. Full local evidence: `test-artifacts/e2e/` (ignored).
 
 Initial browser failures were fixed and rerun: Position selector accessibility, stale profile after navigation, form reference after await. The numeric assertion initially used the machine locale; the browser test now explicitly selects en-US. No production result was changed to satisfy the test.
+
+The first remote Linux E2E exposed an AVI MIME alias missing from the whitelist (415 on upload). The backend now also accepts `video/vnd.avi`, alongside the common legacy AVI types, with actual decoding still required. A regression test covers it; the browser script prints the file MIME and checks the upload response directly to improve diagnostics. This standard mapping is also present in [CPython's MIME table](https://github.com/python/cpython/blob/main/Lib/mimetypes.py).
 
 ## Real CV smoke evidence
 

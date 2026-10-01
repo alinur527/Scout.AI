@@ -99,7 +99,17 @@ with sync_playwright() as p:
         steps.extend(["profile edit/save", "profile refresh/auth restore"])
         page.get_by_role("link", name="Analyze a video", exact=True).first.click()
         page.get_by_label("Match video").set_input_files(str(video))
-        page.get_by_role("button", name="Upload and find players").click()
+        print(
+            "Browser upload MIME:",
+            page.get_by_label("Match video").evaluate("input => input.files[0].type"),
+        )
+        with page.expect_response(
+            lambda response: (
+                response.url.endswith("/analyses") and response.request.method == "POST"
+            )
+        ) as uploaded:
+            page.get_by_role("button", name="Upload and find players").click()
+        assert uploaded.value.status == 202, uploaded.value.text()
         expect(page.get_by_text("Queued for processing", exact=True)).to_be_visible()
         steps.append("upload + queued status")
         # Start the actual durable worker after observing queued, with no mocked API.
