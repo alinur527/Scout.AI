@@ -17,7 +17,9 @@ class AnnotationManager:
 
         annotated_frame = frame.copy()
         annotated_frame = self.box_annotator.annotate(scene=annotated_frame, detections=detections)
-        annotated_frame = self.label_annotator.annotate(scene=annotated_frame, detections=detections, labels=labels)
+        annotated_frame = self.label_annotator.annotate(
+            scene=annotated_frame, detections=detections, labels=labels
+        )
         annotated_frame = self.trace_annotator.annotate(scene=annotated_frame, detections=detections)
         return annotated_frame
 
@@ -66,7 +68,15 @@ class RadarVisualizer:
                 ry = int(np.clip((my / f_wid) * self.height, 0, self.height))
 
                 cv2.circle(radar_img, (rx, ry), 5, (0, 0, 255), -1, cv2.LINE_AA)
-                cv2.putText(radar_img, str(int(player_ids[i])), (rx + 7, ry),
-                            cv2.FONT_HERSHEY_SIMPLEX, 0.4, (255, 255, 255), 1, cv2.LINE_AA)
+                cv2.putText(
+                    radar_img,
+                    str(int(player_ids[i])),
+                    (rx + 7, ry),
+                    cv2.FONT_HERSHEY_SIMPLEX,
+                    0.4,
+                    (255, 255, 255),
+                    1,
+                    cv2.LINE_AA,
+                )
 
         return radar_img

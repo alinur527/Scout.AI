@@ -21,27 +21,61 @@ def test_health(setup):
 def test_auth_profile(setup, auth):
     client, app, settings = setup
     assert client.get("/profile/me").status_code == 401
-    assert client.post("/auth/register", json={"username": "player_one", "password": "Test-password-2026"}).status_code == 409
-    assert client.post("/auth/login", json={"username": "player_one", "password": "wrong-password"}).status_code == 401
-    assert client.post("/auth/register", json={"username": "admin_one", "password": "Test-password-2026", "role": "admin"}).status_code == 403
-    assert client.post("/auth/register", json={"username": "bad_role", "password": "Test-password-2026", "role": "root"}).status_code == 422
-    profile = {"full_name": "Test Player", "position": "Forward", "age": 22, "team": "Local FC", "bio": "Left foot"}
+    assert (
+        client.post(
+            "/auth/register", json={"username": "player_one", "password": "Test-password-2026"}
+        ).status_code
+        == 409
+    )
+    assert (
+        client.post("/auth/login", json={"username": "player_one", "password": "wrong-password"}).status_code
+        == 401
+    )
+    assert (
+        client.post(
+            "/auth/register",
+            json={"username": "admin_one", "password": "Test-password-2026", "role": "admin"},
+        ).status_code
+        == 403
+    )
+    assert (
+        client.post(
+            "/auth/register", json={"username": "bad_role", "password": "Test-password-2026", "role": "root"}
+        ).status_code
+        == 422
+    )
+    profile = {
+        "full_name": "Test Player",
+        "position": "Forward",
+        "age": 22,
+        "team": "Local FC",
+        "bio": "Left foot",
+    }
     assert client.put("/profile/me", headers=auth, json=profile).status_code == 200
     assert client.get("/profile/me", headers=auth).json()["profile"]["full_name"] == "Test Player"
     with app.state.sessions() as db:
         user = db.scalar(select(User))
         assert user.password_hash.startswith("$argon2id$")
-    expired = jwt.encode({"sub": "1", "iat": utcnow() - timedelta(hours=2),
-                          "exp": utcnow() - timedelta(hours=1)}, settings.jwt_secret_key, algorithm="HS256")
+    expired = jwt.encode(
+        {"sub": "1", "iat": utcnow() - timedelta(hours=2), "exp": utcnow() - timedelta(hours=1)},
+        settings.jwt_secret_key,
+        algorithm="HS256",
+    )
     assert client.get("/profile/me", headers={"Authorization": f"Bearer {expired}"}).status_code == 401
     assert client.get("/profile/me", headers={"Authorization": "Bearer invalid"}).status_code == 401
 
 
-@pytest.mark.parametrize("name,mime,data,expected", [
-    ("bad.exe", "video/mp4", b"bad", 415), ("bad.mp4", "text/plain", b"bad", 415),
-    ("bad.mp4", "video/mp4", b"bad", 422), ("empty.avi", "video/x-msvideo", b"", 422),
-    ("large.mp4", "video/mp4", b"x" * (1024 * 1024 + 1), 413),
-], ids=["extension", "mime", "invalid", "empty", "oversized"])
+@pytest.mark.parametrize(
+    "name,mime,data,expected",
+    [
+        ("bad.exe", "video/mp4", b"bad", 415),
+        ("bad.mp4", "text/plain", b"bad", 415),
+        ("bad.mp4", "video/mp4", b"bad", 422),
+        ("empty.avi", "video/x-msvideo", b"", 422),
+        ("large.mp4", "video/mp4", b"x" * (1024 * 1024 + 1), 413),
+    ],
+    ids=["extension", "mime", "invalid", "empty", "oversized"],
+)
 def test_upload_validation(setup, auth, name, mime, data, expected):
     assert upload(setup[0], auth, data, name, mime).status_code == expected
     assert list(setup[2].upload_dir.glob("*")) == []
@@ -119,6 +153,38 @@ def test_calibration_rejected(setup, auth, video):
     jid = upload(client, auth, video).json()["id"]
     process_next(app.state.sessions, settings)
     client.patch(f"/analyses/{jid}/player", headers=auth, json={"player_id": 1})
-    result = client.post(f"/analyses/{jid}/run", headers=auth,
-                        json={"calibration": {"points": [[0, 0]] * 4, "field_length": 40, "field_width": 20}})
+    result = client.post(
+        f"/analyses/{jid}/run",
+        headers=auth,
+        json={"calibration": {"points": [[0, 0]] * 4, "field_length": 40, "field_width": 20}},
+    )
     assert result.status_code == 422
+
+
+def test_request_size_limit_including_chunked(setup, auth):
+    client = setup[0]
+    assert (
+        client.post("/analyses", headers={**auth, "Content-Length": "999999999"}, content=b"").status_code
+        == 413
+    )
+    chunks = (b"x" * 400000 for _ in range(4))
+    assert (
+        client.post(
+            "/analyses", headers={**auth, "Content-Type": "multipart/form-data; boundary=x"}, content=chunks
+        ).status_code
+        == 413
+    )
+
+
+def test_profile_role_and_search_empty(setup, auth):
+    client = setup[0]
+    assert client.get("/analyses", headers=auth).json() == []
+    scout = account(client, "test_scout", "scout")
+    assert (
+        client.put(
+            "/profile/me", headers=scout, json={"full_name": "Scout", "position": "Forward"}
+        ).status_code
+        == 403
+    )
+    assert client.get("/players?q=no_such_player", headers=scout).json() == []
+    assert client.get("/players/999", headers=scout).status_code == 404

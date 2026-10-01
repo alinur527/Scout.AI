@@ -1,4 +1,5 @@
 """Legacy EMA/distance/sprint ideas with timestamps and rejected discontinuities."""
+
 import math
 
 import numpy as np
@@ -20,10 +21,15 @@ class MatchAnalytics:
             return
         if tid not in self.player_data:
             self.player_data[tid], self.player_speeds[tid] = [], []
-            self.sprint_count[tid], self.distance[tid], self.sprint_seconds[tid], self.rejected[tid] = 0, 0., 0., 0
+            self.sprint_count[tid], self.distance[tid], self.sprint_seconds[tid], self.rejected[tid] = (
+                0,
+                0.0,
+                0.0,
+                0,
+            )
         previous_time = self.last_time.get(tid)
         dt = timestamp - previous_time if previous_time is not None else 0
-        speed, smoothed = 0., point
+        speed, smoothed = 0.0, point
         if previous_time is not None:
             if dt <= 0:
                 return
@@ -40,7 +46,7 @@ class MatchAnalytics:
                 if speed > 21:
                     before = self.sprint_seconds[tid]
                     self.sprint_seconds[tid] += dt
-                    if before < .6 <= self.sprint_seconds[tid]:
+                    if before < 0.6 <= self.sprint_seconds[tid]:
                         self.sprint_count[tid] += 1
                 else:
                     self.sprint_seconds[tid] = 0
@@ -49,4 +55,4 @@ class MatchAnalytics:
         self.player_speeds[tid].append(float(speed))
 
     def get_total_distance(self, track_id):
-        return self.distance.get(int(track_id), 0.)
+        return self.distance.get(int(track_id), 0.0)

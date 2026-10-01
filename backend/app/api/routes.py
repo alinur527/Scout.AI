@@ -26,9 +26,23 @@ def public_profile(profile):
 
 
 def public_job(job):
-    return {key: getattr(job, key) for key in (
-        "id", "status", "stage", "progress", "original_filename", "selected_player_id", "demo",
-        "created_at", "started_at", "completed_at", "error", "video")}
+    return {
+        key: getattr(job, key)
+        for key in (
+            "id",
+            "status",
+            "stage",
+            "progress",
+            "original_filename",
+            "selected_player_id",
+            "demo",
+            "created_at",
+            "started_at",
+            "completed_at",
+            "error",
+            "video",
+        )
+    }
 
 
 def owned_job(db, analysis_id, user):
@@ -43,8 +57,13 @@ def health(request: Request):
     settings = request.app.state.settings
     heartbeat = settings.upload_dir / ".worker-heartbeat"
     age = time.time() - heartbeat.stat().st_mtime if heartbeat.exists() else None
-    return {"status": "ok", "demo_mode": settings.demo_mode, "worker_online": age is not None and age < 120,
-            "max_upload_mb": settings.max_upload_mb, "max_video_seconds": settings.max_video_seconds}
+    return {
+        "status": "ok",
+        "demo_mode": settings.demo_mode,
+        "worker_online": age is not None and age < 120,
+        "max_upload_mb": settings.max_upload_mb,
+        "max_video_seconds": settings.max_video_seconds,
+    }
 
 
 @router.post("/auth/register", status_code=201)
@@ -69,8 +88,11 @@ def login(data: Login, request: Request, db=Depends(session)):
     user = db.scalar(select(User).where(User.username == data.username))
     if user is None or not passwords.verify(data.password, user.password_hash):
         raise HTTPException(401, "Invalid username or password", headers={"WWW-Authenticate": "Bearer"})
-    return {"access_token": token_for(user, request.app.state.settings), "token_type": "bearer",
-            "user": public_user(user)}
+    return {
+        "access_token": token_for(user, request.app.state.settings),
+        "token_type": "bearer",
+        "user": public_user(user),
+    }
 
 
 @router.get("/profile/me")
@@ -89,18 +111,27 @@ def update_profile(data: ProfileUpdate, user=Depends(player_user), db=Depends(se
 
 @router.get("/analyses")
 def analyses(user=Depends(player_user), db=Depends(session)):
-    jobs = db.scalars(select(AnalysisJob).where(AnalysisJob.user_id == user.id)
-                      .order_by(AnalysisJob.created_at.desc()).limit(100))
+    jobs = db.scalars(
+        select(AnalysisJob)
+        .where(AnalysisJob.user_id == user.id)
+        .order_by(AnalysisJob.created_at.desc())
+        .limit(100)
+    )
     return [public_job(job) for job in jobs]
 
 
 @router.post("/analyses", status_code=202)
-async def upload(request: Request, video: UploadFile = File(...), user=Depends(player_user), db=Depends(session)):
+async def upload(
+    request: Request, video: UploadFile = File(...), user=Depends(player_user), db=Depends(session)
+):
     settings = request.app.state.settings
     original = (video.filename or "").replace("\\", "/").split("/")[-1][:255]
     extension = Path(original).suffix.lower()
-    allowed = {".mp4": {"video/mp4"}, ".mov": {"video/quicktime", "video/mp4"},
-               ".avi": {"video/x-msvideo", "video/avi", "video/msvideo"}}
+    allowed = {
+        ".mp4": {"video/mp4"},
+        ".mov": {"video/quicktime", "video/mp4"},
+        ".avi": {"video/x-msvideo", "video/avi", "video/msvideo"},
+    }
     if extension not in allowed or video.content_type not in allowed[extension]:
         await video.close()
         raise HTTPException(415, "Use MP4, MOV or AVI with the matching video MIME type")
@@ -118,8 +149,13 @@ async def upload(request: Request, video: UploadFile = File(...), user=Depends(p
             metadata = await run_in_threadpool(inspect_video, target, settings)
         except ValueError as error:
             raise HTTPException(422, str(error)) from error
-        job = AnalysisJob(user_id=user.id, original_filename=original, stored_filename=filename,
-                          demo=settings.demo_mode, video=metadata)
+        job = AnalysisJob(
+            user_id=user.id,
+            original_filename=original,
+            stored_filename=filename,
+            demo=settings.demo_mode,
+            video=metadata,
+        )
         db.add(job)
         db.commit()
         db.refresh(job)
@@ -163,14 +199,25 @@ def run(analysis_id: str, data: RunAnalysis, user=Depends(player_user), db=Depen
     calibration = data.calibration.model_dump() if data.calibration else None
     if calibration:
         from app.cv.calibration import FieldTransformer
+
         try:
-            FieldTransformer(calibration["points"], calibration["field_length"], calibration["field_width"],
-                             frame_size=(job.video["width"], job.video["height"]))
+            FieldTransformer(
+                calibration["points"],
+                calibration["field_length"],
+                calibration["field_width"],
+                frame_size=(job.video["width"], job.video["height"]),
+            )
         except ValueError as error:
             raise HTTPException(422, str(error)) from error
-    changed = db.execute(update(AnalysisJob).where(AnalysisJob.id == analysis_id,
-                         AnalysisJob.stage == "awaiting_selection", AnalysisJob.status == "processing")
-                         .values(status="queued", stage="reporting", calibration=calibration))
+    changed = db.execute(
+        update(AnalysisJob)
+        .where(
+            AnalysisJob.id == analysis_id,
+            AnalysisJob.stage == "awaiting_selection",
+            AnalysisJob.status == "processing",
+        )
+        .values(status="queued", stage="reporting", calibration=calibration)
+    )
     if changed.rowcount != 1:
         db.rollback()
         raise HTTPException(409, "Analysis has already been queued")
@@ -188,21 +235,33 @@ def result(analysis_id: str, user=Depends(player_user), db=Depends(session)):
 
 
 def player_card(db, user):
-    latest = db.scalar(select(AnalysisJob).where(AnalysisJob.user_id == user.id,
-                       AnalysisJob.status == "completed").order_by(AnalysisJob.completed_at.desc()).limit(1))
-    return {"user": public_user(user), "profile": public_profile(db.get(PlayerProfile, user.id)),
-            "latest_analysis": {"id": latest.id, "result": latest.result} if latest else None}
+    latest = db.scalar(
+        select(AnalysisJob)
+        .where(AnalysisJob.user_id == user.id, AnalysisJob.status == "completed")
+        .order_by(AnalysisJob.completed_at.desc())
+        .limit(1)
+    )
+    return {
+        "user": public_user(user),
+        "profile": public_profile(db.get(PlayerProfile, user.id)),
+        "latest_analysis": {"id": latest.id, "result": latest.result} if latest else None,
+    }
 
 
 @router.get("/players")
 def players(q: str = "", offset: int = 0, user=Depends(scout_user), db=Depends(session)):
-    statement = select(User).join(PlayerProfile, PlayerProfile.user_id == User.id).where(User.role == "player")
+    statement = (
+        select(User).join(PlayerProfile, PlayerProfile.user_id == User.id).where(User.role == "player")
+    )
     if q:
         pattern = "%" + q[:100].replace("%", "\\%").replace("_", "\\_") + "%"
-        statement = statement.where(User.username.ilike(pattern, escape="\\") |
-                                    PlayerProfile.full_name.ilike(pattern, escape="\\"))
-    return [player_card(db, player) for player in db.scalars(statement.order_by(User.id)
-                                                            .offset(max(0, offset)).limit(50))]
+        statement = statement.where(
+            User.username.ilike(pattern, escape="\\") | PlayerProfile.full_name.ilike(pattern, escape="\\")
+        )
+    return [
+        player_card(db, player)
+        for player in db.scalars(statement.order_by(User.id).offset(max(0, offset)).limit(50))
+    ]
 
 
 @router.get("/players/{player_id}")
@@ -211,7 +270,13 @@ def player_detail(player_id: int, user=Depends(scout_user), db=Depends(session))
     if player is None or player.role != "player":
         raise HTTPException(404, "Player not found")
     card = player_card(db, player)
-    jobs = db.scalars(select(AnalysisJob).where(AnalysisJob.user_id == player_id,
-                      AnalysisJob.status == "completed").order_by(AnalysisJob.completed_at.desc()).limit(10))
-    card["analyses"] = [{"id": job.id, "completed_at": job.completed_at, "result": job.result} for job in jobs]
+    jobs = db.scalars(
+        select(AnalysisJob)
+        .where(AnalysisJob.user_id == player_id, AnalysisJob.status == "completed")
+        .order_by(AnalysisJob.completed_at.desc())
+        .limit(10)
+    )
+    card["analyses"] = [
+        {"id": job.id, "completed_at": job.completed_at, "result": job.result} for job in jobs
+    ]
     return card

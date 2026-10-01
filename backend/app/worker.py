@@ -1,4 +1,5 @@
 """One durable local worker per UPLOAD_DIR. Start separately with python -m app.worker."""
+
 import logging
 import time
 from datetime import timedelta
@@ -24,10 +25,17 @@ def remove_upload(settings, job):
 
 def recover(sessions, settings):
     with sessions() as db:
-        interrupted = db.scalars(select(AnalysisJob).where(AnalysisJob.status == "processing",
-                                                          AnalysisJob.stage != "awaiting_selection"))
+        interrupted = db.scalars(
+            select(AnalysisJob).where(
+                AnalysisJob.status == "processing", AnalysisJob.stage != "awaiting_selection"
+            )
+        )
         for job in interrupted:
-            job.status, job.error, job.completed_at = "failed", "Worker interrupted. Upload the video again.", utcnow()
+            job.status, job.error, job.completed_at = (
+                "failed",
+                "Worker interrupted. Upload the video again.",
+                utcnow(),
+            )
             remove_upload(settings, job)
         db.commit()
 
@@ -37,7 +45,11 @@ def cleanup(sessions, settings):
     with sessions() as db:
         for job in db.scalars(select(AnalysisJob).where(AnalysisJob.created_at < cutoff)):
             if job.status in ("queued", "processing"):
-                job.status, job.error, job.completed_at = "failed", "Unfinished job expired; upload again.", utcnow()
+                job.status, job.error, job.completed_at = (
+                    "failed",
+                    "Unfinished job expired; upload again.",
+                    utcnow(),
+                )
             remove_upload(settings, job)
             job.tracks, job.gallery = {}, []
         db.commit()
@@ -50,21 +62,31 @@ def cleanup(sessions, settings):
 
 def process_next(sessions, settings):
     with sessions() as db:
-        job = db.scalar(select(AnalysisJob).where(AnalysisJob.status == "queued")
-                        .order_by(AnalysisJob.created_at).limit(1))
+        job = db.scalar(
+            select(AnalysisJob)
+            .where(AnalysisJob.status == "queued")
+            .order_by(AnalysisJob.created_at)
+            .limit(1)
+        )
         if job is None:
             return False
-        changed = db.execute(update(AnalysisJob).where(AnalysisJob.id == job.id, AnalysisJob.status == "queued")
-                             .values(status="processing", started_at=job.started_at or utcnow()))
+        changed = db.execute(
+            update(AnalysisJob)
+            .where(AnalysisJob.id == job.id, AnalysisJob.status == "queued")
+            .values(status="processing", started_at=job.started_at or utcnow())
+        )
         if changed.rowcount != 1:
             db.rollback()
             return False
         db.commit()
         db.refresh(job)
         try:
+
             def progress(value):
                 with sessions() as progress_db:
-                    progress_db.execute(update(AnalysisJob).where(AnalysisJob.id == job.id).values(progress=value))
+                    progress_db.execute(
+                        update(AnalysisJob).where(AnalysisJob.id == job.id).values(progress=value)
+                    )
                     progress_db.commit()
                 (settings.upload_dir / ".worker-heartbeat").touch()
 
@@ -82,7 +104,11 @@ def process_next(sessions, settings):
         except Exception as error:
             log.exception("Analysis %s failed", job.id)
             job.status, job.stage, job.completed_at = "failed", "done", utcnow()
-            job.error = str(error)[:500] if isinstance(error, ValueError) else "CV processing failed. See worker logs using this analysis ID."
+            job.error = (
+                str(error)[:500]
+                if isinstance(error, ValueError)
+                else "CV processing failed. See worker logs using this analysis ID."
+            )
             job.tracks = {}
         finally:
             # Detection persists everything needed for selection/reporting. Keep no source videos afterward.

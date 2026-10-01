@@ -17,15 +17,20 @@ def session(request: Request):
         yield db
 
 
-def current_user(request: Request, credentials: HTTPAuthorizationCredentials | None = Depends(bearer),
-                 db=Depends(session)):
+def current_user(
+    request: Request, credentials: HTTPAuthorizationCredentials | None = Depends(bearer), db=Depends(session)
+):
     unauthorized = HTTPException(401, "Please log in again", headers={"WWW-Authenticate": "Bearer"})
     if credentials is None:
         raise unauthorized
     settings = request.app.state.settings
     try:
-        payload = jwt.decode(credentials.credentials, settings.jwt_secret_key,
-                             algorithms=[settings.jwt_algorithm], options={"require": ["sub", "exp", "iat"]})
+        payload = jwt.decode(
+            credentials.credentials,
+            settings.jwt_secret_key,
+            algorithms=[settings.jwt_algorithm],
+            options={"require": ["sub", "exp", "iat"]},
+        )
         user = db.scalar(select(User).where(User.id == int(payload["sub"])))
     except (jwt.PyJWTError, ValueError, TypeError):
         raise unauthorized from None
@@ -48,6 +53,12 @@ def scout_user(user=Depends(current_user)):
 
 def token_for(user, settings):
     now = utcnow()
-    return jwt.encode({"sub": str(user.id), "iat": now,
-                       "exp": now + timedelta(minutes=settings.access_token_expire_minutes)},
-                      settings.jwt_secret_key, algorithm=settings.jwt_algorithm)
+    return jwt.encode(
+        {
+            "sub": str(user.id),
+            "iat": now,
+            "exp": now + timedelta(minutes=settings.access_token_expire_minutes),
+        },
+        settings.jwt_secret_key,
+        algorithm=settings.jwt_algorithm,
+    )

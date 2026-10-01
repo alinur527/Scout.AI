@@ -14,9 +14,14 @@ from make_demo_video import make_video
 
 @pytest.fixture
 def setup(tmp_path):
-    settings = Settings(_env_file=None, database_url=f"sqlite:///{tmp_path / 'test.db'}",
-                        jwt_secret_key=secrets.token_urlsafe(48), upload_dir=tmp_path / "uploads",
-                        SCOUTAI_DEMO_MODE=True, max_upload_mb=1)
+    settings = Settings(
+        _env_file=None,
+        database_url=f"sqlite:///{tmp_path / 'test.db'}",
+        jwt_secret_key=secrets.token_urlsafe(48),
+        upload_dir=tmp_path / "uploads",
+        SCOUTAI_DEMO_MODE=True,
+        max_upload_mb=1,
+    )
     app = create_app(settings)
     with TestClient(app) as client:
         yield client, app, settings

@@ -15,7 +15,7 @@ def test_homography_and_invalid_corners():
 def test_timestamps_sprints_short_tracks_and_jumps():
     analytics = MatchAnalytics(30)
     for i in range(30):
-        analytics.update_metrics(1, [i * .7, 0], i / 10)
+        analytics.update_metrics(1, [i * 0.7, 0], i / 10)
     assert 18 < analytics.get_total_distance(1) < 21
     assert 24 < max(analytics.player_speeds[1]) < 26
     assert analytics.sprint_count[1] == 1
@@ -27,7 +27,7 @@ def test_timestamps_sprints_short_tracks_and_jumps():
     assert analytics.get_total_distance(1) == before
     short = MatchAnalytics(20)
     short.update_metrics(2, [0, 0], 0)
-    short.update_metrics(2, [.1, 0], .1)
+    short.update_metrics(2, [0.1, 0], 0.1)
     assert short.get_total_distance(2) > 0
     with pytest.raises(ValueError):
         MatchAnalytics(0)

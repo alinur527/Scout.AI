@@ -22,7 +22,12 @@ def inspect_video(path: Path, settings):
             raise ValueError("The first video frame cannot be decoded.")
         if frame.shape[0] * frame.shape[1] > 3840 * 2160:
             raise ValueError("Video resolution exceeds 4K. Resize the video first.")
-        return {"fps": fps, "frame_count": int(count), "duration_seconds": round(count / fps, 3),
-                "width": frame.shape[1], "height": frame.shape[0]}
+        return {
+            "fps": fps,
+            "frame_count": int(count),
+            "duration_seconds": round(count / fps, 3),
+            "width": frame.shape[1],
+            "height": frame.shape[0],
+        }
     finally:
         cap.release()
