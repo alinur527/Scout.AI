@@ -17,6 +17,14 @@ CONFIGS = {
     "highres": ["--imgsz", "1920"],
     "tiles": ["--tiles", "--imgsz", "960"],
     "pitch": ["--imgsz", "0", "--scene-filter", "pitch"],
+    "person-pitch": [
+        "--model",
+        "backend/weights/yolo11n.pt",
+        "--imgsz",
+        "0",
+        "--scene-filter",
+        "pitch",
+    ],
 }
 
 
