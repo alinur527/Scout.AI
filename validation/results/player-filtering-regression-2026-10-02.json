@@ -1,0 +1,2730 @@
+{
+  "baseline_main_sha": "e423ae6dd4d8d046c58c17304fa0094100bd3151",
+  "final_production_policy": "Original automatic panoramic-person/configured-pose detector and original BoT-SORT; no ROI, kit filter or continuity integration",
+  "production_files_restored_to_main": [
+    "backend/app/core/config.py",
+    "backend/app/services/inference.py"
+  ],
+  "timing_limit": "Sequential CPU runs; includes decoding/tracking/camera and outputs, excludes imports/model initialization/app persistence. Final harness also dumps native tracks; timings are not an optimization comparison. RSS sampled per frame, not continuous peak.",
+  "runs": {
+    "117093": {
+      "summary": {
+        "video": "$REPO\\test-artifacts\\football\\soccertrack\\117093\\window\\clip.avi",
+        "video_sha256": "0a056a53521c275eb80c1f8900fa8ddae0c823a30e503f9fd0ce03364c4a6cc9",
+        "metadata": {
+          "fps": 25.0,
+          "frame_count": 120,
+          "width": 4096,
+          "height": 1080,
+          "duration_seconds": 4.8
+        },
+        "model_sha256": "0ebbc80d4a7680d14987a577cd21342b65ecfd94632bd9a8da63ae6417644ee1",
+        "ultralytics": "8.4.26",
+        "torch": "2.10.0+cpu",
+        "device": "cpu",
+        "experiment": "final-production-regression",
+        "timestamp_utc": "2026-10-02T18:04:07.100281+00:00",
+        "git_commit": "6dbf40104b6cb7453a10fb2a975e70b3526c3126",
+        "git_dirty": true,
+        "harness_sha256": "e8dbc4ae181c0b82a5359e3c0823b20d949fc07219350e6e6ca0542f4ece52d8",
+        "processor_sha256": "aaff59a7de5dcfc661e586ec8d30e8c55eae4a5b485873082d01e1e02a87a3cb",
+        "model": "$REPO\\backend\\weights\\yolo11n.pt",
+        "model_task": "detect",
+        "config": {
+          "continuity": "none",
+          "tracker": "$REPO\\backend\\app\\cv\\botsort.yaml",
+          "conf": 0.3,
+          "iou": 0.5,
+          "imgsz": "native max dimension, rounded to 32, clipped 640..1280",
+          "start": 0,
+          "end": null,
+          "scene_filter": "none",
+          "tiling": null,
+          "production_profile": "panoramic_person"
+        },
+        "technical": {
+          "frames": 120,
+          "detections": 1815,
+          "track_ids": 32,
+          "frames_with_detections": 120,
+          "frames_without_detections": 0,
+          "frame_detection_coverage": 1.0,
+          "mean_detections_per_frame": 15.125,
+          "mean_track_observations": 56.71875,
+          "median_track_observations": 39.5,
+          "longest_track_observations": 120,
+          "short_tracks_lt10_observations": 6,
+          "reacquired_same_id_gaps": 65,
+          "lost_frame_intervals": 187,
+          "fragmentation_proxy_ids_per_100_frames": 26.666666666666668,
+          "confidence_quantiles": [
+            0.300258606672287,
+            0.4378910958766937,
+            0.5344606637954712,
+            0.6442308127880096,
+            0.8448129892349243
+          ]
+        },
+        "processing_seconds": 16.97686490000069,
+        "processing_fps": 7.068442890182575,
+        "processing_to_video_duration": 3.5368468541668108,
+        "failures": [],
+        "ground_truth": null,
+        "raw_detections": 1912,
+        "scene_filter": {
+          "input_boxes": 1912,
+          "accepted_boxes": 1912,
+          "available_frames": 0,
+          "unknown_frames": 0
+        },
+        "camera_motion": {
+          "status": "no_motion_detected",
+          "valid_pairs": 23,
+          "sample_pairs": 23,
+          "max_shift_working_px": 0.079,
+          "max_scale_change": 0.00011,
+          "max_rotation_degrees": 0.006,
+          "method": "masked sparse optical flow / RANSAC affine veto at 5 Hz, max width 640"
+        },
+        "timestamps_reliable": true,
+        "actual_video_processor": true,
+        "observed_peak_rss_bytes": 495689728,
+        "continuity": {
+          "policy": "none",
+          "status": "disabled",
+          "links": []
+        },
+        "continuity_code_sha256": "da37df21fdc7385c9bd3a8ff771f72886dd550cbb90d8eafac757ac8a60937cc",
+        "memory_method": "psutil RSS sampled after each frame; includes model, not a continuous peak"
+      },
+      "publisher": {
+        "provenance": "SoccerTrack v2 released MOT challenge GT; 0-based, players/GK only; human box review protocol not specified",
+        "gt_sha256": "f081ed8f4c7feb76e0fb0982c645fe6ae2039cf69bf2ffeaa787896fa01e2331",
+        "positive_classes": [
+          "player",
+          "goalkeeper"
+        ],
+        "tracking": {
+          "labelled_frames": 120,
+          "iou_threshold": 0.5,
+          "tp": 1591,
+          "fp": 224,
+          "fn": 1049,
+          "precision": 0.8765840220385674,
+          "recall": 0.6026515151515152,
+          "f1": 0.714253647586981,
+          "id_switches": 8,
+          "fragmentations": 72,
+          "events": [
+            {
+              "kind": "fragmentation",
+              "frame": 12,
+              "gt_id": "7"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 22,
+              "gt_id": "8"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 25,
+              "gt_id": "8"
+            },
+            {
+              "kind": "id_switch",
+              "frame": 34,
+              "gt_id": "8",
+              "previous_id": 11,
+              "new_id": 26
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 34,
+              "gt_id": "8"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 35,
+              "gt_id": "5"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 36,
+              "gt_id": "19"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 38,
+              "gt_id": "14"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 41,
+              "gt_id": "13"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 42,
+              "gt_id": "7"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 46,
+              "gt_id": "15"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 47,
+              "gt_id": "14"
+            },
+            {
+              "kind": "id_switch",
+              "frame": 47,
+              "gt_id": "19",
+              "previous_id": 16,
+              "new_id": 40
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 47,
+              "gt_id": "19"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 50,
+              "gt_id": "17"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 52,
+              "gt_id": "15"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 54,
+              "gt_id": "15"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 55,
+              "gt_id": "2"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 55,
+              "gt_id": "14"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 56,
+              "gt_id": "5"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 58,
+              "gt_id": "7"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 59,
+              "gt_id": "19"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 60,
+              "gt_id": "7"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 63,
+              "gt_id": "19"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 68,
+              "gt_id": "7"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 68,
+              "gt_id": "19"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 69,
+              "gt_id": "4"
+            },
+            {
+              "kind": "id_switch",
+              "frame": 69,
+              "gt_id": "9",
+              "previous_id": 36,
+              "new_id": 67
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 69,
+              "gt_id": "9"
+            },
+            {
+              "kind": "id_switch",
+              "frame": 69,
+              "gt_id": "13",
+              "previous_id": 12,
+              "new_id": 68
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 69,
+              "gt_id": "13"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 71,
+              "gt_id": "1"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 75,
+              "gt_id": "7"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 75,
+              "gt_id": "8"
+            },
+            {
+              "kind": "id_switch",
+              "frame": 75,
+              "gt_id": "9",
+              "previous_id": 67,
+              "new_id": 70
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 75,
+              "gt_id": "9"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 76,
+              "gt_id": "1"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 78,
+              "gt_id": "14"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 80,
+              "gt_id": "5"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 81,
+              "gt_id": "1"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 82,
+              "gt_id": "7"
+            },
+            {
+              "kind": "id_switch",
+              "frame": 82,
+              "gt_id": "9",
+              "previous_id": 70,
+              "new_id": 73
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 82,
+              "gt_id": "9"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 83,
+              "gt_id": "5"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 85,
+              "gt_id": "19"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 86,
+              "gt_id": "1"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 86,
+              "gt_id": "13"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 86,
+              "gt_id": "14"
+            },
+            {
+              "kind": "id_switch",
+              "frame": 88,
+              "gt_id": "4",
+              "previous_id": 57,
+              "new_id": 84
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 88,
+              "gt_id": "4"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 91,
+              "gt_id": "7"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 92,
+              "gt_id": "1"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 92,
+              "gt_id": "5"
+            },
+            {
+              "kind": "id_switch",
+              "frame": 92,
+              "gt_id": "9",
+              "previous_id": 73,
+              "new_id": 89
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 92,
+              "gt_id": "9"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 93,
+              "gt_id": "7"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 93,
+              "gt_id": "12"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 94,
+              "gt_id": "13"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 96,
+              "gt_id": "1"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 97,
+              "gt_id": "7"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 97,
+              "gt_id": "9"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 99,
+              "gt_id": "19"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 100,
+              "gt_id": "4"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 102,
+              "gt_id": "4"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 102,
+              "gt_id": "12"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 103,
+              "gt_id": "13"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 104,
+              "gt_id": "1"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 105,
+              "gt_id": "7"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 105,
+              "gt_id": "9"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 106,
+              "gt_id": "19"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 107,
+              "gt_id": "4"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 108,
+              "gt_id": "18"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 110,
+              "gt_id": "9"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 111,
+              "gt_id": "7"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 113,
+              "gt_id": "7"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 116,
+              "gt_id": "4"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 116,
+              "gt_id": "13"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 118,
+              "gt_id": "13"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 118,
+              "gt_id": "19"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 119,
+              "gt_id": "14"
+            }
+          ],
+          "identity_coverage": {
+            "1": 0.25833333333333336,
+            "2": 0.9166666666666666,
+            "3": 1.0,
+            "4": 0.19166666666666668,
+            "5": 0.6,
+            "6": 0.0,
+            "7": 0.725,
+            "8": 0.825,
+            "9": 0.16666666666666666,
+            "10": 0.0,
+            "11": 1.0,
+            "12": 0.975,
+            "13": 0.8333333333333334,
+            "14": 0.875,
+            "15": 0.09166666666666666,
+            "16": 1.0,
+            "17": 0.9916666666666667,
+            "18": 0.09166666666666666,
+            "19": 0.7166666666666667,
+            "20": 1.0,
+            "21": 1.0,
+            "22": 0.0
+          },
+          "ground_point_error_px": {}
+        },
+        "detection": {
+          "tp": 1662,
+          "fp": 250,
+          "fn": 978,
+          "precision": 0.8692468619246861,
+          "recall": 0.6295454545454545,
+          "f1": 0.7302284710017575
+        },
+        "small_players": {
+          "reference_max_side": 1280,
+          "small_area_max_px": 1024,
+          "bins": {
+            "small": {
+              "tp": 1662,
+              "fn": 978,
+              "recall": 0.6295454545454545
+            },
+            "other": {
+              "tp": 0,
+              "fn": 0,
+              "recall": null
+            }
+          }
+        },
+        "gt_observations": 2640
+      },
+      "baseline_agreement": "exact raw/tracked scores, identity coverage, ID counts, switch/fragment counts and small-player recall"
+    },
+    "118575": {
+      "summary": {
+        "video": "$REPO\\test-artifacts\\football\\soccertrack\\118575\\window\\clip.avi",
+        "video_sha256": "a27324f6b48ebf4b31f16750fbd0733b1d11fcf64d845a7ac2484ccb4764b872",
+        "metadata": {
+          "fps": 25.0,
+          "frame_count": 120,
+          "width": 4096,
+          "height": 1080,
+          "duration_seconds": 4.8
+        },
+        "model_sha256": "0ebbc80d4a7680d14987a577cd21342b65ecfd94632bd9a8da63ae6417644ee1",
+        "ultralytics": "8.4.26",
+        "torch": "2.10.0+cpu",
+        "device": "cpu",
+        "experiment": "final-production-regression",
+        "timestamp_utc": "2026-10-02T18:04:29.206826+00:00",
+        "git_commit": "6dbf40104b6cb7453a10fb2a975e70b3526c3126",
+        "git_dirty": true,
+        "harness_sha256": "e8dbc4ae181c0b82a5359e3c0823b20d949fc07219350e6e6ca0542f4ece52d8",
+        "processor_sha256": "aaff59a7de5dcfc661e586ec8d30e8c55eae4a5b485873082d01e1e02a87a3cb",
+        "model": "$REPO\\backend\\weights\\yolo11n.pt",
+        "model_task": "detect",
+        "config": {
+          "continuity": "none",
+          "tracker": "$REPO\\backend\\app\\cv\\botsort.yaml",
+          "conf": 0.3,
+          "iou": 0.5,
+          "imgsz": "native max dimension, rounded to 32, clipped 640..1280",
+          "start": 0,
+          "end": null,
+          "scene_filter": "none",
+          "tiling": null,
+          "production_profile": "panoramic_person"
+        },
+        "technical": {
+          "frames": 120,
+          "detections": 1012,
+          "track_ids": 22,
+          "frames_with_detections": 120,
+          "frames_without_detections": 0,
+          "frame_detection_coverage": 1.0,
+          "mean_detections_per_frame": 8.433333333333334,
+          "mean_track_observations": 46.0,
+          "median_track_observations": 30.0,
+          "longest_track_observations": 118,
+          "short_tracks_lt10_observations": 5,
+          "reacquired_same_id_gaps": 47,
+          "lost_frame_intervals": 139,
+          "fragmentation_proxy_ids_per_100_frames": 18.333333333333332,
+          "confidence_quantiles": [
+            0.3001009523868561,
+            0.38156622648239136,
+            0.45787444710731506,
+            0.5533589869737625,
+            0.7473519444465637
+          ]
+        },
+        "processing_seconds": 15.616787300000396,
+        "processing_fps": 7.684038829164111,
+        "processing_to_video_duration": 3.2534973541667496,
+        "failures": [],
+        "ground_truth": null,
+        "raw_detections": 1064,
+        "scene_filter": {
+          "input_boxes": 1064,
+          "accepted_boxes": 1064,
+          "available_frames": 0,
+          "unknown_frames": 0
+        },
+        "camera_motion": {
+          "status": "no_motion_detected",
+          "valid_pairs": 23,
+          "sample_pairs": 23,
+          "max_shift_working_px": 0.058,
+          "max_scale_change": 0.00016,
+          "max_rotation_degrees": 0.005,
+          "method": "masked sparse optical flow / RANSAC affine veto at 5 Hz, max width 640"
+        },
+        "timestamps_reliable": true,
+        "actual_video_processor": true,
+        "observed_peak_rss_bytes": 480260096,
+        "continuity": {
+          "policy": "none",
+          "status": "disabled",
+          "links": []
+        },
+        "continuity_code_sha256": "da37df21fdc7385c9bd3a8ff771f72886dd550cbb90d8eafac757ac8a60937cc",
+        "memory_method": "psutil RSS sampled after each frame; includes model, not a continuous peak"
+      },
+      "publisher": {
+        "provenance": "SoccerTrack v2 released MOT challenge GT; 0-based, players/GK only; human box review protocol not specified",
+        "gt_sha256": "bf6c6d38e697d6cf9a4e045a7af2e8d33f7a99146517d10213852c9f556f0936",
+        "positive_classes": [
+          "player",
+          "goalkeeper"
+        ],
+        "tracking": {
+          "labelled_frames": 120,
+          "iou_threshold": 0.5,
+          "tp": 804,
+          "fp": 208,
+          "fn": 1836,
+          "precision": 0.7944664031620553,
+          "recall": 0.30454545454545456,
+          "f1": 0.44030668127053674,
+          "id_switches": 8,
+          "fragmentations": 68,
+          "events": [
+            {
+              "kind": "id_switch",
+              "frame": 4,
+              "gt_id": "4",
+              "previous_id": 8,
+              "new_id": 11
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 4,
+              "gt_id": "4"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 4,
+              "gt_id": "10"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 11,
+              "gt_id": "4"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 12,
+              "gt_id": "19"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 15,
+              "gt_id": "5"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 20,
+              "gt_id": "5"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 21,
+              "gt_id": "4"
+            },
+            {
+              "kind": "id_switch",
+              "frame": 24,
+              "gt_id": "10",
+              "previous_id": 7,
+              "new_id": 23
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 24,
+              "gt_id": "10"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 25,
+              "gt_id": "5"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 26,
+              "gt_id": "8"
+            },
+            {
+              "kind": "id_switch",
+              "frame": 26,
+              "gt_id": "19",
+              "previous_id": 6,
+              "new_id": 27
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 26,
+              "gt_id": "19"
+            },
+            {
+              "kind": "id_switch",
+              "frame": 27,
+              "gt_id": "7",
+              "previous_id": 1,
+              "new_id": 25
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 27,
+              "gt_id": "7"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 29,
+              "gt_id": "4"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 30,
+              "gt_id": "5"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 30,
+              "gt_id": "7"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 32,
+              "gt_id": "10"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 36,
+              "gt_id": "5"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 36,
+              "gt_id": "19"
+            },
+            {
+              "kind": "id_switch",
+              "frame": 39,
+              "gt_id": "7",
+              "previous_id": 25,
+              "new_id": 31
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 39,
+              "gt_id": "7"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 40,
+              "gt_id": "10"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 41,
+              "gt_id": "8"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 42,
+              "gt_id": "19"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 44,
+              "gt_id": "5"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 47,
+              "gt_id": "19"
+            },
+            {
+              "kind": "id_switch",
+              "frame": 48,
+              "gt_id": "4",
+              "previous_id": 11,
+              "new_id": 38
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 48,
+              "gt_id": "4"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 49,
+              "gt_id": "10"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 54,
+              "gt_id": "15"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 56,
+              "gt_id": "5"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 56,
+              "gt_id": "19"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 61,
+              "gt_id": "5"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 62,
+              "gt_id": "10"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 63,
+              "gt_id": "4"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 64,
+              "gt_id": "5"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 66,
+              "gt_id": "8"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 66,
+              "gt_id": "19"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 69,
+              "gt_id": "8"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 72,
+              "gt_id": "8"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 74,
+              "gt_id": "4"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 77,
+              "gt_id": "5"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 77,
+              "gt_id": "10"
+            },
+            {
+              "kind": "id_switch",
+              "frame": 78,
+              "gt_id": "19",
+              "previous_id": 27,
+              "new_id": 53
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 78,
+              "gt_id": "19"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 79,
+              "gt_id": "4"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 81,
+              "gt_id": "10"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 81,
+              "gt_id": "15"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 81,
+              "gt_id": "20"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 82,
+              "gt_id": "4"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 83,
+              "gt_id": "20"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 84,
+              "gt_id": "15"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 86,
+              "gt_id": "15"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 88,
+              "gt_id": "8"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 91,
+              "gt_id": "4"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 91,
+              "gt_id": "8"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 94,
+              "gt_id": "4"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 95,
+              "gt_id": "15"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 96,
+              "gt_id": "4"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 99,
+              "gt_id": "18"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 99,
+              "gt_id": "20"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 105,
+              "gt_id": "20"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 107,
+              "gt_id": "9"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 107,
+              "gt_id": "20"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 109,
+              "gt_id": "7"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 110,
+              "gt_id": "20"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 112,
+              "gt_id": "7"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 112,
+              "gt_id": "9"
+            },
+            {
+              "kind": "id_switch",
+              "frame": 113,
+              "gt_id": "19",
+              "previous_id": 53,
+              "new_id": 58
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 113,
+              "gt_id": "19"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 113,
+              "gt_id": "20"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 115,
+              "gt_id": "1"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 119,
+              "gt_id": "7"
+            }
+          ],
+          "identity_coverage": {
+            "1": 0.9833333333333333,
+            "2": 0.058333333333333334,
+            "3": 0.0,
+            "4": 0.6833333333333333,
+            "5": 0.7916666666666666,
+            "6": 0.0,
+            "7": 0.8833333333333333,
+            "8": 0.7583333333333333,
+            "9": 0.11666666666666667,
+            "10": 0.7416666666666667,
+            "11": 0.075,
+            "12": 0.0,
+            "13": 0.0,
+            "14": 0.0,
+            "15": 0.125,
+            "16": 0.0,
+            "17": 0.0,
+            "18": 0.025,
+            "19": 0.5666666666666667,
+            "20": 0.8916666666666667,
+            "21": 0.0,
+            "22": 0.0
+          },
+          "ground_point_error_px": {}
+        },
+        "detection": {
+          "tp": 832,
+          "fp": 232,
+          "fn": 1808,
+          "precision": 0.7819548872180451,
+          "recall": 0.3151515151515151,
+          "f1": 0.4492440604751619
+        },
+        "small_players": {
+          "reference_max_side": 1280,
+          "small_area_max_px": 1024,
+          "bins": {
+            "small": {
+              "tp": 832,
+              "fn": 1808,
+              "recall": 0.3151515151515151
+            },
+            "other": {
+              "tp": 0,
+              "fn": 0,
+              "recall": null
+            }
+          }
+        },
+        "gt_observations": 2640
+      },
+      "baseline_agreement": "exact raw/tracked scores, identity coverage, ID counts, switch/fragment counts and small-player recall"
+    },
+    "118576": {
+      "summary": {
+        "video": "$REPO\\test-artifacts\\football\\soccertrack\\118576\\window\\clip.avi",
+        "video_sha256": "b0fe22a845f276cc93e4aea585e2344747955faf32078de4ef7836e1a7c9cf5e",
+        "metadata": {
+          "fps": 25.0,
+          "frame_count": 120,
+          "width": 4096,
+          "height": 1080,
+          "duration_seconds": 4.8
+        },
+        "model_sha256": "0ebbc80d4a7680d14987a577cd21342b65ecfd94632bd9a8da63ae6417644ee1",
+        "ultralytics": "8.4.26",
+        "torch": "2.10.0+cpu",
+        "device": "cpu",
+        "experiment": "final-production-regression",
+        "timestamp_utc": "2026-10-02T18:04:49.276403+00:00",
+        "git_commit": "6dbf40104b6cb7453a10fb2a975e70b3526c3126",
+        "git_dirty": true,
+        "harness_sha256": "e8dbc4ae181c0b82a5359e3c0823b20d949fc07219350e6e6ca0542f4ece52d8",
+        "processor_sha256": "aaff59a7de5dcfc661e586ec8d30e8c55eae4a5b485873082d01e1e02a87a3cb",
+        "model": "$REPO\\backend\\weights\\yolo11n.pt",
+        "model_task": "detect",
+        "config": {
+          "continuity": "none",
+          "tracker": "$REPO\\backend\\app\\cv\\botsort.yaml",
+          "conf": 0.3,
+          "iou": 0.5,
+          "imgsz": "native max dimension, rounded to 32, clipped 640..1280",
+          "start": 0,
+          "end": null,
+          "scene_filter": "none",
+          "tiling": null,
+          "production_profile": "panoramic_person"
+        },
+        "technical": {
+          "frames": 120,
+          "detections": 1194,
+          "track_ids": 36,
+          "frames_with_detections": 120,
+          "frames_without_detections": 0,
+          "frame_detection_coverage": 1.0,
+          "mean_detections_per_frame": 9.95,
+          "mean_track_observations": 33.166666666666664,
+          "median_track_observations": 18.5,
+          "longest_track_observations": 120,
+          "short_tracks_lt10_observations": 10,
+          "reacquired_same_id_gaps": 46,
+          "lost_frame_intervals": 164,
+          "fragmentation_proxy_ids_per_100_frames": 30.0,
+          "confidence_quantiles": [
+            0.3005799353122711,
+            0.419424369931221,
+            0.5053432881832123,
+            0.5843855440616608,
+            0.7803582549095154
+          ]
+        },
+        "processing_seconds": 15.259844400000475,
+        "processing_fps": 7.863776120810004,
+        "processing_to_video_duration": 3.179134250000099,
+        "failures": [],
+        "ground_truth": null,
+        "raw_detections": 1319,
+        "scene_filter": {
+          "input_boxes": 1319,
+          "accepted_boxes": 1319,
+          "available_frames": 0,
+          "unknown_frames": 0
+        },
+        "camera_motion": {
+          "status": "no_motion_detected",
+          "valid_pairs": 23,
+          "sample_pairs": 23,
+          "max_shift_working_px": 0.054,
+          "max_scale_change": 0.00016,
+          "max_rotation_degrees": 0.008,
+          "method": "masked sparse optical flow / RANSAC affine veto at 5 Hz, max width 640"
+        },
+        "timestamps_reliable": true,
+        "actual_video_processor": true,
+        "observed_peak_rss_bytes": 481124352,
+        "continuity": {
+          "policy": "none",
+          "status": "disabled",
+          "links": []
+        },
+        "continuity_code_sha256": "da37df21fdc7385c9bd3a8ff771f72886dd550cbb90d8eafac757ac8a60937cc",
+        "memory_method": "psutil RSS sampled after each frame; includes model, not a continuous peak"
+      },
+      "publisher": {
+        "provenance": "SoccerTrack v2 released MOT challenge GT; 0-based, players/GK only; human box review protocol not specified",
+        "gt_sha256": "902483d9b029bb69c692da8fe0120f593615faf6d17ae2d4db22165247307310",
+        "positive_classes": [
+          "player",
+          "goalkeeper"
+        ],
+        "tracking": {
+          "labelled_frames": 120,
+          "iou_threshold": 0.5,
+          "tp": 910,
+          "fp": 284,
+          "fn": 1730,
+          "precision": 0.7621440536013401,
+          "recall": 0.3446969696969697,
+          "f1": 0.474700052164841,
+          "id_switches": 18,
+          "fragmentations": 69,
+          "events": [
+            {
+              "kind": "fragmentation",
+              "frame": 2,
+              "gt_id": "4"
+            },
+            {
+              "kind": "id_switch",
+              "frame": 4,
+              "gt_id": "11",
+              "previous_id": 8,
+              "new_id": 12
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 4,
+              "gt_id": "11"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 4,
+              "gt_id": "16"
+            },
+            {
+              "kind": "id_switch",
+              "frame": 6,
+              "gt_id": "1",
+              "previous_id": 3,
+              "new_id": 15
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 6,
+              "gt_id": "1"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 6,
+              "gt_id": "3"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 6,
+              "gt_id": "4"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 7,
+              "gt_id": "20"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 11,
+              "gt_id": "1"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 12,
+              "gt_id": "20"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 15,
+              "gt_id": "11"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 15,
+              "gt_id": "18"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 17,
+              "gt_id": "16"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 18,
+              "gt_id": "18"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 21,
+              "gt_id": "10"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 22,
+              "gt_id": "11"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 24,
+              "gt_id": "19"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 25,
+              "gt_id": "3"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 25,
+              "gt_id": "18"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 26,
+              "gt_id": "10"
+            },
+            {
+              "kind": "id_switch",
+              "frame": 29,
+              "gt_id": "16",
+              "previous_id": 7,
+              "new_id": 37
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 29,
+              "gt_id": "16"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 30,
+              "gt_id": "1"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 30,
+              "gt_id": "11"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 31,
+              "gt_id": "10"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 31,
+              "gt_id": "19"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 32,
+              "gt_id": "4"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 34,
+              "gt_id": "11"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 34,
+              "gt_id": "18"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 36,
+              "gt_id": "10"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 38,
+              "gt_id": "5"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 38,
+              "gt_id": "19"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 39,
+              "gt_id": "11"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 40,
+              "gt_id": "3"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 40,
+              "gt_id": "10"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 41,
+              "gt_id": "5"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 43,
+              "gt_id": "19"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 44,
+              "gt_id": "5"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 45,
+              "gt_id": "11"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 47,
+              "gt_id": "18"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 57,
+              "gt_id": "18"
+            },
+            {
+              "kind": "id_switch",
+              "frame": 61,
+              "gt_id": "19",
+              "previous_id": 2,
+              "new_id": 83
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 61,
+              "gt_id": "19"
+            },
+            {
+              "kind": "id_switch",
+              "frame": 62,
+              "gt_id": "16",
+              "previous_id": 37,
+              "new_id": 86
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 62,
+              "gt_id": "16"
+            },
+            {
+              "kind": "id_switch",
+              "frame": 66,
+              "gt_id": "10",
+              "previous_id": 12,
+              "new_id": 87
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 66,
+              "gt_id": "10"
+            },
+            {
+              "kind": "id_switch",
+              "frame": 66,
+              "gt_id": "19",
+              "previous_id": 83,
+              "new_id": 93
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 66,
+              "gt_id": "19"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 68,
+              "gt_id": "16"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 68,
+              "gt_id": "18"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 71,
+              "gt_id": "19"
+            },
+            {
+              "kind": "id_switch",
+              "frame": 71,
+              "gt_id": "21",
+              "previous_id": 1,
+              "new_id": 10
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 74,
+              "gt_id": "16"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 76,
+              "gt_id": "16"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 77,
+              "gt_id": "19"
+            },
+            {
+              "kind": "id_switch",
+              "frame": 78,
+              "gt_id": "9",
+              "previous_id": 88,
+              "new_id": 99
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 78,
+              "gt_id": "9"
+            },
+            {
+              "kind": "id_switch",
+              "frame": 83,
+              "gt_id": "11",
+              "previous_id": 12,
+              "new_id": 102
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 83,
+              "gt_id": "11"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 83,
+              "gt_id": "20"
+            },
+            {
+              "kind": "id_switch",
+              "frame": 83,
+              "gt_id": "21",
+              "previous_id": 10,
+              "new_id": 105
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 86,
+              "gt_id": "21"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 87,
+              "gt_id": "11"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 87,
+              "gt_id": "20"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 90,
+              "gt_id": "20"
+            },
+            {
+              "kind": "id_switch",
+              "frame": 92,
+              "gt_id": "19",
+              "previous_id": 93,
+              "new_id": 112
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 92,
+              "gt_id": "19"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 93,
+              "gt_id": "11"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 93,
+              "gt_id": "20"
+            },
+            {
+              "kind": "id_switch",
+              "frame": 95,
+              "gt_id": "21",
+              "previous_id": 105,
+              "new_id": 116
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 95,
+              "gt_id": "21"
+            },
+            {
+              "kind": "id_switch",
+              "frame": 96,
+              "gt_id": "16",
+              "previous_id": 86,
+              "new_id": 117
+            },
+            {
+              "kind": "id_switch",
+              "frame": 97,
+              "gt_id": "9",
+              "previous_id": 99,
+              "new_id": 120
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 97,
+              "gt_id": "9"
+            },
+            {
+              "kind": "id_switch",
+              "frame": 97,
+              "gt_id": "20",
+              "previous_id": 10,
+              "new_id": 105
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 97,
+              "gt_id": "20"
+            },
+            {
+              "kind": "id_switch",
+              "frame": 98,
+              "gt_id": "19",
+              "previous_id": 112,
+              "new_id": 121
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 98,
+              "gt_id": "19"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 101,
+              "gt_id": "16"
+            },
+            {
+              "kind": "id_switch",
+              "frame": 106,
+              "gt_id": "2",
+              "previous_id": 6,
+              "new_id": 125
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 106,
+              "gt_id": "2"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 114,
+              "gt_id": "9"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 115,
+              "gt_id": "2"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 117,
+              "gt_id": "9"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 118,
+              "gt_id": "19"
+            }
+          ],
+          "identity_coverage": {
+            "1": 0.95,
+            "2": 0.08333333333333333,
+            "3": 0.20833333333333334,
+            "4": 0.9666666666666667,
+            "5": 0.95,
+            "6": 0.0,
+            "7": 0.0,
+            "8": 0.0,
+            "9": 0.2833333333333333,
+            "10": 0.24166666666666667,
+            "11": 0.7416666666666667,
+            "12": 0.041666666666666664,
+            "13": 0.0,
+            "14": 0.0,
+            "15": 0.0,
+            "16": 0.425,
+            "17": 0.0,
+            "18": 0.375,
+            "19": 0.5583333333333333,
+            "20": 0.825,
+            "21": 0.9333333333333333,
+            "22": 0.0
+          },
+          "ground_point_error_px": {}
+        },
+        "detection": {
+          "tp": 1003,
+          "fp": 316,
+          "fn": 1637,
+          "precision": 0.7604245640636846,
+          "recall": 0.37992424242424244,
+          "f1": 0.5066936094973479
+        },
+        "small_players": {
+          "reference_max_side": 1280,
+          "small_area_max_px": 1024,
+          "bins": {
+            "small": {
+              "tp": 1003,
+              "fn": 1637,
+              "recall": 0.37992424242424244
+            },
+            "other": {
+              "tp": 0,
+              "fn": 0,
+              "recall": null
+            }
+          }
+        },
+        "gt_observations": 2640
+      },
+      "baseline_agreement": "exact raw/tracked scores, identity coverage, ID counts, switch/fragment counts and small-player recall"
+    },
+    "blur": {
+      "summary": {
+        "video": "$REPO\\test-artifacts\\football\\clips\\blur\\clip.avi",
+        "video_sha256": "05290644a934479a56ff96158091f50d2d9eb28ce6b77bf6a0f0de55d8249f86",
+        "metadata": {
+          "fps": 29.97,
+          "frame_count": 250,
+          "width": 636,
+          "height": 360,
+          "duration_seconds": 8.341675008341676
+        },
+        "model_sha256": "869e83fcdffdc7371fa4e34cd8e51c838cc729571d1635e5141e3075e9319dc0",
+        "ultralytics": "8.4.26",
+        "torch": "2.10.0+cpu",
+        "device": "cpu",
+        "experiment": "final-production-regression",
+        "timestamp_utc": "2026-10-02T18:06:10.345633+00:00",
+        "git_commit": "6dbf40104b6cb7453a10fb2a975e70b3526c3126",
+        "git_dirty": true,
+        "harness_sha256": "e8dbc4ae181c0b82a5359e3c0823b20d949fc07219350e6e6ca0542f4ece52d8",
+        "processor_sha256": "aaff59a7de5dcfc661e586ec8d30e8c55eae4a5b485873082d01e1e02a87a3cb",
+        "model": "$REPO\\backend\\weights\\yolo11n-pose.pt",
+        "model_task": "pose",
+        "config": {
+          "continuity": "none",
+          "tracker": "$REPO\\backend\\app\\cv\\botsort.yaml",
+          "conf": 0.3,
+          "iou": 0.5,
+          "imgsz": "native max dimension, rounded to 32, clipped 640..1280",
+          "start": 0,
+          "end": null,
+          "scene_filter": "none",
+          "tiling": null,
+          "production_profile": "configured_base"
+        },
+        "technical": {
+          "frames": 250,
+          "detections": 6,
+          "track_ids": 2,
+          "frames_with_detections": 6,
+          "frames_without_detections": 244,
+          "frame_detection_coverage": 0.024,
+          "mean_detections_per_frame": 0.024,
+          "mean_track_observations": 3.0,
+          "median_track_observations": 3.0,
+          "longest_track_observations": 5,
+          "short_tracks_lt10_observations": 2,
+          "reacquired_same_id_gaps": 1,
+          "lost_frame_intervals": 1,
+          "fragmentation_proxy_ids_per_100_frames": 0.8,
+          "confidence_quantiles": [
+            0.4141791760921478,
+            0.4526439532637596,
+            0.4673707187175751,
+            0.576562337577343,
+            0.6201684474945068
+          ]
+        },
+        "processing_seconds": 15.715073200000006,
+        "processing_fps": 15.908293701107285,
+        "processing_to_video_duration": 1.8839229752160005,
+        "failures": [],
+        "ground_truth": null,
+        "raw_detections": 21,
+        "scene_filter": {
+          "input_boxes": 21,
+          "accepted_boxes": 21,
+          "available_frames": 0,
+          "unknown_frames": 0
+        },
+        "camera_motion": {
+          "status": "moving",
+          "valid_pairs": 5,
+          "sample_pairs": 41,
+          "max_shift_working_px": 47.277,
+          "max_scale_change": 0.0069,
+          "max_rotation_degrees": 2.998,
+          "method": "masked sparse optical flow / RANSAC affine veto at 5 Hz, max width 640"
+        },
+        "timestamps_reliable": true,
+        "actual_video_processor": true,
+        "observed_peak_rss_bytes": 447336448,
+        "continuity": {
+          "policy": "none",
+          "status": "disabled",
+          "links": []
+        },
+        "continuity_code_sha256": "da37df21fdc7385c9bd3a8ff771f72886dd550cbb90d8eafac757ac8a60937cc",
+        "memory_method": "psutil RSS sampled after each frame; includes model, not a continuous peak"
+      },
+      "publisher": {
+        "provenance": "UVY publisher YOLO-World assisted / manual CVAT correction",
+        "source_start_frame": 600,
+        "positive_classes": [
+          "player",
+          "goalkeeper"
+        ],
+        "gt_sha256": "a7eff6a33068d88125f94a15c1bc8a6f719e8b824d708244b1ecf80a5aab3d07",
+        "tracking": {
+          "labelled_frames": 250,
+          "iou_threshold": 0.5,
+          "tp": 0,
+          "fp": 6,
+          "fn": 500,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0,
+          "id_switches": 0,
+          "fragmentations": 0,
+          "events": [],
+          "identity_coverage": {
+            "1": 0.0,
+            "2": 0.0
+          },
+          "ground_point_error_px": {}
+        },
+        "detection": {
+          "tp": 0,
+          "fp": 21,
+          "fn": 500,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0
+        }
+      },
+      "baseline_agreement": "exact raw/tracked scores, identity coverage, ID counts, switch/fragment counts and small-player recall"
+    },
+    "steady": {
+      "summary": {
+        "video": "$REPO\\test-artifacts\\football\\clips\\steady\\clip.avi",
+        "video_sha256": "4a12f3fc3af82af667fe5c2fb6d153865f453e86c9adcd76b4ddf125f8e949b8",
+        "metadata": {
+          "fps": 29.97,
+          "frame_count": 200,
+          "width": 1280,
+          "height": 720,
+          "duration_seconds": 6.673340006673341
+        },
+        "model_sha256": "869e83fcdffdc7371fa4e34cd8e51c838cc729571d1635e5141e3075e9319dc0",
+        "ultralytics": "8.4.26",
+        "torch": "2.10.0+cpu",
+        "device": "cpu",
+        "experiment": "final-production-regression",
+        "timestamp_utc": "2026-10-02T18:05:09.174711+00:00",
+        "git_commit": "6dbf40104b6cb7453a10fb2a975e70b3526c3126",
+        "git_dirty": true,
+        "harness_sha256": "e8dbc4ae181c0b82a5359e3c0823b20d949fc07219350e6e6ca0542f4ece52d8",
+        "processor_sha256": "aaff59a7de5dcfc661e586ec8d30e8c55eae4a5b485873082d01e1e02a87a3cb",
+        "model": "$REPO\\backend\\weights\\yolo11n-pose.pt",
+        "model_task": "pose",
+        "config": {
+          "continuity": "none",
+          "tracker": "$REPO\\backend\\app\\cv\\botsort.yaml",
+          "conf": 0.3,
+          "iou": 0.5,
+          "imgsz": "native max dimension, rounded to 32, clipped 640..1280",
+          "start": 0,
+          "end": null,
+          "scene_filter": "none",
+          "tiling": null,
+          "production_profile": "configured_base"
+        },
+        "technical": {
+          "frames": 200,
+          "detections": 1467,
+          "track_ids": 18,
+          "frames_with_detections": 200,
+          "frames_without_detections": 0,
+          "frame_detection_coverage": 1.0,
+          "mean_detections_per_frame": 7.335,
+          "mean_track_observations": 81.5,
+          "median_track_observations": 38.5,
+          "longest_track_observations": 200,
+          "short_tracks_lt10_observations": 6,
+          "reacquired_same_id_gaps": 69,
+          "lost_frame_intervals": 348,
+          "fragmentation_proxy_ids_per_100_frames": 9.0,
+          "confidence_quantiles": [
+            0.3011990785598755,
+            0.40223920345306396,
+            0.5402851700782776,
+            0.7061675786972046,
+            0.8369581699371338
+          ]
+        },
+        "processing_seconds": 23.39008560000002,
+        "processing_fps": 8.550631383751748,
+        "processing_to_video_duration": 3.5050043271600027,
+        "failures": [],
+        "ground_truth": null,
+        "raw_detections": 1481,
+        "scene_filter": {
+          "input_boxes": 1481,
+          "accepted_boxes": 1481,
+          "available_frames": 0,
+          "unknown_frames": 0
+        },
+        "camera_motion": {
+          "status": "moving",
+          "valid_pairs": 33,
+          "sample_pairs": 33,
+          "max_shift_working_px": 49.812,
+          "max_scale_change": 0.00121,
+          "max_rotation_degrees": 0.462,
+          "method": "masked sparse optical flow / RANSAC affine veto at 5 Hz, max width 640"
+        },
+        "timestamps_reliable": true,
+        "actual_video_processor": true,
+        "observed_peak_rss_bytes": 524447744,
+        "continuity": {
+          "policy": "none",
+          "status": "disabled",
+          "links": []
+        },
+        "continuity_code_sha256": "da37df21fdc7385c9bd3a8ff771f72886dd550cbb90d8eafac757ac8a60937cc",
+        "memory_method": "psutil RSS sampled after each frame; includes model, not a continuous peak"
+      },
+      "publisher": {
+        "provenance": "UVY publisher YOLO-World assisted / manual CVAT correction",
+        "source_start_frame": 0,
+        "positive_classes": [
+          "player",
+          "goalkeeper"
+        ],
+        "gt_sha256": "e64ac661a65fc14d59e18642b9c295c2412dc9129db22407e134c4f84eb361f7",
+        "tracking": {
+          "labelled_frames": 200,
+          "iou_threshold": 0.5,
+          "tp": 1202,
+          "fp": 265,
+          "fn": 1665,
+          "precision": 0.8193592365371506,
+          "recall": 0.4192535751656784,
+          "f1": 0.5546838947854176,
+          "id_switches": 4,
+          "fragmentations": 69,
+          "events": [
+            {
+              "kind": "fragmentation",
+              "frame": 2,
+              "gt_id": "16"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 3,
+              "gt_id": "9"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 4,
+              "gt_id": "6"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 4,
+              "gt_id": "16"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 5,
+              "gt_id": "5"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 6,
+              "gt_id": "4"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 10,
+              "gt_id": "13"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 12,
+              "gt_id": "6"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 15,
+              "gt_id": "6"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 19,
+              "gt_id": "6"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 20,
+              "gt_id": "13"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 22,
+              "gt_id": "13"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 24,
+              "gt_id": "13"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 25,
+              "gt_id": "6"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 25,
+              "gt_id": "16"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 26,
+              "gt_id": "13"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 28,
+              "gt_id": "13"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 29,
+              "gt_id": "6"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 32,
+              "gt_id": "11"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 33,
+              "gt_id": "6"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 33,
+              "gt_id": "13"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 36,
+              "gt_id": "6"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 37,
+              "gt_id": "11"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 37,
+              "gt_id": "13"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 38,
+              "gt_id": "6"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 40,
+              "gt_id": "4"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 40,
+              "gt_id": "11"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 43,
+              "gt_id": "13"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 46,
+              "gt_id": "13"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 48,
+              "gt_id": "6"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 48,
+              "gt_id": "13"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 50,
+              "gt_id": "11"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 51,
+              "gt_id": "13"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 52,
+              "gt_id": "11"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 64,
+              "gt_id": "5"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 64,
+              "gt_id": "11"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 70,
+              "gt_id": "5"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 75,
+              "gt_id": "11"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 83,
+              "gt_id": "6"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 86,
+              "gt_id": "6"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 86,
+              "gt_id": "11"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 90,
+              "gt_id": "6"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 94,
+              "gt_id": "6"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 100,
+              "gt_id": "11"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 103,
+              "gt_id": "11"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 112,
+              "gt_id": "6"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 117,
+              "gt_id": "3"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 119,
+              "gt_id": "11"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 122,
+              "gt_id": "13"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 124,
+              "gt_id": "4"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 127,
+              "gt_id": "3"
+            },
+            {
+              "kind": "id_switch",
+              "frame": 136,
+              "gt_id": "8",
+              "previous_id": 13,
+              "new_id": 19
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 136,
+              "gt_id": "8"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 140,
+              "gt_id": "11"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 140,
+              "gt_id": "13"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 142,
+              "gt_id": "8"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 144,
+              "gt_id": "15"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 147,
+              "gt_id": "4"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 148,
+              "gt_id": "5"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 149,
+              "gt_id": "8"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 151,
+              "gt_id": "11"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 155,
+              "gt_id": "10"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 156,
+              "gt_id": "8"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 158,
+              "gt_id": "15"
+            },
+            {
+              "kind": "id_switch",
+              "frame": 160,
+              "gt_id": "10",
+              "previous_id": 4,
+              "new_id": 23
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 160,
+              "gt_id": "10"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 161,
+              "gt_id": "11"
+            },
+            {
+              "kind": "id_switch",
+              "frame": 162,
+              "gt_id": "5",
+              "previous_id": 7,
+              "new_id": 24
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 162,
+              "gt_id": "5"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 165,
+              "gt_id": "11"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 178,
+              "gt_id": "17"
+            },
+            {
+              "kind": "id_switch",
+              "frame": 180,
+              "gt_id": "15",
+              "previous_id": 2,
+              "new_id": 3
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 180,
+              "gt_id": "15"
+            }
+          ],
+          "identity_coverage": {
+            "3": 0.95,
+            "4": 0.71,
+            "5": 0.725,
+            "6": 0.12,
+            "7": 0.0,
+            "8": 0.045,
+            "9": 0.025,
+            "10": 0.975,
+            "11": 0.665,
+            "12": 0.01,
+            "13": 0.1989247311827957,
+            "15": 0.7704918032786885,
+            "16": 0.04819277108433735,
+            "17": 0.9884393063583815,
+            "19": 0.0,
+            "20": 0.0,
+            "21": 0.0
+          },
+          "ground_point_error_px": {}
+        },
+        "detection": {
+          "tp": 1217,
+          "fp": 264,
+          "fn": 1650,
+          "precision": 0.8217420661715057,
+          "recall": 0.4244855249389606,
+          "f1": 0.5597976080956761
+        }
+      },
+      "baseline_agreement": "exact raw/tracked scores, identity coverage, ID counts, switch/fragment counts and small-player recall"
+    },
+    "zoom": {
+      "summary": {
+        "video": "$REPO\\test-artifacts\\football\\clips\\zoom\\clip.avi",
+        "video_sha256": "1171770468224637e6626299d17fe16c0d160f325443ecb9e5c1a0ba4f754fc3",
+        "metadata": {
+          "fps": 29.97,
+          "frame_count": 250,
+          "width": 1280,
+          "height": 720,
+          "duration_seconds": 8.341675008341676
+        },
+        "model_sha256": "869e83fcdffdc7371fa4e34cd8e51c838cc729571d1635e5141e3075e9319dc0",
+        "ultralytics": "8.4.26",
+        "torch": "2.10.0+cpu",
+        "device": "cpu",
+        "experiment": "final-production-regression",
+        "timestamp_utc": "2026-10-02T18:05:36.409745+00:00",
+        "git_commit": "6dbf40104b6cb7453a10fb2a975e70b3526c3126",
+        "git_dirty": true,
+        "harness_sha256": "e8dbc4ae181c0b82a5359e3c0823b20d949fc07219350e6e6ca0542f4ece52d8",
+        "processor_sha256": "aaff59a7de5dcfc661e586ec8d30e8c55eae4a5b485873082d01e1e02a87a3cb",
+        "model": "$REPO\\backend\\weights\\yolo11n-pose.pt",
+        "model_task": "pose",
+        "config": {
+          "continuity": "none",
+          "tracker": "$REPO\\backend\\app\\cv\\botsort.yaml",
+          "conf": 0.3,
+          "iou": 0.5,
+          "imgsz": "native max dimension, rounded to 32, clipped 640..1280",
+          "start": 0,
+          "end": null,
+          "scene_filter": "none",
+          "tiling": null,
+          "production_profile": "configured_base"
+        },
+        "technical": {
+          "frames": 250,
+          "detections": 552,
+          "track_ids": 25,
+          "frames_with_detections": 107,
+          "frames_without_detections": 143,
+          "frame_detection_coverage": 0.428,
+          "mean_detections_per_frame": 2.208,
+          "mean_track_observations": 22.08,
+          "median_track_observations": 21.0,
+          "longest_track_observations": 43,
+          "short_tracks_lt10_observations": 6,
+          "reacquired_same_id_gaps": 33,
+          "lost_frame_intervals": 123,
+          "fragmentation_proxy_ids_per_100_frames": 10.0,
+          "confidence_quantiles": [
+            0.30006104707717896,
+            0.45573394000530243,
+            0.591564267873764,
+            0.6899626553058624,
+            0.8162083029747009
+          ]
+        },
+        "processing_seconds": 30.454214800000045,
+        "processing_fps": 8.2090443520481,
+        "processing_to_video_duration": 3.650851270224005,
+        "failures": [],
+        "ground_truth": null,
+        "raw_detections": 624,
+        "scene_filter": {
+          "input_boxes": 624,
+          "accepted_boxes": 624,
+          "available_frames": 0,
+          "unknown_frames": 0
+        },
+        "camera_motion": {
+          "status": "moving",
+          "valid_pairs": 39,
+          "sample_pairs": 41,
+          "max_shift_working_px": 179.967,
+          "max_scale_change": 2.5276,
+          "max_rotation_degrees": 1.275,
+          "method": "masked sparse optical flow / RANSAC affine veto at 5 Hz, max width 640"
+        },
+        "timestamps_reliable": true,
+        "actual_video_processor": true,
+        "observed_peak_rss_bytes": 524525568,
+        "continuity": {
+          "policy": "none",
+          "status": "disabled",
+          "links": []
+        },
+        "continuity_code_sha256": "da37df21fdc7385c9bd3a8ff771f72886dd550cbb90d8eafac757ac8a60937cc",
+        "memory_method": "psutil RSS sampled after each frame; includes model, not a continuous peak"
+      },
+      "publisher": {
+        "provenance": "UVY publisher YOLO-World assisted / manual CVAT correction",
+        "source_start_frame": 100,
+        "positive_classes": [
+          "player",
+          "goalkeeper"
+        ],
+        "gt_sha256": "ab5b835db492ea06525888833c43899fb9f1973903f514c11768ca8f5e59d639",
+        "tracking": {
+          "labelled_frames": 250,
+          "iou_threshold": 0.5,
+          "tp": 42,
+          "fp": 510,
+          "fn": 398,
+          "precision": 0.07608695652173914,
+          "recall": 0.09545454545454546,
+          "f1": 0.08467741935483872,
+          "id_switches": 0,
+          "fragmentations": 13,
+          "events": [
+            {
+              "kind": "fragmentation",
+              "frame": 125,
+              "gt_id": "3"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 128,
+              "gt_id": "3"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 130,
+              "gt_id": "1"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 130,
+              "gt_id": "3"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 139,
+              "gt_id": "3"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 142,
+              "gt_id": "3"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 180,
+              "gt_id": "3"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 182,
+              "gt_id": "3"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 184,
+              "gt_id": "3"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 205,
+              "gt_id": "3"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 207,
+              "gt_id": "3"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 217,
+              "gt_id": "3"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 222,
+              "gt_id": "3"
+            }
+          ],
+          "identity_coverage": {
+            "1": 0.06103286384976526,
+            "3": 0.13615023474178403,
+            "7": 0.0
+          },
+          "ground_point_error_px": {}
+        },
+        "detection": {
+          "tp": 53,
+          "fp": 571,
+          "fn": 387,
+          "precision": 0.08493589743589744,
+          "recall": 0.12045454545454545,
+          "f1": 0.09962406015037595
+        }
+      },
+      "baseline_agreement": "exact raw/tracked scores, identity coverage, ID counts, switch/fragment counts and small-player recall"
+    }
+  },
+  "e2e": {
+    "demo": {
+      "result": "PASS",
+      "steps": [
+        "register player",
+        "login",
+        "profile edit/save",
+        "profile refresh/auth restore",
+        "upload + queued status",
+        "persisted processing/selection after refresh",
+        "player selection",
+        "completed report + metrics + heatmap/path",
+        "report refresh",
+        "register scout",
+        "login",
+        "scout dashboard from API",
+        "search created player",
+        "player detail + saved report",
+        "scout route guard",
+        "404 fallback",
+        "invalid JWT clears session and returns to login (expected 401)"
+      ],
+      "happy_path_console_errors": 0,
+      "happy_path_http_failures": 0,
+      "expected_invalid_jwt_http_401_requests": 2,
+      "source_result_sha256": "9059c6c3031ff3b72829c9fa7b2eba48b04a64fbcdf4164b422513b7bffe5b99"
+    },
+    "real_broadcast": {
+      "result": "PASS",
+      "steps": [
+        "register player",
+        "login",
+        "profile edit/save",
+        "profile refresh/auth restore",
+        "upload + queued status",
+        "real YOLO football, calibration safety gate, unavailable physical metrics",
+        "persisted processing/selection after refresh",
+        "player selection",
+        "completed report + metrics + heatmap/path",
+        "report refresh",
+        "register scout",
+        "login",
+        "scout dashboard from API",
+        "search created player",
+        "player detail + saved report",
+        "scout route guard",
+        "404 fallback",
+        "invalid JWT clears session and returns to login (expected 401)"
+      ],
+      "happy_path_console_errors": 0,
+      "happy_path_http_failures": 0,
+      "expected_invalid_jwt_http_401_requests": 2,
+      "source_result_sha256": "4fced675827c00c7b54765d0bf7d3c6ec1605c403ba7db90d0c80710821906c3",
+      "report_safety": {
+        "demo": false,
+        "detector_profile": "configured_base",
+        "frames_processed": 200,
+        "physical_metrics_status": "unavailable",
+        "physical_accuracy": "not_validated",
+        "camera_motion": {
+          "status": "moving",
+          "valid_pairs": 33,
+          "sample_pairs": 33,
+          "max_shift_working_px": 49.812,
+          "max_scale_change": 0.00121,
+          "max_rotation_degrees": 0.462,
+          "method": "masked sparse optical flow / RANSAC affine veto at 5 Hz, max width 640"
+        },
+        "metrics": {
+          "total_distance_m": null,
+          "top_speed_kmh": null,
+          "sprint_count": null
+        },
+        "coordinate_space": "image"
+      }
+    },
+    "real_panorama": {
+      "result": "PASS",
+      "command": "scripts/test_e2e.py --video test-artifacts/football/soccertrack/117093/window/clip.avi",
+      "evidence": "Executed sequential test wrapper returned 0 before broadcast; shared results.json/report.json subsequently overwritten by broadcast. Preserved report-390.png is panoramic; report-1440.png is broadcast. No claim of independent retained complete per-run logs.",
+      "happy_path_console_errors": 0,
+      "happy_path_http_failures": 0,
+      "frames_processed": 120,
+      "physical_metrics_status": "unavailable",
+      "physical_accuracy": "not_validated"
+    },
+    "layout": {
+      "overflow_assertions_widths_px": [
+        1440,
+        768,
+        390
+      ],
+      "visually_inspected": [
+        "panorama report-390.png",
+        "broadcast report-1440.png"
+      ]
+    },
+    "real_cpu_smoke": {
+      "result": "PASS",
+      "command": "scripts/smoke_real.py",
+      "decoded_frames": 24,
+      "tracked_ids": 4,
+      "selected_observations": 12,
+      "cuda_available": false,
+      "scope": "pipeline + persistence smoke, not football or physical accuracy; artificial projection check separately labelled"
+    }
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "dataset": "TeamTrack",
+  "publisher": "Atom Scott et al.",
+  "publisher_url": "https://www.kaggle.com/datasets/atomscott/teamtrack",
+  "project_url": "https://atomscott.github.io/TeamTrack/",
+  "license": "MIT",
+  "license_provenance": "https://www.kaggle.com/api/v1/datasets/metadata/atomscott/teamtrack",
+  "license_metadata_sha256": "e9f1ec74a87c6afc39199a13b8abce51d68f19d4c3c02d6fc66c12c02672dbea",
+  "sequence": "F_20220220_1_1680_1710",
+  "split": "SEALED HOLDOUT",
+  "selection": "First lexicographic official soccer_side/test video in catalogue; first 120 decoded frames, zero-based 0..119. Selected before viewing frames or GT.",
+  "camera": "Publisher soccer_side fisheye Z CAM E2-F8; different camera system from SoccerTrack v2 panoramic footage",
+  "venue": "Publisher identifies A University outdoor; exact venue difference not independently established",
+  "independence": "No TeamTrack images or annotations used in this task's DEV tuning. Entire source family sealed. File-date tokens are identifiers, not independently verified match dates.",
+  "network_bytes_this_run": 15643861,
+  "prior_partial_attempt_budget_upper_bound": 18100000,
+  "files": [
+    {
+      "member": "teamtrack-mot/teamtrack-mot/soccer_side/test/F_20220220_1_1680_1710/img1.mp4",
+      "url": "https://www.kaggle.com/api/v1/datasets/download/atomscott/teamtrack?fileName=teamtrack-mot%2Fteamtrack-mot%2Fsoccer_side%2Ftest%2FF_20220220_1_1680_1710%2Fimg1.mp4",
+      "file": "source.mp4",
+      "download_bytes": 15069985,
+      "bytes": 15069985,
+      "sha256": "8a3d50042b958863c996396107041c624ff74e03487b57104fa335e5de12edd5"
+    },
+    {
+      "member": "teamtrack-mot/teamtrack-mot/soccer_side/test/F_20220220_1_1680_1710/gt/gt.txt",
+      "url": "https://www.kaggle.com/api/v1/datasets/download/atomscott/teamtrack?fileName=teamtrack-mot%2Fteamtrack-mot%2Fsoccer_side%2Ftest%2FF_20220220_1_1680_1710%2Fgt%2Fgt.txt",
+      "file": "gt.txt",
+      "download_bytes": 558450,
+      "bytes": 558450,
+      "sha256": "6afeb37050a62d612e5eddcae363dbe11e42bcc6c3f161cef16bfd1b98108110"
+    },
+    {
+      "member": "teamtrack-mot/teamtrack-mot/soccer_side/test/F_20220220_1_1680_1710/seqinfo.ini",
+      "url": "https://www.kaggle.com/api/v1/datasets/download/atomscott/teamtrack?fileName=teamtrack-mot%2Fteamtrack-mot%2Fsoccer_side%2Ftest%2FF_20220220_1_1680_1710%2Fseqinfo.ini",
+      "file": "seqinfo.ini",
+      "download_bytes": 132,
+      "bytes": 132,
+      "sha256": "1cfd048c8a72dec3057311bcf209b0833e976e9945b0c29e5956cf08712ba166"
+    }
+  ],
+  "opened_for_cv": false
+}

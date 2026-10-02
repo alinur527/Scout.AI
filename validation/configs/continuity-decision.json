@@ -1,0 +1,8 @@
+{
+  "candidate_freeze_commit": "6dbf40104b6cb7453a10fb2a975e70b3526c3126",
+  "frozen_configuration": "validation/configs/selected-continuity.json",
+  "final_production_policy": "existing original BoT-SORT IDs; no ROI/kit/stitching deployed",
+  "reason": "REJECT conservative continuity for production: no held-out improvement, switches2->2/fragments20->20/no links; retain original BoT-SORT grouping. ROI and kit heuristics also rejected on DEV.",
+  "frozen_core_sha256": "da37df21fdc7385c9bd3a8ff771f72886dd550cbb90d8eafac757ac8a60937cc",
+  "default_inference_and_settings_reverted": true
+}

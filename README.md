@@ -210,9 +210,13 @@ Reproduce the new sample preparation and real browser flow:
 .\.venv\Scripts\python.exe scripts/test_e2e.py --video test-artifacts/football/soccertrack/117093/window/clip.avi
 ```
 
+## Player filtering and continuity
+
+[PLAYER_FILTERING_CONTINUITY.md](docs/PLAYER_FILTERING_CONTINUITY.md) records the next round after merging PR#3. Semi-manual pitch polygons removed only one DEV false positive; a torso-kit heuristic removed none and lost two true positives. Conservative continuity reduced DEV switches16->12 without measured false merges, but the frozen independent TeamTrack fisheye holdout produced no links or improvement (switches2->2, fragments20->20, raw recall7.72%). All candidates were rejected for production. Automatic detector selection and original BoT-SORT remain unchanged; six previous clips retain exact raw/tracked scores. Offline experiments, scorer, hashes, freeze and rejection evidence are retained; no application ROI/identity option is added. New dataset downloads remain below200MB. Status **PARTIAL**, physical accuracy **NOT VALIDATED**.
+
 ## Known limitations
 
-* Football validation includes three UVY windows from one event and three short SoccerTrackv2 match windows from one venue/camera family. New-match HOLDOUT improves small-player recall, but publisher box review is unspecified and independent visual labels await expert review. No measured physical movement reference, load benchmark or CUDA validation. Results do not establish global football accuracy; panoramic results do not establish broadcast generalization.
+* Football validation includes three UVY windows, three short SoccerTrackv2 matches and an independent TeamTrack fisheye camera source. Another venue is not established. Earlier small-player gains are preserved, but TeamTrack recall is low and continuity did not generalize. Independent visual/polygon labels await expert review. No measured physical movement reference, load benchmark or CUDA validation. Results do not establish global football accuracy; panoramic results do not establish broadcast generalization.
 * One worker, local media storage, no distributed lease/queue, cancellation or automatic retries. Requests need an external rate limit and TLS boundary before an internet-facing deployment.
 * Self-registration permits player/scout; admin is preserved as a role but cannot self-register. No advanced admin panel, password reset, email verification or refresh tokens.
 * Scout accounts can discover all registered player profiles and completed reports. Private profiles/consent controls are not yet implemented.

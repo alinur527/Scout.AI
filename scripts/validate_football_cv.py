@@ -22,6 +22,7 @@ sys.path.insert(0, str(ROOT / "backend"))
 from app.cv.validation import evaluate_labels, technical_metrics  # noqa: E402
 from app.cv.pitch import pitch_box_selection  # noqa: E402
 from app.cv.tiles import nms_indices, tile_windows  # noqa: E402
+from app.cv.continuity import TrackEndpoints, continuity_result, torso_histogram  # noqa: E402
 
 
 def sha256(path):
@@ -109,6 +110,7 @@ def main():
     parser.add_argument("--annotations", type=Path)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--save-every", type=int, default=25)
+    parser.add_argument("--continuity", choices=("none", "conservative"), default="none", help="Explicit offline continuity diagnostic; production grouping stays unchanged")
     parser.add_argument(
         "--production",
         action="store_true",
@@ -240,6 +242,7 @@ def main():
     process = psutil.Process()
     observed_peak_rss = process.memory_info().rss
     raw_detections = []
+    endpoints = TrackEndpoints()
     prefilter_counts, filter_statuses = [], []
 
     def capture_raw(predictor):
@@ -337,6 +340,8 @@ def main():
                         "mean": mean.tolist(),
                         "bbox": bbox.tolist(),
                     }
+                    if args.continuity != "none":
+                        endpoints.add(int(tid), timestamp, mean, box, torso_histogram(frame, box))
                     detections.append(
                         {
                             "id": int(tid),
@@ -360,6 +365,16 @@ def main():
         raise
     finally:
         capture.release()
+        # Retain native output for the frozen candidate's offline link audit.
+        # Production integration was rejected after the sealed evaluation.
+        (args.output / "tracker_tracks.json").write_text(json.dumps(frames), encoding="utf-8")
+        aliases, continuity = continuity_result(
+            endpoints, camera.summary()["status"] if camera else "unknown",
+            processor.timestamps_reliable if processor else False, args.continuity,
+        )
+        for frame_record in frames:
+            for detection in frame_record["detections"]:
+                detection["id"] = aliases.get(detection["id"], detection["id"])
         elapsed = time.perf_counter() - started
         summary = {
             "video": str(args.video.resolve()),
@@ -378,6 +393,7 @@ def main():
             "model": str(args.model.resolve()),
             "model_task": model.task,
             "config": {
+                "continuity": args.continuity,
                 "tracker": args.tracker,
                 "conf": args.conf,
                 "iou": 0.5,
@@ -434,6 +450,8 @@ def main():
             summary["timestamps_reliable"] = processor.timestamps_reliable
             summary["actual_video_processor"] = True
         summary["observed_peak_rss_bytes"] = observed_peak_rss
+        summary["continuity"] = continuity
+        summary["continuity_code_sha256"] = sha256(ROOT / "backend/app/cv/continuity.py")
         summary["memory_method"] = (
             "psutil RSS sampled after each frame; includes model, not a continuous peak"
         )

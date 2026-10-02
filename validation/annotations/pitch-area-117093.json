@@ -1,0 +1,56 @@
+{
+  "points": [
+    [
+      80,
+      600
+    ],
+    [
+      640,
+      410
+    ],
+    [
+      1140,
+      218
+    ],
+    [
+      1554,
+      176
+    ],
+    [
+      2014,
+      152
+    ],
+    [
+      2514,
+      176
+    ],
+    [
+      3000,
+      218
+    ],
+    [
+      3440,
+      354
+    ],
+    [
+      3950,
+      548
+    ],
+    [
+      3100,
+      666
+    ],
+    [
+      2050,
+      720
+    ],
+    [
+      1200,
+      690
+    ]
+  ],
+  "margin_fraction": 0.005,
+  "coordinate_space": "image_pixels",
+  "provenance": "Agent visual polygon from raw first frame, before ROI candidate output; broad shared visible field boundary. Requires human review. Not metric calibration.",
+  "video_sha256": "0a056a53521c275eb80c1f8900fa8ddae0c823a30e503f9fd0ce03364c4a6cc9"
+}
