@@ -158,6 +158,7 @@ export default function App() {
               path="/login"
               element={
                 <Auth
+                  demo={health.data?.demo_mode}
                   onLogin={(value) => {
                     setUser(value)
                     setSessionError('')
@@ -165,7 +166,7 @@ export default function App() {
                 />
               }
             />
-            <Route path="/register" element={<Auth register />} />
+            <Route path="/register" element={<Auth register demo={health.data?.demo_mode} />} />
             <Route path="*" element={<Navigate to="/login" replace />} />
           </Routes>
         </main>

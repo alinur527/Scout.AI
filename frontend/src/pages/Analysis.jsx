@@ -18,7 +18,7 @@ export default function Analysis() {
         action={<Status status={job.status} />}
       />
       <ErrorBox message={error} retry={reload} />
-      {job.demo && <p className="notice">Demo analysis · Sample data is used for this job.</p>}
+      {job.demo && job.status !== 'completed' && <p className="notice">Demo analysis · Sample data is used for this job.</p>}
       {job.status === 'completed' ? (
         <Completed id={id} />
       ) : job.status === 'failed' ? (
@@ -42,13 +42,12 @@ export default function Analysis() {
                       ? 'Building your report'
                       : 'Finding and tracking players'}
               </strong>
-              <span>{job.progress}%</span>
+              <span>{job.demo ? 'DEMO' : 'REAL'}</span>
             </div>
-            <progress value={job.progress} max="100" />
             <p>
               {job.stage === 'awaiting_selection'
                 ? 'A tracker ID represents one visible track; it may change after occlusion.'
-                : 'You can leave this page and return from your profile. Progress is saved.'}
+                : 'CPU processing can take several minutes. You can leave this page and return from your profile; the current stage is saved.'}
             </p>
           </section>
           {job.stage === 'awaiting_selection' && (

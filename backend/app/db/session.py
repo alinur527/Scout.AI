@@ -4,10 +4,10 @@ from sqlalchemy import create_engine, event
 from sqlalchemy.engine import make_url
 from sqlalchemy.orm import sessionmaker
 
-from app.models.entities import Base
+from app.db.migrate import require_current, upgrade
 
 
-def create_database(settings):
+def create_database(settings, migrate=True):
     url = make_url(settings.database_url)
     if url.drivername.startswith("sqlite") and url.database and url.database != ":memory:":
         Path(url.database).parent.mkdir(parents=True, exist_ok=True)
@@ -22,5 +22,11 @@ def create_database(settings):
             cursor.execute("PRAGMA journal_mode=WAL")
             cursor.close()
 
-    Base.metadata.create_all(engine)
+    try:
+        if migrate:
+            upgrade(engine)
+        require_current(engine)
+    except Exception:
+        engine.dispose()
+        raise
     return engine, sessionmaker(engine, expire_on_commit=False)

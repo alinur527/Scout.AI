@@ -2,9 +2,12 @@ from pathlib import Path
 from uuid import uuid4
 import time
 
-from fastapi import APIRouter, Depends, File, HTTPException, Request, UploadFile
+from fastapi import APIRouter, Depends, File, HTTPException, Query, Request, UploadFile
+from fastapi.encoders import jsonable_encoder
+from fastapi.responses import JSONResponse, Response
 from sqlalchemy import select, update
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm import defer
 from starlette.concurrency import run_in_threadpool
 
 from app.core.security import current_user, passwords, player_user, scout_user, session, token_for
@@ -22,7 +25,7 @@ def public_user(user):
 def public_profile(profile):
     if profile is None:
         return None
-    return {key: getattr(profile, key) for key in ("user_id", "full_name", "position", "age", "team", "bio")}
+    return {key: getattr(profile, key) for key in ("user_id", "full_name", "position", "age", "team", "bio", "scout_visible")}
 
 
 def public_job(job):
@@ -110,12 +113,14 @@ def update_profile(data: ProfileUpdate, user=Depends(player_user), db=Depends(se
 
 
 @router.get("/analyses")
-def analyses(user=Depends(player_user), db=Depends(session)):
+def analyses(offset: int = Query(default=0, ge=0), limit: int = Query(default=20, ge=1, le=100), user=Depends(player_user), db=Depends(session)):
     jobs = db.scalars(
         select(AnalysisJob)
+        .options(defer(AnalysisJob.tracks), defer(AnalysisJob.gallery), defer(AnalysisJob.result))
         .where(AnalysisJob.user_id == user.id)
-        .order_by(AnalysisJob.created_at.desc())
-        .limit(100)
+        .order_by(AnalysisJob.created_at.desc(), AnalysisJob.id.desc())
+        .offset(offset)
+        .limit(limit)
     )
     return [public_job(job) for job in jobs]
 
@@ -165,6 +170,15 @@ async def upload(
         raise
     finally:
         await video.close()
+
+
+@router.get("/demo/sample")
+def demo_sample(request: Request, user=Depends(player_user)):
+    if not request.app.state.settings.demo_mode:
+        raise HTTPException(404, "Synthetic sample is available only in DEMO mode")
+    from app.services.demo_sample import sample_bytes
+
+    return Response(sample_bytes(), media_type="video/x-msvideo", headers={"Content-Disposition": 'attachment; filename="synthetic-demo.avi"'})
 
 
 @router.get("/analyses/{analysis_id}")
@@ -234,6 +248,35 @@ def result(analysis_id: str, user=Depends(player_user), db=Depends(session)):
     return job.result
 
 
+def published_profile(db, player_id):
+    profile = db.get(PlayerProfile, player_id)
+    if profile is None or not profile.scout_visible:
+        raise HTTPException(404, "Player not found or no longer shared")
+    return profile
+
+
+@router.get("/analyses/{analysis_id}/export")
+def export_report(analysis_id: str, user=Depends(current_user), db=Depends(session)):
+    job = db.get(AnalysisJob, analysis_id)
+    if job is None:
+        raise HTTPException(404, "Analysis not found")
+    if job.user_id != user.id:
+        if user.role not in ("scout", "admin"):
+            raise HTTPException(404, "Analysis not found")
+        published_profile(db, job.user_id)
+    if job.status != "completed" or not job.result:
+        raise HTTPException(409, "Analysis is not completed")
+    # Explicit projection excludes source paths, private job state and binary media.
+    fields = ("player_id", "demo", "calibrated", "calibration_provided", "physical_metrics_status", "physical_accuracy", "ground_position_method", "detector_profile", "camera_motion", "timestamp_basis", "coordinate_space", "metrics", "movement", "movement_segments", "heatmap", "observations", "duration_seconds", "frames_processed", "device", "rejected_segments", "warnings", "tracking_quality")
+    payload = {
+        "schema_version": "1.0",
+        "analysis": {key: getattr(job, key) for key in ("id", "original_filename", "created_at", "completed_at", "demo")},
+        "report": {key: job.result[key] for key in fields if key in job.result},
+        "export_notice": "Anonymous track, not verified identity. Physical accuracy is not validated. DEMO metrics are synthetic. Sharing can be revoked for future requests; downloaded copies cannot be recalled.",
+    }
+    return JSONResponse(jsonable_encoder(payload), headers={"Content-Disposition": 'attachment; filename="scoutai-report.json"', "Cache-Control": "no-store", "X-Content-Type-Options": "nosniff"})
+
+
 def player_card(db, user):
     latest = db.scalar(
         select(AnalysisJob)
@@ -251,7 +294,7 @@ def player_card(db, user):
 @router.get("/players")
 def players(q: str = "", offset: int = 0, user=Depends(scout_user), db=Depends(session)):
     statement = (
-        select(User).join(PlayerProfile, PlayerProfile.user_id == User.id).where(User.role == "player")
+        select(User).join(PlayerProfile, PlayerProfile.user_id == User.id).where(User.role == "player", PlayerProfile.scout_visible.is_(True))
     )
     if q:
         pattern = "%" + q[:100].replace("%", "\\%").replace("_", "\\_") + "%"
@@ -266,6 +309,7 @@ def players(q: str = "", offset: int = 0, user=Depends(scout_user), db=Depends(s
 
 @router.get("/players/{player_id}")
 def player_detail(player_id: int, user=Depends(scout_user), db=Depends(session)):
+    published_profile(db, player_id)
     player = db.get(User, player_id)
     if player is None or player.role != "player":
         raise HTTPException(404, "Player not found")

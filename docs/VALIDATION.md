@@ -1,6 +1,37 @@
-# Validation record — 2 October 2026
+# Validation record
 
-## Player filtering and continuity phase (current)
+## Portfolio v1 candidate — 3 October 2026
+
+Release preparation starts after [PR #4](https://github.com/alinur527/Scout.AI/pull/4), verified at `40351dd18faca0ba9d3136ed83c5773fccbbf9fd` with [Actions 37045893830](https://github.com/alinur527/Scout.AI/actions/runs/37045893830) and merged as `445a400c77ce343f84ad4fc648c4bd6b633577e2`. Fresh baseline: 106 tests, Ruff, frontend install/lint/build and reachable-history scan passed. No baseline test failures were found.
+
+The candidate adds consent/privacy, history/export/print, migrations and reproducible native/Compose operation. Production CV models, thresholds, detector policy, inference algorithms and safety gates are unchanged. No new video or model downloads were needed. Existing panoramic/broadcast clips and weights were reused; the historical experiment matrix was intentionally not rerun.
+
+| Executed command / check | Result |
+|---|---|
+| `.venv/Scripts/python.exe -m pytest -q backend/tests` | PASS, 117 tests, 0 skipped; one upstream Starlette/httpx deprecation |
+| `python -m ruff check backend scripts`; `python -m compileall -q backend/app scripts` | PASS |
+| Frontend `npm ci`, `npm run lint`, `npm run build`, `npm audit --audit-level=low` | PASS; clean native setup also installs/builds twice; 0 npm vulnerabilities |
+| `python -m pip check`; `python -m pip_audit --progress-spinner off` | PASS; audit found no known vulnerabilities among audited packages; local `torch 2.10.0+cpu` and `torchvision 0.25.0+cpu` skipped because PyPI could not match those wheel identifiers |
+| `python scripts/test_native.py` | PASS, fresh OS-temp source copy without env/venv/node_modules/DB/weights; both setup runs, full browser flow, restart persistence, unchanged config bytes/all DB rows, repeated start/stop, second worker, foreign port, stale PID, worker lock and partial-start rollback |
+| `docker compose -p scoutai-v1-validation build` then `up -d --wait` | PASS locally on Docker Desktop, Engine 29.8.0; API/worker/frontend healthy |
+| `scripts/e2e.py` against Compose `8080` and `/api`, managed worker | PASS; restart preserved all test users/profile/job rows on named volume |
+| `python scripts/test_e2e.py` | PASS, production-built DEMO UI; later native/Compose flows also exercised cached-report revocation |
+| `python scripts/test_e2e.py --video test-artifacts/football/soccertrack/117093/window/clip.avi` | PASS, actual CPU REAL panorama, 120 decoded frames, person profile, physical metrics null |
+| Broadcast browser flow with reviewed webapp-testing `with_server.py` and `scripts/e2e.py` | PASS, actual CPU REAL `steady/clip.avi`, 200 frames, pose profile, camera-motion veto, physical metrics null |
+| `python scripts/smoke_real.py` | PASS, actual CPU inference: 24 frames, 4 IDs, 12 selected observations; blank-frame REAL input failed clearly, export denied, no DEMO fallback |
+| Fresh + original-schema upgrade + repeated upgrade + isolated restore | PASS in backend tests; original users/hashes/jobs/results retained; old profiles private; unknown/missing-constraint schemas rejected |
+| `scripts/backup_sqlite.py` on isolated native test database | PASS, SQLite backup API and integrity check; real user DB untouched |
+| Responsive UI and print | PASS overflow assertions at 1440/768/390 px; report, entry, gallery, tablet scout and mobile/print captures inspected; print action invoked and Chromium PDF rendered |
+
+The [machine-readable summary](../validation/results/portfolio-v1-2026-10-03.json) records run IDs and results extracted from actual artifacts. Local artifact directories are ignored and use UTC names; the release document date is Asia/Qyzylorda. Native evidence: `test-artifacts/native/20261002T200742467874Z/`. Compose evidence: `test-artifacts/e2e/20261002T201000Z-compose-demo/`. REAL runs: `20261002T200955448189Z-real-window` and `20261002T201256448802Z-real-steady-helper`. CPU smoke: `test-artifacts/real/20261002T201844959253Z-cpu-smoke/`. Runs remain separate.
+
+Browser checks include registration/login/profile, synthetic sample or real upload, queue/stages/gallery/selection, saved report/history/relogin, protected JSON export, print rendering, explicit publication, scout search/detail/report and revocation of a report already open in another context. Happy-path console/HTTP errors are zero. Expected negative 404 (revocation) and 401 (invalid JWT) occur after that assertion. API tests cover private foreign IDs, admin registration rejection, expired/malformed JWT, malformed/oversized upload, missing weights, permissions and cleanup/recovery. Actual blank-video inference checks no-detections failure. The smoke's artificial calibration fixture is isolated/rolled back and is not physical-accuracy evidence.
+
+Read-only agent reviews checked access/export, migration adoption, native process identity, cleanup, Compose and notices. Concrete findings (CI missing build, person-only doctor requirement, orphan cleanup, cached-revocation coverage and migration constraints) were fixed and verified. This is agent review, not human approval. The initial print-action test exposed a test-expression side effect; it was corrected and rerun. An initial Docker build hit Debian network errors; the final image uses the same OpenCV version's headless wheel without unnecessary GUI libraries and built successfully. Failed attempts are retained in local artifacts and are not counted as PASS.
+
+Unverified: CUDA, live PostgreSQL, public hosting, industrial load and physical measurement accuracy. Upstream inference deprecation warnings remain. Audits/scanners are bounded checks, not security certification. Final remote candidate CI and publication status are recorded in the PR/release draft; historical CI below is not evidence for the candidate. Public v1 remains held for [rights confirmation](PROVENANCE.md#publication-status).
+
+## Player filtering and continuity phase (historical)
 
 PR#3 was checked at `54f5c25428fc94af9945841a4a2d528bbe4e1d24`: base main, mergeable, scoped diff, local77-test/Ruff/security PASS and [CI37039995800](https://github.com/alinur527/Scout.AI/actions/runs/37039995800) backend/frontend/E2E SUCCESS. It was merged as `e423ae6dd4d8d046c58c17304fa0094100bd3151`; clean updated main was the base of `cv/player-filtering-continuity`.
 

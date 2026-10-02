@@ -7,28 +7,35 @@ export function useLoad(path, interval = 0) {
   useEffect(() => {
     let stopped = false
     let timer
+    let sequence = 0
     const controller = new AbortController()
     async function load() {
+      const requestSequence = ++sequence
       try {
         const { data } = await api.get(path, { signal: controller.signal })
-        if (!stopped) setState({ path, data, error: '', loading: false })
+        if (!stopped && requestSequence === sequence) setState({ path, data, error: '', loading: false })
       } catch (error) {
-        if (!stopped)
+        if (!stopped && requestSequence === sequence)
           setState((previous) => ({
             path,
-            data: previous.path === path ? previous.data : null,
+            data: [401, 403, 404].includes(error.response?.status)
+              ? null
+              : previous.path === path ? previous.data : null,
             error: errorMessage(error),
             loading: false,
           }))
       } finally {
-        if (!stopped && interval) timer = setTimeout(load, interval)
+        if (!stopped && requestSequence === sequence && interval) timer = setTimeout(load, interval)
       }
     }
     load()
+    const refreshOnFocus = () => { clearTimeout(timer); load() }
+    window.addEventListener('focus', refreshOnFocus)
     return () => {
       stopped = true
       controller.abort()
       clearTimeout(timer)
+      window.removeEventListener('focus', refreshOnFocus)
     }
   }, [path, interval, revision])
   return {

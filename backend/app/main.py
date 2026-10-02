@@ -19,6 +19,13 @@ def create_app(settings=None):
         engine.dispose()
 
     app = FastAPI(title="ScoutAI", version="1.0.0", lifespan=lifespan)
+
+    @app.middleware("http")
+    async def private_responses(request, call_next):
+        response = await call_next(request)
+        response.headers["Cache-Control"] = "no-store"
+        response.headers["X-Content-Type-Options"] = "nosniff"
+        return response
     # Load configuration at startup; this deliberately fails when a JWT secret is absent.
     config = settings or Settings()
     app.add_middleware(BodyLimitMiddleware, max_bytes=config.max_upload_mb * 1024 * 1024 + 65536)

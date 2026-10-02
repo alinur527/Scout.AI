@@ -10,6 +10,7 @@ import subprocess
 import sys
 import tempfile
 import time
+from datetime import datetime, timezone
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -65,10 +66,13 @@ def main():
         else:
             env.pop("SCOUTAI_E2E_VIDEO", None)
         servers = []
-        artifacts = ROOT / (
-            "test-artifacts/football/app-e2e" if args.video else "test-artifacts/e2e"
-        )
+        mode = f"real-{args.video.parent.name}" if args.video else "demo"
+        artifacts = ROOT / "test-artifacts/e2e" / f"{datetime.now(timezone.utc):%Y%m%dT%H%M%S%fZ}-{mode}"
         artifacts.mkdir(parents=True, exist_ok=True)
+        env["SCOUTAI_E2E_ARTIFACTS"] = str(artifacts)
+        print(f"Evidence: {artifacts}", flush=True)
+        if not (ROOT / "frontend/dist/index.html").exists():
+            raise RuntimeError("Run npm run build in frontend before E2E")
         handles = []
         try:
             for name, args, cwd, port in [
@@ -93,6 +97,7 @@ def main():
                     [
                         shutil.which("node"),
                         "node_modules/vite/bin/vite.js",
+                        "preview",
                         "--host",
                         "127.0.0.1",
                         "--port",
@@ -106,14 +111,15 @@ def main():
                 handle = (artifacts / f"{name}.log").open("w", encoding="utf-8")
                 handles.append(handle)
                 process = subprocess.Popen(
-                    args, cwd=cwd, env=env, stdout=handle, stderr=subprocess.STDOUT
+                    args, cwd=cwd, env=env, stdout=handle, stderr=subprocess.STDOUT,
+                    creationflags=subprocess.CREATE_NO_WINDOW if os.name == "nt" else 0,
                 )
                 servers.append(process)
                 deadline = time.monotonic() + 30
                 while not ready(port):
                     if process.poll() is not None or time.monotonic() > deadline:
                         raise RuntimeError(
-                            f"{name} did not start; see test-artifacts/e2e/{name}.log"
+                            f"{name} did not start; see {artifacts / (name + '.log')}"
                         )
                     time.sleep(0.2)
             return subprocess.run(

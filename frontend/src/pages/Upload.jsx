@@ -7,7 +7,20 @@ export default function Upload({ health }) {
   const [file, setFile] = useState(null)
   const [error, setError] = useState('')
   const [progress, setProgress] = useState(null)
+  const [sampleBusy, setSampleBusy] = useState(false)
   const navigate = useNavigate()
+  async function useSample() {
+    setSampleBusy(true)
+    setError('')
+    try {
+      const { data } = await api.get('/demo/sample', { responseType: 'blob' })
+      setFile(new File([data], 'synthetic-demo.avi', { type: 'video/x-msvideo' }))
+    } catch (failure) {
+      setError(errorMessage(failure))
+    } finally {
+      setSampleBusy(false)
+    }
+  }
   async function upload(event) {
     event.preventDefault()
     setError('')
@@ -38,6 +51,15 @@ export default function Upload({ health }) {
       <div className="upload-grid">
         <form className="panel" onSubmit={upload}>
           <ErrorBox message={error} />
+          {health?.demo_mode && (
+            <div className="sample-choice">
+              <h2>Start with the synthetic sample</h2>
+              <p>No footage needed. This small generated clip demonstrates upload, selection and reporting.</p>
+              <button type="button" disabled={sampleBusy || progress !== null} onClick={useSample}>
+                {sampleBusy ? 'Preparing sample…' : 'Use synthetic demo sample'}
+              </button>
+            </div>
+          )}
           <label
             className="upload-target"
             onDragOver={(event) => event.preventDefault()}
@@ -85,8 +107,8 @@ export default function Upload({ health }) {
             <li>
               <strong>Add field calibration</strong>
               <p>
-                Four known corners unlock distance, speed and sprint estimates. Without them,
-                explore image movement.
+                Known corners, a confirmed fixed camera and reliable timestamps may allow physical
+                estimates. Their accuracy is unvalidated; otherwise explore image movement.
               </p>
             </li>
           </ol>

@@ -114,6 +114,12 @@ def test_complete_flow_persistence_and_access(setup, auth, video):
     assert client.get("/players", headers=auth).status_code == 403
     scout = account(client, "scout_one", "scout")
     assert upload(client, scout, video).status_code == 403
+    assert client.get("/players", headers=scout).json() == []
+    profile = client.get("/profile/me", headers=auth).json()["profile"]
+    assert profile["scout_visible"] is False
+    profile.pop("user_id")
+    profile.update(full_name="Synthetic Test Player", scout_visible=True)
+    assert client.put("/profile/me", headers=auth, json=profile).status_code == 200
     cards = client.get("/players", headers=scout).json()
     card = next(card for card in cards if card["user"]["username"] == "player_one")
     assert card["latest_analysis"]["result"]["demo"]

@@ -8,7 +8,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "node scripts/license-notices.mjs && vite build",
     "lint": "eslint .",
     "preview": "vite preview"
   },
