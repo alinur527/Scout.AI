@@ -186,6 +186,13 @@ with sync_playwright() as p:
                 )
             )
             coordinates.blur()
+            if panorama:
+                # UI correctly refuses physical calibration without fixed-camera confirmation.
+                # Continue with the supported image-space report instead of inventing field geometry.
+                expect(
+                    page.get_by_role("button", name="Build my report")
+                ).to_be_disabled()
+                page.get_by_label("Enable manual calibration").uncheck()
         else:
             page.get_by_role("button", name="Demo player 1").click()
         page.get_by_role("button", name="Build my report").click()
@@ -208,7 +215,8 @@ with sync_playwright() as p:
                 assert any("precise foot" in warning for warning in result["warnings"])
             else:
                 assert result["camera_motion"]["status"] == "moving"
-            assert result["calibration_provided"] and not result["calibrated"]
+            assert result["calibration_provided"] == (not panorama)
+            assert not result["calibrated"]
             assert all(value is None for value in result["metrics"].values())
             assert result["movement_segments"] and result["annotated_preview"]
             assert result["tracking_quality"]["observed_frame_coverage"] > 0

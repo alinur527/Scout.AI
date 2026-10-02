@@ -1,6 +1,28 @@
 # Validation record — 2 October 2026
 
-## Football continuation
+## Small-player phase (current)
+
+PR#1 was verified open/mergeable against main, with green [CI36928035973](https://github.com/alinur527/Scout.AI/actions/runs/36928035973), and merged as `d03a2700317c751ea50bbb050a584801fd215d77`. PR#2 base changed from revive/scout-ai to main without rewriting its head/history; the resulting5-commit/39-file diff contained only football-phase changes. Local58-test/backend/frontend/demo/CPU/three-clip regressions and [CI36933062448](https://github.com/alinur527/Scout.AI/actions/runs/36933062448) passed before merge `24a389bad4aa2b777f04eb8fe25c1b895e680b07`. Main was updated by fast-forward and clean before creating independent `cv/small-player-detection`. Historical branches remain.
+
+The new phase adds three different SoccerTrackv2 matches, a preregistered DEV/HOLDOUT split, a bounded detector/ROI/tiling matrix and one frozen-candidate holdout round. Protocol, sources, rejected regressions and measured results: [SMALL_PLAYER_EXPERIMENTS.md](SMALL_PLAYER_EXPERIMENTS.md); [numeric evidence](../validation/results/small-player-2026-10-02.json). Raw detection F1 rose0→.7302/.4492 on DEV and0→.5067 on HOLDOUT; this is publisher-box agreement on short panoramic windows, not global football accuracy. Auto chooses person weights only for panoramic geometry; ordinary broadcast stays on configured pose weights. Physical accuracy remains **NOT VALIDATED**, CUDA **NOT TESTED**.
+
+| Executed local command | Result |
+|---|---|
+| `.venv\Scripts\python.exe -m pytest backend/tests -q` | PASS,77 tests; weights/GPU-free deterministic tests |
+| `.venv\Scripts\python.exe -m ruff check backend scripts` | PASS |
+| `.venv\Scripts\python.exe -m compileall -q backend/app scripts` | PASS |
+| frontend `npm ci`, `npm run lint`, `npm run build`, `npm audit` | PASS;0 vulnerabilities |
+| `.venv\Scripts\python.exe scripts/test_e2e.py` | PASS, full demo browser flow |
+| `.venv\Scripts\python.exe scripts/smoke_real.py` | PASS, CPU pipeline smoke; not accuracy |
+| Real panoramic E2E through reviewed webapp-testing `with_server.py` helper | PASS,117093/120frames; real API/frontend/worker/auto person |
+| `.venv\Scripts\python.exe scripts/test_e2e.py --video test-artifacts/football/clips/steady/clip.avi` | PASS,200frames; auto preserves pose, moving-camera veto |
+| Actual `--production` harness plus publisher scorers on steady/zoom/blur | PASS; raw/tracked TP/FP/FN exactly match phase2 |
+
+Panoramic browser flow covered player/scout accounts, profile/save/refresh, upload202/queue/gallery/selection, report/path/heatmap/preview/refresh, search/detail and guards. ID1 had120observed frames/40saved samples; physical metrics were null without calibration. It explicitly checked that enabled calibration without stationary confirmation blocks submission, then ran without calibration. Legacy E2E supplied synthetic corners/confirmation but detected camera motion still vetoed physical metrics. Both happy paths had no console/page/HTTP/image errors, worker crash or stuck job. Desktop/mobile screenshots were inspected, with overflow assertions at1440/768/390px. Full local logs/screenshots remain ignored under `test-artifacts/small-player` and `test-artifacts/football/app-e2e`.
+
+Final automatic-policy old-clip raw /tracked TP,FP,FN: steady `1217,264,1650 /1202,265,1665`; zoom `53,571,387 /42,510,398`; blur `0,21,500 /0,6,500`. These are unchanged. New PR CI is recorded separately after its actual remote execution; this local section does not claim a remote result.
+
+## First football phase (historical)
 
 The restoration results below describe the previous phase. The current football phase starts from `e65bbfd` on `cv/football-validation`; PR#1 was still open when work began. Full experiment definitions, source/licensing, baseline and after tables, limitations and reproduction commands are in [FOOTBALL_VALIDATION.md](FOOTBALL_VALIDATION.md); numeric evidence in [validation/results](../validation/results/football-2026-10-02.json).
 
