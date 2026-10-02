@@ -6,10 +6,12 @@ experiments, never application defaults. Run --help; annotations must be frozen 
 
 import argparse
 import csv
+from datetime import datetime, timezone
 import hashlib
 import json
 from pathlib import Path
 import sys
+import subprocess
 import time
 
 import cv2
@@ -18,11 +20,70 @@ import numpy as np
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "backend"))
 from app.cv.validation import evaluate_labels, technical_metrics  # noqa: E402
+from app.cv.pitch import pitch_box_selection  # noqa: E402
+from app.cv.tiles import nms_indices, tile_windows  # noqa: E402
 
 
 def sha256(path):
     with Path(path).open("rb") as stream:
         return hashlib.file_digest(stream, "sha256").hexdigest()
+
+
+def tiled_result(model, tracker, frame, args, device, torch):
+    """Four overlapping crops, global coordinates/NMS, then one tracker update."""
+    from ultralytics.engine.results import Results
+
+    boxes, keypoints = [], []
+    for x1, y1, x2, y2 in tile_windows(frame.shape[1], frame.shape[0]):
+        prediction = model.predict(
+            frame[y1:y2, x1:x2],
+            classes=[0],
+            conf=args.conf,
+            iou=0.5,
+            imgsz=args.imgsz,
+            device=device,
+            half=device == "cuda",
+            verbose=False,
+        )[0]
+        data = prediction.boxes.data.cpu().numpy().copy()
+        data[:, [0, 2]] += x1
+        data[:, [1, 3]] += y1
+        boxes.extend(data)
+        if prediction.keypoints is not None:
+            kp = prediction.keypoints.data.cpu().numpy().copy()
+            kp[:, :, 0] += x1
+            kp[:, :, 1] += y1
+            keypoints.extend(kp)
+    data = np.asarray(boxes, dtype=np.float32).reshape(-1, 6)
+    keep = nms_indices(data[:, :4], data[:, 4])
+    data = data[keep]
+    kp = (
+        np.asarray(keypoints, dtype=np.float32).reshape(-1, 17, 3)[keep]
+        if model.task == "pose"
+        else None
+    )
+    raw_count = len(data)
+    info = {"status": "disabled"}
+    if args.scene_filter == "pitch":
+        keep, info = pitch_box_selection(frame, data[:, :4])
+        data = data[keep]
+        if kp is not None:
+            kp = kp[keep]
+    result = Results(
+        frame,
+        "tiles",
+        model.names,
+        boxes=torch.as_tensor(data),
+        keypoints=torch.as_tensor(kp) if kp is not None else None,
+    )
+    raw = [
+        {"id": 0, "box": row[:4].tolist(), "confidence": float(row[4])} for row in data
+    ]
+    tracks = tracker.update(result.boxes.cpu().numpy(), frame)
+    if len(tracks):
+        result = result[tracks[:, -1].astype(int)]
+        result.update(boxes=torch.as_tensor(tracks[:, :-1]))
+    return result, raw, raw_count, info
 
 
 def main():
@@ -34,6 +95,13 @@ def main():
     parser.add_argument("--tracker", default=str(ROOT / "backend/app/cv/botsort.yaml"))
     parser.add_argument("--conf", type=float, default=0.3)
     parser.add_argument("--imgsz", type=int, default=640)
+    parser.add_argument("--scene-filter", choices=("none", "pitch"), default="none")
+    parser.add_argument(
+        "--tiles",
+        action="store_true",
+        help="Experimental 2x2 crops with 15%% overlap and global NMS",
+    )
+    parser.add_argument("--experiment", default="unspecified")
     parser.add_argument("--start", type=int, default=0)
     parser.add_argument("--end", type=int)
     parser.add_argument("--annotations", type=Path)
@@ -49,8 +117,14 @@ def main():
         parser.error("Supply local model weights; this script never downloads them")
     if not 0 <= args.conf <= 1 or args.start < 0 or args.save_every < 1:
         parser.error("Invalid confidence, frame range or save interval")
-    if args.imgsz < 32 or (args.end is not None and args.end <= args.start):
-        parser.error("Image size must be >=32; end frame must be greater than start")
+    if (args.imgsz != 0 and args.imgsz < 32) or (
+        args.end is not None and args.end <= args.start
+    ):
+        parser.error(
+            "Image size must be 0 (native production policy) or >=32; invalid frame range"
+        )
+    if args.tiles and args.imgsz == 0:
+        parser.error("Tiling needs an explicit per-tile image size")
     args.output.mkdir(parents=True, exist_ok=True)
     import torch
     import ultralytics
@@ -66,6 +140,8 @@ def main():
             or args.conf != 0.3
             or args.imgsz != 640
             or args.tracker != str(ROOT / "backend/app/cv/botsort.yaml")
+            or args.tiles
+            or args.scene_filter != "none"
         ):
             parser.error(
                 "--production uses application defaults and the entire clip; remove experiment overrides"
@@ -77,8 +153,20 @@ def main():
         model = processor.model
     else:
         model = YOLO(str(args.model)).to(device)
-    if model.task != "pose":
-        parser.error("A local COCO pose model is required")
+    if model.task not in ("pose", "detect") or model.names.get(0) != "person":
+        parser.error("A local COCO person detection or pose model is required")
+    tile_tracker = None
+    if args.tiles:
+        from ultralytics.trackers.bot_sort import BOTSORT
+        from ultralytics.utils import YAML, IterableSimpleNamespace
+
+        tracker_config = YAML.load(args.tracker)
+        if tracker_config["tracker_type"] != "botsort" or tracker_config.get(
+            "with_reid"
+        ):
+            parser.error("Tile experiment requires BoT-SORT without ReID")
+        tile_tracker = BOTSORT(IterableSimpleNamespace(**tracker_config), frame_rate=30)
+        tile_tracker.reset()
     labels = (
         json.loads(args.annotations.read_text(encoding="utf-8"))
         if args.annotations
@@ -106,11 +194,21 @@ def main():
     process = psutil.Process()
     observed_peak_rss = process.memory_info().rss
     raw_detections = []
+    prefilter_counts, filter_statuses = [], []
 
     def capture_raw(predictor):
         # Registered before model.track installs tracker callbacks: raw NMS detections.
         raw_detections.clear()
         result = predictor.results[0]
+        prefilter_counts.append(len(result.boxes))
+        info = {"status": "disabled"}
+        if args.scene_filter == "pitch":
+            keep, info = pitch_box_selection(
+                result.orig_img, result.boxes.xyxy.cpu().numpy()
+            )
+            result = result[keep]
+            predictor.results[0] = result
+        filter_statuses.append(info)
         for box, score in zip(
             result.boxes.xyxy.cpu().numpy(), result.boxes.conf.cpu().numpy()
         ):
@@ -118,7 +216,8 @@ def main():
                 {"id": 0, "box": box.tolist(), "confidence": float(score)}
             )
 
-    model.add_callback("on_predict_postprocess_end", capture_raw)
+    if not args.tiles:
+        model.add_callback("on_predict_postprocess_end", capture_raw)
     started = time.perf_counter()
     try:
         index = 0
@@ -139,25 +238,43 @@ def main():
                 index += 1
                 continue
             if not processor:
-                result = model.track(
-                    frame,
-                    persist=True,
-                    classes=[0],
-                    conf=args.conf,
-                    iou=0.5,
-                    imgsz=args.imgsz,
-                    half=device == "cuda",
-                    device=device,
-                    tracker=args.tracker,
-                    verbose=False,
-                )[0]
+                if args.tiles:
+                    result, raw, before, info = tiled_result(
+                        model, tile_tracker, frame, args, device, torch
+                    )
+                    raw_detections[:] = raw
+                    prefilter_counts.append(before)
+                    filter_statuses.append(info)
+                else:
+                    from app.cv.processor import inference_size_for_frame
+
+                    result = model.track(
+                        frame,
+                        persist=True,
+                        classes=[0],
+                        conf=args.conf,
+                        iou=0.5,
+                        imgsz=args.imgsz or inference_size_for_frame(frame),
+                        half=device == "cuda",
+                        device=device,
+                        tracker=args.tracker,
+                        verbose=False,
+                    )[0]
             detections = []
             if result.boxes.id is not None:
                 boxes = result.boxes.xyxy.cpu().numpy()
                 ids = result.boxes.id.cpu().numpy().astype(int)
                 scores = result.boxes.conf.cpu().numpy()
-                keypoints = result.keypoints.xy.cpu().numpy()
-                kp_conf = result.keypoints.conf.cpu().numpy()
+                keypoints = (
+                    result.keypoints.xy.cpu().numpy()
+                    if result.keypoints is not None
+                    else np.zeros((len(boxes), 17, 2))
+                )
+                kp_conf = (
+                    result.keypoints.conf.cpu().numpy()
+                    if result.keypoints is not None
+                    else np.zeros((len(boxes), 17))
+                )
                 for box, tid, score, xy, confidence in zip(
                     boxes, ids, scores, keypoints, kp_conf
                 ):
@@ -206,6 +323,26 @@ def main():
             "ultralytics": ultralytics.__version__,
             "torch": torch.__version__,
             "device": device,
+            "experiment": args.experiment,
+            "timestamp_utc": datetime.now(timezone.utc).isoformat(),
+            "git_commit": subprocess.run(
+                ["git", "rev-parse", "HEAD"],
+                cwd=ROOT,
+                capture_output=True,
+                text=True,
+                check=True,
+            ).stdout.strip(),
+            "git_dirty": bool(
+                subprocess.run(
+                    ["git", "status", "--porcelain"],
+                    cwd=ROOT,
+                    capture_output=True,
+                    text=True,
+                    check=True,
+                ).stdout
+            ),
+            "model": str(args.model.resolve()),
+            "model_task": model.task,
             "config": {
                 "tracker": args.tracker,
                 "conf": args.conf,
@@ -213,6 +350,10 @@ def main():
                 "imgsz": args.imgsz,
                 "start": args.start,
                 "end": args.end,
+                "scene_filter": args.scene_filter,
+                "tiling": {"grid": [2, 2], "overlap": 0.15, "global_nms_iou": 0.5}
+                if args.tiles
+                else None,
             },
             "technical": technical_metrics(frames),
             "processing_seconds": elapsed,
@@ -240,6 +381,16 @@ def main():
             }
             summary["annotation_sha256"] = sha256(args.annotations)
         summary["raw_detections"] = sum(len(f["detections"]) for f in raw_frames)
+        summary["scene_filter"] = {
+            "input_boxes": sum(prefilter_counts),
+            "accepted_boxes": summary["raw_detections"],
+            "available_frames": sum(
+                info["status"] == "available" for info in filter_statuses
+            ),
+            "unknown_frames": sum(
+                info["status"] == "unknown" for info in filter_statuses
+            ),
+        }
         if processor:
             summary["config"]["imgsz"] = (
                 "native max dimension, rounded to 32, clipped 640..1280"
