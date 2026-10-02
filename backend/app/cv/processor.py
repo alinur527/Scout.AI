@@ -1,4 +1,4 @@
-"""YOLO pose / BoT-SORT / ankle pipeline adapted from Isaksend/ai-scouter."""
+"""COCO person detection/optional pose, BoT-SORT and image-space ground points."""
 
 from pathlib import Path
 import math
@@ -30,8 +30,9 @@ class VideoProcessor:
         self.sv = sv
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
         self.model = YOLO(str(model_weights)).to(self.device)
-        if self.model.task != "pose":
-            raise ValueError("MODEL_WEIGHTS must be a COCO pose model with ankle keypoints")
+        if self.model.task not in ("detect", "pose") or self.model.names.get(0) != "person":
+            raise ValueError("MODEL_WEIGHTS must be a COCO person detection or pose model")
+        self.ground_position_method = "bbox_bottom_center" if self.model.task == "detect" else "ankle_mean_with_bbox_fallback"
 
     def process_video(self, source_path, max_frames=54000):
         cap = cv2.VideoCapture(str(source_path))
