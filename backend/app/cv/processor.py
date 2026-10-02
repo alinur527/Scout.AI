@@ -18,7 +18,7 @@ def inference_size_for_frame(frame):
 class VideoProcessor:
     def __init__(self, model_weights):
         if not Path(model_weights).is_file():
-            raise ValueError("Model weights are missing. Run scripts/download_model.py or set MODEL_WEIGHTS.")
+            raise ValueError(f"Model weights are missing: {Path(model_weights).name}. Download the configured local model with scripts/download_model.py --model, or correct its weights path.")
         try:
             import torch
             import supervision as sv

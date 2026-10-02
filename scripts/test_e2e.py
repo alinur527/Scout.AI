@@ -41,7 +41,7 @@ def main():
     parser.add_argument(
         "--video",
         type=Path,
-        help="Opt-in 200-frame football clip, local weights required",
+        help="Opt-in football clip, local scene-policy weights required",
     )
     args = parser.parse_args()
     if args.video and not args.video.is_file():
@@ -60,6 +60,8 @@ def main():
         if args.video:
             env["SCOUTAI_E2E_VIDEO"] = str(args.video.resolve())
             env["MODEL_WEIGHTS"] = str(ROOT / "backend/weights/yolo11n-pose.pt")
+            env["PERSON_MODEL_WEIGHTS"] = str(ROOT / "backend/weights/yolo11n.pt")
+            env["CV_DETECTOR_POLICY"] = "auto"
         else:
             env.pop("SCOUTAI_E2E_VIDEO", None)
         servers = []

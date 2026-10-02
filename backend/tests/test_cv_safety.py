@@ -271,6 +271,19 @@ def test_unreliable_decoder_timestamps_block_physical_metrics():
     assert report(fixture)["metrics"]["total_distance_m"] is None
 
 
+def test_person_bbox_report_preserves_camera_gate_segments_and_honest_position_note():
+    fixture = job("moving", True)
+    fixture.tracks["ground_position_method"] = "bbox_bottom_center"
+    fixture.tracks["detector_profile"] = "panoramic_person"
+    result = report(fixture)
+    assert result["ground_position_method"] == "bbox_bottom_center"
+    assert result["detector_profile"] == "panoramic_person"
+    assert result["physical_accuracy"] == "not_validated"
+    assert all(value is None for value in result["metrics"].values())
+    assert len(result["movement_segments"]) == 2
+    assert any("precise foot locations" in note for note in result["warnings"])
+
+
 def test_decoder_timestamps_preserve_variable_intervals_and_flag_fallback(monkeypatch):
     processor = VideoProcessor.__new__(VideoProcessor)
     processor.device = "cpu"

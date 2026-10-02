@@ -90,7 +90,9 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("video", type=Path)
     parser.add_argument(
-        "--model", type=Path, default=ROOT / "backend/weights/yolo11n-pose.pt"
+        "--model",
+        type=Path,
+        help="Explicit local weights; production default follows the scene policy",
     )
     parser.add_argument("--tracker", default=str(ROOT / "backend/app/cv/botsort.yaml"))
     parser.add_argument("--conf", type=float, default=0.3)
@@ -113,6 +115,31 @@ def main():
         help="Run actual VideoProcessor and camera veto; full clip only",
     )
     args = parser.parse_args()
+    production_profile = "explicit_model" if args.model else None
+    if args.model is None and args.production:
+        from types import SimpleNamespace
+        from app.core.config import Settings
+        from app.cv.detector_policy import select_model_weights
+
+        probe = cv2.VideoCapture(str(args.video))
+        try:
+            video_size = {
+                "width": probe.get(cv2.CAP_PROP_FRAME_WIDTH),
+                "height": probe.get(cv2.CAP_PROP_FRAME_HEIGHT),
+            }
+        finally:
+            probe.release()
+        defaults = SimpleNamespace(
+            cv_detector_policy=Settings.model_fields["cv_detector_policy"].default,
+            model_weights=ROOT
+            / "backend"
+            / Settings.model_fields["model_weights"].default,
+            person_model_weights=ROOT
+            / "backend"
+            / Settings.model_fields["person_model_weights"].default,
+        )
+        args.model, production_profile = select_model_weights(defaults, video_size)
+    args.model = args.model or ROOT / "backend/weights/yolo11n-pose.pt"
     if not args.model.is_file():
         parser.error("Supply local model weights; this script never downloads them")
     if not 0 <= args.conf <= 1 or args.start < 0 or args.save_every < 1:
@@ -361,6 +388,7 @@ def main():
                 "tiling": {"grid": [2, 2], "overlap": 0.15, "global_nms_iou": 0.5}
                 if args.tiles
                 else None,
+                "production_profile": production_profile if args.production else None,
             },
             "technical": technical_metrics(frames),
             "processing_seconds": elapsed,

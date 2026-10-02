@@ -15,7 +15,7 @@ class Settings(BaseSettings):
     upload_dir: Path = Path("data/uploads")
     model_weights: Path = Path("weights/yolo11n-pose.pt")
     person_model_weights: Path = Path("weights/yolo11n.pt")
-    cv_detector_policy: Literal["pose", "person", "auto"] = "pose"
+    cv_detector_policy: Literal["pose", "person", "auto"] = "auto"
     demo_mode: bool = Field(default=False, validation_alias=AliasChoices("SCOUTAI_DEMO_MODE", "DEMO_MODE"))
     max_upload_mb: int = Field(default=200, ge=1, le=2000)
     max_video_seconds: int = Field(default=1800, ge=1, le=10800)
