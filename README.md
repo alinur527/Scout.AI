@@ -2,7 +2,7 @@
 
 Football scouting and player movement analysis, restored from the original React and computer-vision prototypes. Upload a clip, track players, select your ID and save a report. Scouts browse real saved player profiles and completed analyses.
 
-**Demo mode is explicit. Real mode runs YOLO pose and tracking.** Uncalibrated real video produces image-space movement; metre distance, km/h speed and sprint estimates require manual field calibration. There are no claims of accuracy, real-time performance or concurrent-video throughput.
+**Demo mode is explicit. Real mode runs local YOLO detection and tracking.** Panoramic clips use a measured person-detector profile; normal frames retain optional pose. Uncalibrated real video produces image-space movement; metre distance, km/h speed and sprint estimates require manual field calibration. There are no claims of accuracy, real-time performance or concurrent-video throughput.
 
 ## Features
 
@@ -16,7 +16,7 @@ Football scouting and player movement analysis, restored from the original React
 
 ## Architecture and tech stack
 
-React 19 + Vite + React Router + Axios → FastAPI → SQLAlchemy database → one Python worker → OpenCV / Ultralytics YOLO11 pose / BoT-SORT / Supervision / NumPy. Python **3.12** is the supported project baseline; use Node **22.12+**, preferably Node 22 LTS. The actual Windows run used Python 3.12 and Node 25.8; CI selects Node 22.
+React 19 + Vite + React Router + Axios → FastAPI → SQLAlchemy database → one Python worker → OpenCV / Ultralytics YOLO11 detection/optional pose / BoT-SORT / Supervision / NumPy. Python **3.12** is the supported project baseline; use Node **22.12+**, preferably Node 22 LTS. The actual Windows run used Python 3.12 and Node 25.8; CI selects Node 22.
 
 SQLite is the zero-service local default. PostgreSQL uses the same SQLAlchemy models and the psycopg driver. No GPU, PostgreSQL, Docker, Celery or model download is needed for demo mode. Run the worker as a separate process so inference does not block API requests. One worker owns the upload directory through an OS file lock; multi-host workers are outside the current design.
 
@@ -113,6 +113,8 @@ API and worker read `backend/.env` when launched from `backend/`. Process enviro
 | CORS_ORIGINS | JSON list of explicit origins; defaults permit localhost and 127.0.0.1 port 5173; wildcard rejected |
 | UPLOAD_DIR | `./data/uploads`; API/worker must share it |
 | MODEL_WEIGHTS | `./weights/yolo11n-pose.pt`; local file required in real mode |
+| PERSON_MODEL_WEIGHTS | `./weights/yolo11n.pt`; local panoramic person model |
+| CV_DETECTOR_POLICY | `auto`: person when width>=1920 and aspect>=3; configured MODEL_WEIGHTS otherwise. `pose` restores the base profile; `person` is an explicit opt-in experiment |
 | SCOUTAI_DEMO_MODE | Default false in code; `.env.example` deliberately sets true; legacy alias DEMO_MODE also accepted |
 | MAX_UPLOAD_MB | 200; streaming and multipart-body limits enforced |
 | MAX_VIDEO_SECONDS | 1800 (30 minutes); trim longer clips |
@@ -140,22 +142,23 @@ Install the CPU stack (the project was smoke-tested with this pair):
 .\.venv\Scripts\python.exe -m pip install torch==2.10.0 torchvision==0.25.0 --index-url https://download.pytorch.org/whl/cpu
 .\.venv\Scripts\python.exe -m pip install -r backend/requirements-cv.txt
 .\.venv\Scripts\python.exe scripts/download_model.py
+.\.venv\Scripts\python.exe scripts/download_model.py --model yolo11n.pt
 ```
 
-The explicit download script retrieves the official YOLO11n-pose checkpoint (~6.3 MB), bounds the download size and saves it under ignored `backend/weights/`. The server never downloads a model implicitly. Missing/wrong weights fail clearly. Only load trusted model checkpoints.
+The explicit commands retrieve official YOLO11n-pose (~6.3 MB) and YOLO11n person (~5.6 MB) checkpoints with bounded downloads under ignored `backend/weights/`. Auto policy uses only one model per clip. The server never downloads a model implicitly; missing configured weights fail clearly. Only load trusted checkpoints. Existing MODEL_WEIGHTS overrides are preserved; PERSON_MODEL_WEIGHTS is separate.
 
 Set `SCOUTAI_DEMO_MODE=false` in `backend/.env`, keep MODEL_WEIGHTS correct, then restart API and worker. CUDA is auto-selected when the installed Torch build reports CUDA available; otherwise the processor uses CPU and disables half precision. For GPU installation choose a matching torch/torchvision build from the [official PyTorch installation guide](https://pytorch.org/get-started/locally/). The local validation machine used CPU; CUDA was not exercised. Tracking follows the [Ultralytics tracking API](https://docs.ultralytics.com/modes/track/).
 
 ### How video analysis works
 
 1. Validate upload extension, MIME, actual decoding, FPS, duration, frame count and resolution; create a queued DB job.
-2. Worker streams every OpenCV frame through YOLO pose and BoT-SORT. Inference preserves native detail up to 1280px (minimum 640), extracts confident ankles with bbox-bottom fallback, saves crops and at most 10 timestamped observations/second per track.
+2. Worker selects the measured panoramic person profile or configured base model, then streams every OpenCV frame through YOLO and unchanged BoT-SORT. Inference preserves native detail up to1280px (minimum640). Person detections use approximate bbox-bottom positions; pose keeps confident ankles/fallback. Crops and at most10 timestamped observations/second per track are saved.
 3. UI polls status and shows gallery. Select yourself. A track is not a verified personal identity; occlusion can split it.
 4. Optionally mark four visible corners of a known rectangular field region in perimeter order and enter its actual metre dimensions. Confirm the camera stayed fixed. Motion detection, uncertain camera stability or unusable decoder timestamps block physical metrics even when corners are supplied. A first-frame preview and keyboard coordinate input are provided.
 5. Build the selected-track report from saved decoder timestamps. For supported fixed-camera clips, manual homography and time-aware smoothing yield estimates whose physical accuracy is not validated. Gaps >0.5s, invalid coordinates and >45km/h raw jumps split calibrated trajectories. The path renders separate segments. Heatmap is specific to the selected ID.
 6. Store the completed report. Scouts can view it on the player's detail page.
 
-Without supported calibration, **distance, speed and sprints are unavailable**. Moving cameras are unsupported for physical measurement; image paths include camera movement. Observed-frame coverage is a technical visibility ratio, not accuracy. The person model also detects referees/staff/spectators. Pose weights do not detect a football. Goals, assists and possession are not implemented.
+Without supported calibration, **distance, speed and sprints are unavailable**. Moving cameras are unsupported for physical measurement; image paths include camera movement. Observed-frame coverage is a technical visibility ratio, not accuracy. Both models also detect referees/staff/spectators; precise feet and physical accuracy are not validated. Goals, assists and possession are not implemented.
 
 ## API contract
 
@@ -196,9 +199,20 @@ The optional local harness uses existing weights, saves ignored annotated frames
 .\.venv\Scripts\python.exe scripts/test_e2e.py --video test-artifacts/football/clips/steady/clip.avi
 ```
 
+## Small-player validation
+
+[SMALL_PLAYER_EXPERIMENTS.md](docs/SMALL_PLAYER_EXPERIMENTS.md) documents the next stage: three different CC BY SoccerTrackv2 matches, two DEV windows and one frozen HOLDOUT round. The person detector raised raw F1 from0 to.730/.449 on DEV and.507 on HOLDOUT at8.3–8.6 CPU FPS. Auto selects it only for panoramic geometry; unconditional use was rejected after broadcast false positives rose sharply. Grass filtering, larger pose and tiling were measured and rejected as defaults. The old three-clip raw/tracked counts remained unchanged. These are short-window box-agreement measurements; false positives and stable identity remain unresolved. Downloaded sample/GT/model payload was75.5MB, with videos ignored.
+
+Reproduce the new sample preparation and real browser flow:
+
+```powershell
+.\.venv\Scripts\python.exe scripts/download_soccertrack_samples.py
+.\.venv\Scripts\python.exe scripts/test_e2e.py --video test-artifacts/football/soccertrack/117093/window/clip.avi
+```
+
 ## Known limitations
 
-* Football validation covers three correlated short windows from one event, with agent visual labels awaiting expert review and publisher-assisted annotations. No fully fixed-camera football sample, physical movement reference, independent match holdout, load benchmark or CUDA validation. Results do not establish global football accuracy.
+* Football validation includes three UVY windows from one event and three short SoccerTrackv2 match windows from one venue/camera family. New-match HOLDOUT improves small-player recall, but publisher box review is unspecified and independent visual labels await expert review. No measured physical movement reference, load benchmark or CUDA validation. Results do not establish global football accuracy; panoramic results do not establish broadcast generalization.
 * One worker, local media storage, no distributed lease/queue, cancellation or automatic retries. Requests need an external rate limit and TLS boundary before an internet-facing deployment.
 * Self-registration permits player/scout; admin is preserved as a role but cannot self-register. No advanced admin panel, password reset, email verification or refresh tokens.
 * Scout accounts can discover all registered player profiles and completed reports. Private profiles/consent controls are not yet implemented.
@@ -208,7 +222,7 @@ The optional local harness uses existing weights, saves ignored annotated frames
 
 ## Roadmap
 
-Expert-checked independent football holdout and fixed-camera physical references; small-player detection/field filtering; measured track correction; profile privacy and account deletion; Alembic migrations and live PostgreSQL coverage; queue cancellation/retry. Telegram Mini App is a later integration, not part of this web restoration.
+New expert-checked sealed match from another venue/camera and fixed-camera physical references; remaining small-player detection/user-assisted field filtering; measured track correction; profile privacy and account deletion; Alembic migrations and live PostgreSQL coverage; queue cancellation/retry. Telegram Mini App is a later integration, not part of this web restoration.
 
 ## Screenshots
 

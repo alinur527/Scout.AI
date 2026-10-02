@@ -1,0 +1,176 @@
+{
+  "network_bytes_this_run": 49469883,
+  "records": [
+    {
+      "match": "117093",
+      "split": "DEV",
+      "event": "B1 vs B2",
+      "license": "https://github.com/AtomScott/SoccerTrack-v2/blob/6f5c47cd3a5c38b074c44e9c98dfba48daa230d3/LICENSE-DATA",
+      "video_url": "https://drive.usercontent.google.com/download?id=1qcOv7Ub9ju5qXzx_9FeIY3jkmrFWQyZ8&export=download&confirm=t",
+      "original_video_bytes": 304980773,
+      "gt_url": "https://drive.usercontent.google.com/download?id=1BHUMvKZWzJyX0uQ73_7A-e4HtXjUk5p7&export=download&confirm=t",
+      "gt_bytes": 6221412,
+      "video_ranges": [
+        [
+          0,
+          10785908
+        ],
+        [
+          304764342,
+          304980773
+        ]
+      ],
+      "ranges_end_exclusive": true,
+      "range_hashes": {
+        "prefix_sha256": "163a0675132a2f0d61b37aa1905e6281dad188558b8109c727830329bccc954f",
+        "moov_sha256": "a6d3b43e5e8512ba44cd8be7dc285928da279dabafce58ca72f69676244b6310",
+        "cached": false
+      },
+      "partial_cache_sha256": "5b8634f35ea0d9021c39f45ea8bbdff03f3ab57dfe6557786268dcd6d51b5315",
+      "gt_sha256": "f081ed8f4c7feb76e0fb0982c645fe6ae2039cf69bf2ffeaa787896fa01e2331",
+      "clip": "test-artifacts/football/soccertrack/117093/window/clip.avi",
+      "gt": "test-artifacts/football/soccertrack/117093/gt.txt",
+      "metadata": {
+        "source": "$REPO/test-artifacts/football/soccertrack/117093/partial.decode-cache.mp4",
+        "source_sha256": "5b8634f35ea0d9021c39f45ea8bbdff03f3ab57dfe6557786268dcd6d51b5315",
+        "video_sha256": "0a056a53521c275eb80c1f8900fa8ddae0c823a30e503f9fd0ce03364c4a6cc9",
+        "source_start_frame": 0,
+        "frames": 120,
+        "fps": 25.0,
+        "width": 4096,
+        "height": 1080,
+        "sampled_frames": [
+          0,
+          10,
+          21,
+          32,
+          43,
+          54,
+          64,
+          75,
+          86,
+          97,
+          108,
+          119
+        ],
+        "roi": null,
+        "derivation": "OpenCV MJPG, original resolution/FPS; no generated or interpolated frames"
+      },
+      "cache_warning": "First200 encoded samples only; future sample table entries lack payload. Valid derived AVI contains first120 decoded frames, not a complete original MP4."
+    },
+    {
+      "match": "118575",
+      "split": "DEV",
+      "event": "C1 vs C2",
+      "license": "https://github.com/AtomScott/SoccerTrack-v2/blob/6f5c47cd3a5c38b074c44e9c98dfba48daa230d3/LICENSE-DATA",
+      "video_url": "https://drive.usercontent.google.com/download?id=11Hy7QN9cI7N0fKRNjX_SYeCMnK_lXyb0&export=download&confirm=t",
+      "original_video_bytes": 287015664,
+      "gt_url": "https://drive.usercontent.google.com/download?id=16Gro5nViH_D8H71RagNUDD1sSFqxpDlt&export=download&confirm=t",
+      "gt_bytes": 6122283,
+      "video_ranges": [
+        [
+          0,
+          9177824
+        ],
+        [
+          286833901,
+          287015664
+        ]
+      ],
+      "ranges_end_exclusive": true,
+      "range_hashes": {
+        "prefix_sha256": "20f4e75ccf19c2a6e50fecc1b07059a769e99235e0a7cc665fff2333e305f5da",
+        "moov_sha256": "c5850755ee7d290c4aaec32da27267d890e6eece423005a68badde8c3df202b8",
+        "cached": false
+      },
+      "partial_cache_sha256": "b99805f3f0821e94f4db79011242b2d833439d2d2b60a44b4540629ef6aa1992",
+      "gt_sha256": "bf6c6d38e697d6cf9a4e045a7af2e8d33f7a99146517d10213852c9f556f0936",
+      "clip": "test-artifacts/football/soccertrack/118575/window/clip.avi",
+      "gt": "test-artifacts/football/soccertrack/118575/gt.txt",
+      "metadata": {
+        "source": "$REPO/test-artifacts/football/soccertrack/118575/partial.decode-cache.mp4",
+        "source_sha256": "b99805f3f0821e94f4db79011242b2d833439d2d2b60a44b4540629ef6aa1992",
+        "video_sha256": "a27324f6b48ebf4b31f16750fbd0733b1d11fcf64d845a7ac2484ccb4764b872",
+        "source_start_frame": 0,
+        "frames": 120,
+        "fps": 25.0,
+        "width": 4096,
+        "height": 1080,
+        "sampled_frames": [
+          0,
+          10,
+          21,
+          32,
+          43,
+          54,
+          64,
+          75,
+          86,
+          97,
+          108,
+          119
+        ],
+        "roi": null,
+        "derivation": "OpenCV MJPG, original resolution/FPS; no generated or interpolated frames"
+      },
+      "cache_warning": "First200 encoded samples only; future sample table entries lack payload. Valid derived AVI contains first120 decoded frames, not a complete original MP4."
+    },
+    {
+      "match": "118576",
+      "split": "HOLDOUT",
+      "event": "D1 vs D2",
+      "license": "https://github.com/AtomScott/SoccerTrack-v2/blob/6f5c47cd3a5c38b074c44e9c98dfba48daa230d3/LICENSE-DATA",
+      "video_url": "https://drive.usercontent.google.com/download?id=132fWwtSBIRuKVigIDK1odzQjz2mLXl3M&export=download&confirm=t",
+      "original_video_bytes": 298409129,
+      "gt_url": "https://drive.usercontent.google.com/download?id=1FxOiI9wz8EobXtuXYr7xCgihqg50NxYL&export=download&confirm=t",
+      "gt_bytes": 6231376,
+      "video_ranges": [
+        [
+          0,
+          10313323
+        ],
+        [
+          298189566,
+          298409129
+        ]
+      ],
+      "ranges_end_exclusive": true,
+      "range_hashes": {
+        "prefix_sha256": "786ccf46fd905d49499787b6458852ef086994b7875017a4e5c1cf0df32b3083",
+        "moov_sha256": "083e6e1984df472b35922a0aefdcebf0f13aad29c7c7af39192ea70d9570847b",
+        "cached": false
+      },
+      "partial_cache_sha256": "56963574377d315847bf9d4512eddd812823de61024d8bff29d6988514952130",
+      "gt_sha256": "902483d9b029bb69c692da8fe0120f593615faf6d17ae2d4db22165247307310",
+      "clip": "test-artifacts/football/soccertrack/118576/window/clip.avi",
+      "gt": "test-artifacts/football/soccertrack/118576/gt.txt",
+      "metadata": {
+        "source": "$REPO/test-artifacts/football/soccertrack/118576/partial.decode-cache.mp4",
+        "source_sha256": "56963574377d315847bf9d4512eddd812823de61024d8bff29d6988514952130",
+        "video_sha256": "b0fe22a845f276cc93e4aea585e2344747955faf32078de4ef7836e1a7c9cf5e",
+        "source_start_frame": 0,
+        "frames": 120,
+        "fps": 25.0,
+        "width": 4096,
+        "height": 1080,
+        "sampled_frames": [
+          0,
+          10,
+          21,
+          32,
+          43,
+          54,
+          64,
+          75,
+          86,
+          97,
+          108,
+          119
+        ],
+        "roi": null,
+        "derivation": "OpenCV MJPG, original resolution/FPS; no generated or interpolated frames"
+      },
+      "cache_warning": "First200 encoded samples only; future sample table entries lack payload. Valid derived AVI contains first120 decoded frames, not a complete original MP4."
+    }
+  ]
+}

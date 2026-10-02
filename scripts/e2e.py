@@ -13,6 +13,7 @@ from test_e2e import stop_process
 
 ROOT = Path(__file__).resolve().parents[1]
 real = bool(os.environ.get("SCOUTAI_E2E_VIDEO"))
+panorama = False
 ARTIFACTS = ROOT / ("test-artifacts/football/app-e2e" if real else "test-artifacts/e2e")
 ARTIFACTS.mkdir(parents=True, exist_ok=True)
 video = (
@@ -22,6 +23,22 @@ video = (
 )
 if real and os.environ.get("SCOUTAI_DEMO_MODE", "true").lower() != "false":
     raise RuntimeError("Football E2E requires SCOUTAI_DEMO_MODE=false")
+if real:
+    import cv2
+
+    from_source = cv2.VideoCapture(str(video))
+    try:
+        width, height, frame_count = [
+            int(from_source.get(prop))
+            for prop in (
+                cv2.CAP_PROP_FRAME_WIDTH,
+                cv2.CAP_PROP_FRAME_HEIGHT,
+                cv2.CAP_PROP_FRAME_COUNT,
+            )
+        ]
+    finally:
+        from_source.release()
+    panorama = width >= 1920 and width / height >= 3
 suffix = secrets.token_hex(4)
 player, scout = f"player_{suffix}", f"scout_{suffix}"
 password = secrets.token_urlsafe(18)
@@ -156,14 +173,26 @@ with sync_playwright() as p:
                 "Field calibration for distance and speed", exact=True
             ).click()
             page.get_by_label("Enable manual calibration").check()
-            page.get_by_label(
-                "I confirm the camera stayed fixed throughout this clip"
-            ).check()
+            if not panorama:
+                page.get_by_label(
+                    "I confirm the camera stayed fixed throughout this clip"
+                ).check()
             coordinates = page.get_by_label(
                 "Corner coordinates (JSON; keyboard alternative)"
             )
-            coordinates.fill("[[0,0],[1279,0],[1279,719],[0,719]]")
+            coordinates.fill(
+                json.dumps(
+                    [[0, 0], [width - 1, 0], [width - 1, height - 1], [0, height - 1]]
+                )
+            )
             coordinates.blur()
+            if panorama:
+                # UI correctly refuses physical calibration without fixed-camera confirmation.
+                # Continue with the supported image-space report instead of inventing field geometry.
+                expect(
+                    page.get_by_role("button", name="Build my report")
+                ).to_be_disabled()
+                page.get_by_label("Enable manual calibration").uncheck()
         else:
             page.get_by_role("button", name="Demo player 1").click()
         page.get_by_role("button", name="Build my report").click()
@@ -179,18 +208,29 @@ with sync_playwright() as p:
             assert result_response.ok
             result = result_response.json()
             assert result["demo"] is False and result["device"] in ("cpu", "cuda")
-            assert result["frames_processed"] == 200
-            assert result["camera_motion"]["status"] == "moving"
-            assert result["calibration_provided"] and not result["calibrated"]
+            assert result["frames_processed"] == frame_count
+            if panorama:
+                assert result["detector_profile"] == "panoramic_person"
+                assert result["ground_position_method"] == "bbox_bottom_center"
+                assert any("precise foot" in warning for warning in result["warnings"])
+            else:
+                assert result["camera_motion"]["status"] == "moving"
+            assert result["calibration_provided"] == (not panorama)
+            assert not result["calibrated"]
             assert all(value is None for value in result["metrics"].values())
             assert result["movement_segments"] and result["annotated_preview"]
             assert result["tracking_quality"]["observed_frame_coverage"] > 0
             (ARTIFACTS / "report.json").write_text(
                 json.dumps(result, indent=2), encoding="utf-8"
             )
-            expect(page.get_by_text("Motion detected", exact=True)).to_be_visible()
+            if not panorama:
+                expect(page.get_by_text("Motion detected", exact=True)).to_be_visible()
+            else:
+                expect(
+                    page.get_by_text("Positions use the bottom", exact=False)
+                ).to_be_visible()
             steps.append(
-                "real YOLO football, moving-camera calibration veto, unavailable physical metrics"
+                "real YOLO football, calibration safety gate, unavailable physical metrics"
             )
         else:
             expect(page.get_by_text("1,250.5", exact=False)).to_be_visible()
@@ -227,7 +267,12 @@ with sync_playwright() as p:
         page.get_by_role("link", name="View player", exact=True).click()
         expect(page.get_by_role("heading", name="Player detail")).to_be_visible()
         if real:
-            expect(page.get_by_text("Motion detected", exact=True)).to_be_visible()
+            if not panorama:
+                expect(page.get_by_text("Motion detected", exact=True)).to_be_visible()
+            else:
+                expect(
+                    page.get_by_text("Positions use the bottom", exact=False)
+                ).to_be_visible()
         else:
             expect(page.get_by_text("1,250.5", exact=False)).to_be_visible()
         check_layout(page, "player-detail")

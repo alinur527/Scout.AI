@@ -1,5 +1,7 @@
 # Football CV validation — 2 October 2026
 
+This is the historical PR#2 phase, now merged into main as `24a389bad4aa2b777f04eb8fe25c1b895e680b07`. The subsequent independent three-match DEV/HOLDOUT experiment and current panoramic detector policy are documented in [SMALL_PLAYER_EXPERIMENTS.md](SMALL_PLAYER_EXPERIMENTS.md). Its final automatic-policy reruns preserved all three raw/tracked counts below. Original evidence and unsuccessful experiments remain intact.
+
 The validation work is complete; football reliability remains limited. HD input detail recovers useful player observations, while camera motion, distant people, crowd false positives and identity switches remain real failures. Physical distance/speed accuracy is **not validated**. This is a small correlated evaluation, not a production football benchmark.
 
 ## Environment and baseline integrity

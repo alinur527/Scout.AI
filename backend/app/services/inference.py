@@ -46,8 +46,10 @@ def detect(job, settings, progress):
 
     from app.cv.processor import VideoProcessor
     from app.cv.camera import CameraMotionMonitor
+    from app.cv.detector_policy import select_model_weights
 
-    processor = VideoProcessor(settings.model_weights)
+    weights, detector_profile = select_model_weights(settings, job.video)
+    processor = VideoProcessor(weights)
     from app.cv.visualizer import AnnotationManager
 
     annotator = AnnotationManager()
@@ -110,6 +112,10 @@ def detect(job, settings, progress):
         "track_frame_counts": track_frames,
         "camera_motion": camera.summary(),
         "timestamps_reliable": processor.timestamps_reliable,
+        "detector_task": processor.model.task,
+        "detector_profile": detector_profile,
+        "model_name": weights.name,
+        "ground_position_method": processor.ground_position_method,
     }, candidates
 
 
@@ -130,6 +136,9 @@ def report(job):
     )
     dimensions = [job.video["width"], job.video["height"]]
     warnings = []
+    position_method = job.tracks.get("ground_position_method", "unknown")
+    if position_method == "bbox_bottom_center":
+        warnings.append("Positions use the bottom of detection boxes; precise foot locations are not measured.")
     metrics = {"total_distance_m": None, "top_speed_kmh": None, "sprint_count": None}
     rejected = 0
     # Invalid/out-of-frame points and time gaps also split the image path.
@@ -242,6 +251,8 @@ def report(job):
         "calibration_provided": calibration_provided,
         "physical_metrics_status": "demo" if job.demo else "estimated" if calibrated else "unavailable",
         "physical_accuracy": "not_validated",
+        "ground_position_method": position_method,
+        "detector_profile": job.tracks.get("detector_profile", "unknown"),
         "camera_motion": camera,
         "timestamp_basis": "synthetic"
         if job.demo

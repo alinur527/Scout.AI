@@ -48,6 +48,10 @@ Example points are only an illustration. Use actual video pixel coordinates. Fou
 
 ## Result contract
 
+Real reports also provide `detector_profile` (`panoramic_person`, `explicit_person`, `configured_base`, or `unknown`) and `ground_position_method` (`bbox_bottom_center`, `ankle_mean_with_bbox_fallback`, or `unknown`). Person-only detection uses approximate bbox positions and adds a warning that precise feet are not measured. These fields do not authorize physical metrics or express accuracy.
+
+Server configuration `CV_DETECTOR_POLICY=auto` chooses `PERSON_MODEL_WEIGHTS` for videos at least1920px wide with aspect ratio at least3; all other shapes retain `MODEL_WEIGHTS`. Explicit `pose` and `person` policies are available. Missing local weights produce an actionable error; the server never downloads them. See [SMALL_PLAYER_EXPERIMENTS.md](SMALL_PLAYER_EXPERIMENTS.md) for the scope and regressions behind this choice.
+
 `analysis_id`, `player_id`, `demo`, `calibrated`, `calibration_provided`, `coordinate_space` (field/image), `metrics` (`total_distance_m`, `top_speed_kmh`, `sprint_count`), normalized `movement` points (max1000, retained for older clients), `movement_segments` (render these separate polylines; endpoints preserved), 12×20 `heatmap`, observations, duration_seconds, frames_processed, device, rejected_segments, warnings, optional annotated_preview/radar. Added `camera_motion`, `timestamp_basis`, `physical_metrics_status` (demo/estimated/unavailable), `physical_accuracy=not_validated`, and `tracking_quality`.
 
 `calibrated` now means physical projection was actually permitted, while `calibration_provided` records input corners. `tracking_quality.observed_frame_coverage` is selected-ID detected frames / decoded frames (null for demo/older missing records), and `trajectory_segments` counts continuous retained segments. The formula is also included in `definition`; neither is an accuracy score. `timestamp_basis` is decoder_pts, nominal_fps_fallback or synthetic. Existing clients omitting stationary confirmation retain image-space reports, rather than being silently authorized for physical measurement.

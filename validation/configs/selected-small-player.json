@@ -1,0 +1,22 @@
+{
+  "status": "candidate_frozen_before_holdout",
+  "selection_round": 1,
+  "holdout_evaluated_at_freeze": false,
+  "dev_matches": ["117093", "118575"],
+  "diagnostic_dev_clips": ["UVY steady", "UVY zoom"],
+  "holdout_match": "118576",
+  "detector_policy": "auto",
+  "panorama_condition": {"minimum_source_width": 1920, "minimum_aspect_ratio": 3.0},
+  "panoramic_model": "yolo11n.pt",
+  "panoramic_model_sha256": "0ebbc80d4a7680d14987a577cd21342b65ecfd94632bd9a8da63ae6417644ee1",
+  "other_frames_model": "configured MODEL_WEIGHTS (default yolo11n-pose.pt)",
+  "imgsz": "native max dimension rounded to32, clipped640..1280",
+  "confidence": 0.3,
+  "nms_iou": 0.5,
+  "tracker": "unchanged backend/app/cv/botsort.yaml",
+  "scene_filter": "none",
+  "tiling": null,
+  "ground_position": "bbox bottom center for person; original ankles/fallback for pose",
+  "rationale": "Panoramic DEV person F1 .730228/.449244 vs pose0/0 at comparable CPU cost. Unconditional person causes large broadcast FP regression (2524/4108). Grass envelope removes only3/6 broadcast FP and none in panoramic DEV, so rejected. Narrow panoramic condition preserves existing broadcast defaults.",
+  "physical_metrics": "all prior timing/gap/calibration/camera gates unchanged; physical accuracy not validated"
+}
