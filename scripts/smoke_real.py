@@ -80,10 +80,17 @@ def main():
                 metric_fixture = db.get(AnalysisJob, jid)
                 metric_fixture.selected_player_id = tid
                 metric_fixture.calibration = {
+                    "stationary_camera": True,
                     "points": [[0, 0], [479, 0], [479, 639], [0, 639]],
                     "field_length": 40,
                     "field_width": 20,
                 }
+                # Artificially authorize this isolated math/radar smoke, then roll back.
+                # The shifted bus video itself is not evidence of a stationary camera.
+                metric_fixture.tracks = dict(
+                    metric_fixture.tracks,
+                    camera_motion={"status": "no_motion_detected"},
+                )
                 calibrated = report(metric_fixture)
                 assert calibrated["metrics"]["total_distance_m"] is not None
                 assert calibrated["radar"] and calibrated["calibrated"]

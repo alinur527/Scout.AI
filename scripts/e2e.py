@@ -1,4 +1,4 @@
-"""Real browser DEMO flow. Servers are supplied by with_server.py or scripts/test_e2e.py."""
+"""Browser demo or opt-in football flow; uses real API/worker with no mocked responses."""
 
 import json
 import os
@@ -12,9 +12,16 @@ from make_demo_video import make_video
 from test_e2e import stop_process
 
 ROOT = Path(__file__).resolve().parents[1]
-ARTIFACTS = ROOT / "test-artifacts/e2e"
+real = bool(os.environ.get("SCOUTAI_E2E_VIDEO"))
+ARTIFACTS = ROOT / ("test-artifacts/football/app-e2e" if real else "test-artifacts/e2e")
 ARTIFACTS.mkdir(parents=True, exist_ok=True)
-video = make_video(ARTIFACTS / "demo.avi")
+video = (
+    Path(os.environ["SCOUTAI_E2E_VIDEO"])
+    if real
+    else make_video(ARTIFACTS / "demo.avi")
+)
+if real and os.environ.get("SCOUTAI_DEMO_MODE", "true").lower() != "false":
+    raise RuntimeError("Football E2E requires SCOUTAI_DEMO_MODE=false")
 suffix = secrets.token_hex(4)
 player, scout = f"player_{suffix}", f"scout_{suffix}"
 password = secrets.token_urlsafe(18)
@@ -122,23 +129,82 @@ with sync_playwright() as p:
             stderr=subprocess.STDOUT,
         )
         expect(page.get_by_role("heading", name="Which player are you?")).to_be_visible(
-            timeout=30000
+            timeout=120000 if real else 30000
         )
         expect(page.get_by_text("processing", exact=True)).to_be_visible()
         page.reload()
         expect(
             page.get_by_role("heading", name="Which player are you?")
         ).to_be_visible()
-        page.get_by_role("button", name="Demo player 1").click()
+        selected_id = 1
+        if real:
+            token = page.evaluate("sessionStorage.getItem('scout_token')")
+            analysis_id = page.url.rsplit("/", 1)[-1]
+            gallery_response = context.request.get(
+                f"http://127.0.0.1:8000/analyses/{analysis_id}/players",
+                headers={"Authorization": f"Bearer {token}"},
+            )
+            assert gallery_response.ok
+            gallery = gallery_response.json()["players"]
+            selected_id = max(gallery, key=lambda entry: entry["observations"])["id"]
+            page.get_by_role("button").filter(
+                has=page.get_by_text(f"Player {selected_id}", exact=True)
+            ).click()
+            # Deliberately invalid physical assumption to test the server-side camera veto.
+            # This whole-image rectangle is a UI/geometry fixture, not field ground truth.
+            page.get_by_text(
+                "Field calibration for distance and speed", exact=True
+            ).click()
+            page.get_by_label("Enable manual calibration").check()
+            page.get_by_label(
+                "I confirm the camera stayed fixed throughout this clip"
+            ).check()
+            coordinates = page.get_by_label(
+                "Corner coordinates (JSON; keyboard alternative)"
+            )
+            coordinates.fill("[[0,0],[1279,0],[1279,719],[0,719]]")
+            coordinates.blur()
+        else:
+            page.get_by_role("button", name="Demo player 1").click()
         page.get_by_role("button", name="Build my report").click()
         expect(page.get_by_role("heading", name="Your match report")).to_be_visible(
             timeout=30000
         )
         expect(page.get_by_text("completed", exact=True)).to_be_visible()
-        expect(page.get_by_text("1,250.5", exact=False)).to_be_visible()
+        if real:
+            result_response = context.request.get(
+                f"http://127.0.0.1:8000/analyses/{analysis_id}/result",
+                headers={"Authorization": f"Bearer {token}"},
+            )
+            assert result_response.ok
+            result = result_response.json()
+            assert result["demo"] is False and result["device"] in ("cpu", "cuda")
+            assert result["frames_processed"] == 200
+            assert result["camera_motion"]["status"] == "moving"
+            assert result["calibration_provided"] and not result["calibrated"]
+            assert all(value is None for value in result["metrics"].values())
+            assert result["movement_segments"] and result["annotated_preview"]
+            assert result["tracking_quality"]["observed_frame_coverage"] > 0
+            (ARTIFACTS / "report.json").write_text(
+                json.dumps(result, indent=2), encoding="utf-8"
+            )
+            expect(page.get_by_text("Motion detected", exact=True)).to_be_visible()
+            steps.append(
+                "real YOLO football, moving-camera calibration veto, unavailable physical metrics"
+            )
+        else:
+            expect(page.get_by_text("1,250.5", exact=False)).to_be_visible()
         page.get_by_role("button", name="Path", exact=True).click()
-        expect(page.get_by_role("img", name="path for player 1")).to_be_visible()
+        expect(
+            page.get_by_role("img", name=f"path for player {selected_id}")
+        ).to_be_visible()
         page.get_by_role("button", name="Heatmap", exact=True).click()
+        if real:
+            page.get_by_text("View detected players", exact=True).click()
+        assert page.locator("img").evaluate_all(
+            "images => images.every(i => i.complete && i.naturalWidth > 0)"
+        )
+        assert worker.poll() is None
         check_layout(page, "report")
         page.reload()
         expect(page.get_by_role("heading", name="Your match report")).to_be_visible()
@@ -160,7 +226,10 @@ with sync_playwright() as p:
         check_layout(page, "dashboard")
         page.get_by_role("link", name="View player", exact=True).click()
         expect(page.get_by_role("heading", name="Player detail")).to_be_visible()
-        expect(page.get_by_text("1,250.5", exact=False)).to_be_visible()
+        if real:
+            expect(page.get_by_text("Motion detected", exact=True)).to_be_visible()
+        else:
+            expect(page.get_by_text("1,250.5", exact=False)).to_be_visible()
         check_layout(page, "player-detail")
         steps.extend(
             [

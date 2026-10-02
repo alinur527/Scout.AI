@@ -41,14 +41,16 @@ Any processing failure becomes `failed / done` with a persisted error. `awaiting
 ## Calibration
 
 ```
-{"calibration":{"points":[[10,10],[310,10],[310,190],[10,190]],"field_length":40,"field_width":20}}
+{"calibration":{"points":[[10,10],[310,10],[310,190],[10,190]],"field_length":40,"field_width":20,"stationary_camera":true}}
 ```
 
-Example points are only an illustration. Use actual video pixel coordinates. Four points must trace the boundary of a known rectangular field region in this order: origin, along length, opposite corner, along width. They map to (0,0), (length,0), (length,width), (0,width) metres. Camera must remain static. The UI supports clicking the first frame and a JSON keyboard alternative. Never reuse arbitrary example coordinates for measurements.
+Example points are only an illustration. Use actual video pixel coordinates. Four points must trace the boundary of a known rectangular field region in this order: origin, along length, opposite corner, along width. They map to (0,0), (length,0), (length,width), (0,width) metres. Camera must remain static. `stationary_camera` defaults to false; physical estimates additionally require no detected camera motion and reliable decoder timestamps. Moving/unknown cameras produce a completed image-space report with null physical metrics even when valid corners were supplied. The UI supports clicking the first frame and a JSON keyboard alternative. Never reuse arbitrary example coordinates for measurements.
 
 ## Result contract
 
-`analysis_id`, `player_id`, `demo`, `calibrated`, `coordinate_space` (field/image), `metrics` (`total_distance_m`, `top_speed_kmh`, `sprint_count`), normalized `movement` points (max 1000), 12×20 `heatmap`, observations, duration_seconds, frames_processed, device, rejected_segments, warnings, optional annotated_preview/radar.
+`analysis_id`, `player_id`, `demo`, `calibrated`, `calibration_provided`, `coordinate_space` (field/image), `metrics` (`total_distance_m`, `top_speed_kmh`, `sprint_count`), normalized `movement` points (max1000, retained for older clients), `movement_segments` (render these separate polylines; endpoints preserved), 12×20 `heatmap`, observations, duration_seconds, frames_processed, device, rejected_segments, warnings, optional annotated_preview/radar. Added `camera_motion`, `timestamp_basis`, `physical_metrics_status` (demo/estimated/unavailable), `physical_accuracy=not_validated`, and `tracking_quality`.
+
+`calibrated` now means physical projection was actually permitted, while `calibration_provided` records input corners. `tracking_quality.observed_frame_coverage` is selected-ID detected frames / decoded frames (null for demo/older missing records), and `trajectory_segments` counts continuous retained segments. The formula is also included in `definition`; neither is an accuracy score. `timestamp_basis` is decoder_pts, nominal_fps_fallback or synthetic. Existing clients omitting stationary confirmation retain image-space reports, rather than being silently authorized for physical measurement.
 
 Real uncalibrated results have **null** distance/speed/sprints; movement is normalized image space. Calibrated results are estimates from one track, not verified real-world accuracy. Demo reports contain deterministic synthetic data and explicit warnings. Goals, assists, ball possession and ranking are not implemented.
 

@@ -35,6 +35,7 @@ class Calibration(BaseModel):
     points: list[tuple[float, float]] = Field(min_length=4, max_length=4)
     field_length: float = Field(ge=5, le=150)
     field_width: float = Field(ge=5, le=100)
+    stationary_camera: bool = False
 
 
 class RunAnalysis(BaseModel):

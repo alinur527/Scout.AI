@@ -17,7 +17,7 @@ export function Metrics({ metrics }) {
               : Number(value).toLocaleString(undefined, { maximumFractionDigits: 1 })}
             <small>{value == null ? '' : unit}</small>
           </strong>
-          {value == null && <small>Calibration required</small>}
+          {value == null && <small>Physical metrics unavailable</small>}
         </div>
       ))}
     </div>
@@ -59,34 +59,33 @@ export default function Report({ result }) {
             {Array.from({ length: 8 }, (_, i) => (
               <rect key={i} x={i * 80} width="40" height="400" fill="#143341" />
             ))}
-            {layer === 'heatmap' ? (
-              result.heatmap.flatMap((row, y) =>
-                row.map(
-                  (value, x) =>
-                    value > 0 && (
-                      <rect
-                        key={`${x}-${y}`}
-                        x={20 + x * 30}
-                        y={20 + y * 30}
-                        width="30"
-                        height="30"
-                        rx="7"
-                        fill="#62e6eb"
-                        opacity={0.15 + (0.75 * value) / peak}
-                      />
-                    ),
-                ),
-              )
-            ) : (
-              <polyline
-                points={result.movement
-                  .map(([x, y]) => `${20 + x * 600},${20 + y * 360}`)
-                  .join(' ')}
-                fill="none"
-                stroke="#62e6eb"
-                strokeWidth="2"
-              />
-            )}
+            {layer === 'heatmap'
+              ? result.heatmap.flatMap((row, y) =>
+                  row.map(
+                    (value, x) =>
+                      value > 0 && (
+                        <rect
+                          key={`${x}-${y}`}
+                          x={20 + x * 30}
+                          y={20 + y * 30}
+                          width="30"
+                          height="30"
+                          rx="7"
+                          fill="#62e6eb"
+                          opacity={0.15 + (0.75 * value) / peak}
+                        />
+                      ),
+                  ),
+                )
+              : (result.movement_segments || [result.movement]).map((segment, index) => (
+                  <polyline
+                    key={index}
+                    points={segment.map(([x, y]) => `${20 + x * 600},${20 + y * 360}`).join(' ')}
+                    fill="none"
+                    stroke="#62e6eb"
+                    strokeWidth="2"
+                  />
+                ))}
             <g fill="none" stroke="#accad1" strokeOpacity=".65" strokeWidth="1.5">
               <rect x="20" y="20" width="600" height="360" />
               {field && (
@@ -121,13 +120,45 @@ export default function Report({ result }) {
             <dt>Processing</dt>
             <dd>{result.device}</dd>
             <dt>Calibration</dt>
-            <dd>{result.calibrated ? 'Manual field corners' : 'Not provided'}</dd>
+            <dd>
+              {result.calibrated
+                ? 'Manual field corners'
+                : result.calibration_provided
+                  ? 'Provided; physical metrics blocked'
+                  : 'Not provided'}
+            </dd>
+            {result.camera_motion && !result.demo && (
+              <>
+                <dt>Camera</dt>
+                <dd>
+                  {result.camera_motion.status === 'moving'
+                    ? 'Motion detected'
+                    : result.camera_motion.status === 'no_motion_detected'
+                      ? 'No motion detected'
+                      : 'Stability unknown'}
+                </dd>
+                <dt>Observed frames</dt>
+                <dd title={result.tracking_quality?.definition}>
+                  {result.tracking_quality?.observed_frame_coverage == null
+                    ? 'Not recorded'
+                    : `${(100 * result.tracking_quality.observed_frame_coverage).toFixed(1)}%`}
+                </dd>
+                <dt>Path segments</dt>
+                <dd>{result.tracking_quality?.trajectory_segments ?? 'Not recorded'}</dd>
+              </>
+            )}
             <dt>Rejected segments</dt>
             <dd>{result.rejected_segments}</dd>
           </dl>
         </aside>
       </div>
       <div className="report-footnotes">
+        {!result.demo && (
+          <p>
+            Observed frames measure visibility of this ID, not detection accuracy. Physical accuracy
+            has not been validated.
+          </p>
+        )}
         {result.warnings.map((warning) => (
           <p key={warning}>{warning}</p>
         ))}
