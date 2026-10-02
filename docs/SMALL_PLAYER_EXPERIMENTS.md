@@ -132,6 +132,8 @@ Same DEV117093 frame0/crop, publisher boxes in yellow and saved raw detections i
 
 ## Reproduce and next step
 
+Remote CI for full implementation/evidence head `0d0b74be59a1816a97114b59ccdea86d284848b6`: [run37039654120](https://github.com/alinur527/Scout.AI/actions/runs/37039654120), backend/frontend/demo E2E all SUCCESS. [PR#3](https://github.com/alinur527/Scout.AI/pull/3) is independent against main and remains unmerged. This documentation-only follow-up records the executed result; the PR shows final-head checks.
+
 ```powershell
 .\.venv\Scripts\python.exe scripts/download_soccertrack_samples.py
 .\.venv\Scripts\python.exe scripts/download_model.py --model yolo11n.pt

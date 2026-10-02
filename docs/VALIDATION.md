@@ -22,6 +22,8 @@ Panoramic browser flow covered player/scout accounts, profile/save/refresh, uplo
 
 Final automatic-policy old-clip raw /tracked TP,FP,FN: steady `1217,264,1650 /1202,265,1665`; zoom `53,571,387 /42,510,398`; blur `0,21,500 /0,6,500`. These are unchanged. New PR CI is recorded separately after its actual remote execution; this local section does not claim a remote result.
 
+Remote new-stage CI: evidence/implementation head `0d0b74be59a1816a97114b59ccdea86d284848b6`, [Actions run37039654120](https://github.com/alinur527/Scout.AI/actions/runs/37039654120): **backend, frontend and demo E2E all SUCCESS** on Linux with no ML weights/GPU. This final documentation-only follow-up records that observed run. [PR#3](https://github.com/alinur527/Scout.AI/pull/3) targets main and is intentionally left open, unmerged; its checks expose the latest head status.
+
 ## First football phase (historical)
 
 The restoration results below describe the previous phase. The current football phase starts from `e65bbfd` on `cv/football-validation`; PR#1 was still open when work began. Full experiment definitions, source/licensing, baseline and after tables, limitations and reproduction commands are in [FOOTBALL_VALIDATION.md](FOOTBALL_VALIDATION.md); numeric evidence in [validation/results](../validation/results/football-2026-10-02.json).
