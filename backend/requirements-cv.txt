@@ -1,0 +1,8 @@
+-r requirements.txt
+# Install the torch/torchvision pair first from the appropriate PyTorch index.
+torch==2.10.0
+torchvision==0.25.0
+ultralytics==8.4.26
+supervision==0.27.0.post1
+scipy==1.17.1
+lap==0.5.13
