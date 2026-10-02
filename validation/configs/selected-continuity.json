@@ -1,0 +1,38 @@
+{
+  "selection": "conservative continuity only; ROI and role heuristics rejected",
+  "continuity_policy": {
+    "max_gap_seconds": 0.5,
+    "max_displacement_heights": 1.25,
+    "max_prediction_error_heights": 0.5,
+    "min_direction_cosine": 0.5,
+    "min_appearance_cosine": 0.9,
+    "direction_deadband_heights_per_second": 0.5,
+    "scale_ratio_min": 0.8,
+    "scale_ratio_max": 1.25,
+    "min_observations": 3,
+    "endpoint_samples": 5
+  },
+  "default": "conservative",
+  "bypass": "camera status != no_motion_detected OR unreliable decoder timestamps; CV_TRACK_CONTINUITY=none rolls back grouping",
+  "detector": "unchanged auto, conf .3, IoU .5, native640..1280, original BoT-SORT",
+  "dev_switches_before": [
+    8,
+    8
+  ],
+  "dev_switches_after": [
+    5,
+    7
+  ],
+  "dev_fragments_before_after": [
+    72,
+    68
+  ],
+  "new_sealed_source": "TeamTrack F_20220220_1_1680_1710; first120frames; no TeamTrack frames/GT opened for experiments",
+  "code_sha256": {
+    "backend/app/cv/continuity.py": "da37df21fdc7385c9bd3a8ff771f72886dd550cbb90d8eafac757ac8a60937cc",
+    "backend/app/core/config.py": "e60053054daf2f22f83cb38fd3bdfef28079387ea873982c12e2fc0e55aac745",
+    "backend/app/services/inference.py": "146971c215047d074ec43eb6957b78ff9377b10a0ba86629f9e5018eedd61f24",
+    "scripts/validate_football_cv.py": "0edb26330486f0ac526bd69e34449a7937358bd1ae42fb717eae60105cc3c07f"
+  },
+  "physical_accuracy": "not_validated"
+}

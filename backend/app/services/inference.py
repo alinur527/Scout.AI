@@ -47,6 +47,7 @@ def detect(job, settings, progress):
     from app.cv.processor import VideoProcessor
     from app.cv.camera import CameraMotionMonitor
     from app.cv.detector_policy import select_model_weights
+    from app.cv.continuity import TrackEndpoints, continuity_result, merge_track_data, torso_histogram
 
     weights, detector_profile = select_model_weights(settings, job.video)
     processor = VideoProcessor(weights)
@@ -57,6 +58,7 @@ def detect(job, settings, progress):
     count = 0
     camera = CameraMotionMonitor(job.video["fps"])
     track_frames = {}
+    endpoints = TrackEndpoints()
     for index, timestamp, frame, detections, ankles in processor.process_video(
         path, settings.max_video_frames
     ):
@@ -79,6 +81,8 @@ def detect(job, settings, progress):
                 point = ankles[i]
                 if not np.isfinite(point).all():
                     continue
+                if settings.cv_track_continuity != "none":
+                    endpoints.add(int(track), timestamp, point, detections.xyxy[i], torso_histogram(frame, detections.xyxy[i]))
                 # Persist <=10 samples/second per track; timestamps preserve correct units.
                 samples = points.setdefault(tid, [])
                 if not samples or timestamp - samples[-1][0] >= 0.1 - 1e-8:
@@ -98,6 +102,11 @@ def detect(job, settings, progress):
             progress(min(75, 5 + int(70 * count / job.video["frame_count"])))
     if count < job.video["frame_count"] * 0.9:
         raise ValueError("Video decoding stopped early; the file may be truncated or corrupted")
+    aliases, continuity = continuity_result(
+        endpoints, camera.summary()["status"], processor.timestamps_reliable, settings.cv_track_continuity
+    )
+    if continuity["links"]:
+        points, gallery, track_frames = merge_track_data(points, gallery, track_frames, aliases)
     candidates = [
         dict(value, observations=len(points[tid])) for tid, value in gallery.items() if len(points[tid]) >= 2
     ]
@@ -116,6 +125,7 @@ def detect(job, settings, progress):
         "detector_profile": detector_profile,
         "model_name": weights.name,
         "ground_position_method": processor.ground_position_method,
+        "continuity": continuity,
     }, candidates
 
 
@@ -283,6 +293,7 @@ def report(job):
             if not job.demo and job.tracks.get("track_frame_counts")
             else None,
             "trajectory_segments": len(segments),
+            "continuity": job.tracks.get("continuity", {"policy": "none", "status": "legacy", "links": []}),
             "definition": "Selected ID detected frames / decoded frames; segments split at gaps >0.5s "
             "or invalid coordinates (also >45km/h jumps after calibration). Not accuracy.",
         },
