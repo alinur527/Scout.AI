@@ -126,6 +126,25 @@ def main():
     if args.tiles and args.imgsz == 0:
         parser.error("Tiling needs an explicit per-tile image size")
     args.output.mkdir(parents=True, exist_ok=True)
+    run_started_utc = datetime.now(timezone.utc).isoformat()
+    run_commit = subprocess.run(
+        ["git", "rev-parse", "HEAD"],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        check=True,
+    ).stdout.strip()
+    run_dirty = bool(
+        subprocess.run(
+            ["git", "status", "--porcelain"],
+            cwd=ROOT,
+            capture_output=True,
+            text=True,
+            check=True,
+        ).stdout
+    )
+    harness_hash = sha256(Path(__file__))
+    processor_hash = sha256(ROOT / "backend/app/cv/processor.py")
     import torch
     import ultralytics
     import psutil
@@ -324,23 +343,11 @@ def main():
             "torch": torch.__version__,
             "device": device,
             "experiment": args.experiment,
-            "timestamp_utc": datetime.now(timezone.utc).isoformat(),
-            "git_commit": subprocess.run(
-                ["git", "rev-parse", "HEAD"],
-                cwd=ROOT,
-                capture_output=True,
-                text=True,
-                check=True,
-            ).stdout.strip(),
-            "git_dirty": bool(
-                subprocess.run(
-                    ["git", "status", "--porcelain"],
-                    cwd=ROOT,
-                    capture_output=True,
-                    text=True,
-                    check=True,
-                ).stdout
-            ),
+            "timestamp_utc": run_started_utc,
+            "git_commit": run_commit,
+            "git_dirty": run_dirty,
+            "harness_sha256": harness_hash,
+            "processor_sha256": processor_hash,
             "model": str(args.model.resolve()),
             "model_task": model.task,
             "config": {
