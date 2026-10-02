@@ -1,6 +1,26 @@
 # Validation record — 2 October 2026
 
-## Small-player phase (current)
+## Player filtering and continuity phase (current)
+
+PR#3 was checked at `54f5c25428fc94af9945841a4a2d528bbe4e1d24`: base main, mergeable, scoped diff, local77-test/Ruff/security PASS and [CI37039995800](https://github.com/alinur527/Scout.AI/actions/runs/37039995800) backend/frontend/E2E SUCCESS. It was merged as `e423ae6dd4d8d046c58c17304fa0094100bd3151`; clean updated main was the base of `cv/player-filtering-continuity`.
+
+Status **PARTIAL**: pitch/kit filters failed DEV; conservative continuity improved DEV but produced no links or improvement on the new TeamTrack fisheye sealed source after freeze `6dbf40104b6cb7453a10fb2a975e70b3526c3126`. Production config/inference were restored to main. Final actual-processor runs match six prior clips' raw/tracked scores, identity coverage, IDs/switches/fragments and small-player bins exactly. Source/license/false-merge evidence, timing caveats and commands: [PLAYER_FILTERING_CONTINUITY.md](PLAYER_FILTERING_CONTINUITY.md); [final regression + E2E](../validation/results/player-filtering-regression-2026-10-02.json).
+
+| Executed local command | Result |
+|---|---|
+| `.venv\Scripts\python.exe -m pytest backend/tests -q` | PASS,106 tests; one upstream Starlette deprecation warning |
+| `.venv\Scripts\python.exe -m ruff check backend scripts` | PASS |
+| `.venv\Scripts\python.exe -m compileall -q backend/app scripts` | PASS |
+| frontend `npm ci`, `npm run lint`, `npm run build`, `npm audit --audit-level=low` | PASS,0 vulnerabilities |
+| `.venv\Scripts\python.exe scripts/test_e2e.py` | PASS, demo |
+| `scripts/test_e2e.py --video test-artifacts/football/soccertrack/117093/window/clip.avi` | PASS, real panorama120frames |
+| `scripts/test_e2e.py --video test-artifacts/football/clips/steady/clip.avi` | PASS, real broadcast200frames |
+| `.venv\Scripts\python.exe scripts/smoke_real.py` | PASS, CPU24frames/4IDs/12selected observations; artificial math separate |
+| Actual `--production` harness + SoccerTrack/UVY scorers on six clips | PASS, exact baseline agreement |
+
+Browser flows covered register/login/profile/save/refresh/upload202/queued/processing/gallery/selection/report/refresh/scout/search/saved report/guards/404 with temporary SQLite and actual worker. Happy-path console/page/HTTP/image failures0; intentional invalid JWT produces two expected401 responses outside that assertion. Overflow checks1440/768/390 PASS; panoramic390 and broadcast1440 report images inspected. Real-run outputs share an ignored folder and earlier records are overwritten; numeric evidence discloses this. Physical metrics remain unavailable, physical_accuracy=not_validated. Current remote PR checks must be read from its final head; historical CI below is not evidence for this round.
+
+## Small-player phase (historical)
 
 PR#1 was verified open/mergeable against main, with green [CI36928035973](https://github.com/alinur527/Scout.AI/actions/runs/36928035973), and merged as `d03a2700317c751ea50bbb050a584801fd215d77`. PR#2 base changed from revive/scout-ai to main without rewriting its head/history; the resulting5-commit/39-file diff contained only football-phase changes. Local58-test/backend/frontend/demo/CPU/three-clip regressions and [CI36933062448](https://github.com/alinur527/Scout.AI/actions/runs/36933062448) passed before merge `24a389bad4aa2b777f04eb8fe25c1b895e680b07`. Main was updated by fast-forward and clean before creating independent `cv/small-player-detection`. Historical branches remain.
 
@@ -22,7 +42,7 @@ Panoramic browser flow covered player/scout accounts, profile/save/refresh, uplo
 
 Final automatic-policy old-clip raw /tracked TP,FP,FN: steady `1217,264,1650 /1202,265,1665`; zoom `53,571,387 /42,510,398`; blur `0,21,500 /0,6,500`. These are unchanged. New PR CI is recorded separately after its actual remote execution; this local section does not claim a remote result.
 
-Remote new-stage CI: evidence/implementation head `0d0b74be59a1816a97114b59ccdea86d284848b6`, [Actions run37039654120](https://github.com/alinur527/Scout.AI/actions/runs/37039654120): **backend, frontend and demo E2E all SUCCESS** on Linux with no ML weights/GPU. This final documentation-only follow-up records that observed run. [PR#3](https://github.com/alinur527/Scout.AI/pull/3) targets main and is intentionally left open, unmerged; its checks expose the latest head status.
+Remote small-player CI: evidence/implementation head `0d0b74be59a1816a97114b59ccdea86d284848b6`, [Actions run37039654120](https://github.com/alinur527/Scout.AI/actions/runs/37039654120): **backend, frontend and demo E2E all SUCCESS**. Final-head CI37039995800 also passed. [PR#3](https://github.com/alinur527/Scout.AI/pull/3) was subsequently verified and merged as `e423ae6dd4d8d046c58c17304fa0094100bd3151` for the continuity round above.
 
 ## First football phase (historical)
 

@@ -2,6 +2,8 @@
 
 This is the historical PR#2 phase, now merged into main as `24a389bad4aa2b777f04eb8fe25c1b895e680b07`. The subsequent independent three-match DEV/HOLDOUT experiment and current panoramic detector policy are documented in [SMALL_PLAYER_EXPERIMENTS.md](SMALL_PLAYER_EXPERIMENTS.md). Its final automatic-policy reruns preserved all three raw/tracked counts below. Original evidence and unsuccessful experiments remain intact.
 
+The subsequent [player-filtering/continuity round](PLAYER_FILTERING_CONTINUITY.md) independently reran these three UVY clips after merging PR#3. Raw/tracked counts, switches/fragments and identity coverage match exactly. ROI/kit candidates failed DEV and stitching failed to improve a frozen TeamTrack fisheye sealed source, so production was restored to the existing policy. Status PARTIAL; earlier metric/movement limitations below still apply.
+
 The validation work is complete; football reliability remains limited. HD input detail recovers useful player observations, while camera motion, distant people, crowd false positives and identity switches remain real failures. Physical distance/speed accuracy is **not validated**. This is a small correlated evaluation, not a production football benchmark.
 
 ## Environment and baseline integrity

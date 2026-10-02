@@ -1,0 +1,642 @@
+{
+  "candidate_freeze_commit": "6dbf40104b6cb7453a10fb2a975e70b3526c3126",
+  "candidate_changed_after_holdout": false,
+  "dataset": {
+    "dataset": "TeamTrack",
+    "publisher": "Atom Scott et al.",
+    "publisher_url": "https://www.kaggle.com/datasets/atomscott/teamtrack",
+    "project_url": "https://atomscott.github.io/TeamTrack/",
+    "license": "MIT",
+    "license_provenance": "https://www.kaggle.com/api/v1/datasets/metadata/atomscott/teamtrack",
+    "license_metadata_sha256": "e9f1ec74a87c6afc39199a13b8abce51d68f19d4c3c02d6fc66c12c02672dbea",
+    "sequence": "F_20220220_1_1680_1710",
+    "split": "SEALED HOLDOUT",
+    "selection": "First lexicographic official soccer_side/test video in catalogue; first 120 decoded frames, zero-based 0..119. Selected before viewing frames or GT.",
+    "camera": "Publisher soccer_side fisheye Z CAM E2-F8; different camera system from SoccerTrack v2 panoramic footage",
+    "venue": "Publisher identifies A University outdoor; exact venue difference not independently established",
+    "independence": "No TeamTrack images or annotations used in this task's DEV tuning. Entire source family sealed. File-date tokens are identifiers, not independently verified match dates.",
+    "network_bytes_this_run": 15643861,
+    "prior_partial_attempt_budget_upper_bound": 18100000,
+    "files": [
+      {
+        "member": "teamtrack-mot/teamtrack-mot/soccer_side/test/F_20220220_1_1680_1710/img1.mp4",
+        "url": "https://www.kaggle.com/api/v1/datasets/download/atomscott/teamtrack?fileName=teamtrack-mot%2Fteamtrack-mot%2Fsoccer_side%2Ftest%2FF_20220220_1_1680_1710%2Fimg1.mp4",
+        "file": "source.mp4",
+        "download_bytes": 15069985,
+        "bytes": 15069985,
+        "sha256": "8a3d50042b958863c996396107041c624ff74e03487b57104fa335e5de12edd5"
+      },
+      {
+        "member": "teamtrack-mot/teamtrack-mot/soccer_side/test/F_20220220_1_1680_1710/gt/gt.txt",
+        "url": "https://www.kaggle.com/api/v1/datasets/download/atomscott/teamtrack?fileName=teamtrack-mot%2Fteamtrack-mot%2Fsoccer_side%2Ftest%2FF_20220220_1_1680_1710%2Fgt%2Fgt.txt",
+        "file": "gt.txt",
+        "download_bytes": 558450,
+        "bytes": 558450,
+        "sha256": "6afeb37050a62d612e5eddcae363dbe11e42bcc6c3f161cef16bfd1b98108110"
+      },
+      {
+        "member": "teamtrack-mot/teamtrack-mot/soccer_side/test/F_20220220_1_1680_1710/seqinfo.ini",
+        "url": "https://www.kaggle.com/api/v1/datasets/download/atomscott/teamtrack?fileName=teamtrack-mot%2Fteamtrack-mot%2Fsoccer_side%2Ftest%2FF_20220220_1_1680_1710%2Fseqinfo.ini",
+        "file": "seqinfo.ini",
+        "download_bytes": 132,
+        "bytes": 132,
+        "sha256": "1cfd048c8a72dec3057311bcf209b0833e976e9945b0c29e5956cf08712ba166"
+      }
+    ],
+    "opened_for_cv": false
+  },
+  "window": {
+    "source": "test-artifacts\\player-filtering\\sealed-teamtrack\\source.mp4",
+    "source_sha256": "8a3d50042b958863c996396107041c624ff74e03487b57104fa335e5de12edd5",
+    "video_sha256": "5374d382f6f1cee23afd6e3b9f469322cba41552755d8adf70f459663e264d40",
+    "source_start_frame": 0,
+    "frames": 120,
+    "fps": 25.0,
+    "width": 6500,
+    "height": 1000,
+    "sampled_frames": [
+      0,
+      23,
+      47,
+      71,
+      95,
+      119
+    ],
+    "roi": null,
+    "derivation": "OpenCV MJPG, original resolution/FPS; no generated or interpolated frames"
+  },
+  "runs": {
+    "none": {
+      "summary": {
+        "video": "C:\\Users\\FLANTE\\Documents\\Vscode\\Scout.AI\\test-artifacts\\player-filtering\\sealed-teamtrack\\window\\clip.avi",
+        "video_sha256": "5374d382f6f1cee23afd6e3b9f469322cba41552755d8adf70f459663e264d40",
+        "metadata": {
+          "fps": 25.0,
+          "frame_count": 120,
+          "width": 6500,
+          "height": 1000,
+          "duration_seconds": 4.8
+        },
+        "model_sha256": "0ebbc80d4a7680d14987a577cd21342b65ecfd94632bd9a8da63ae6417644ee1",
+        "ultralytics": "8.4.26",
+        "torch": "2.10.0+cpu",
+        "device": "cpu",
+        "experiment": "frozen-teamtrack-holdout",
+        "timestamp_utc": "2026-10-02T17:58:42.410093+00:00",
+        "git_commit": "6dbf40104b6cb7453a10fb2a975e70b3526c3126",
+        "git_dirty": false,
+        "harness_sha256": "0edb26330486f0ac526bd69e34449a7937358bd1ae42fb717eae60105cc3c07f",
+        "processor_sha256": "aaff59a7de5dcfc661e586ec8d30e8c55eae4a5b485873082d01e1e02a87a3cb",
+        "model": "C:\\Users\\FLANTE\\Documents\\Vscode\\Scout.AI\\backend\\weights\\yolo11n.pt",
+        "model_task": "detect",
+        "config": {
+          "continuity": "none",
+          "tracker": "C:\\Users\\FLANTE\\Documents\\Vscode\\Scout.AI\\backend\\app\\cv\\botsort.yaml",
+          "conf": 0.3,
+          "iou": 0.5,
+          "imgsz": "native max dimension, rounded to 32, clipped 640..1280",
+          "start": 0,
+          "end": null,
+          "scene_filter": "none",
+          "tiling": null,
+          "production_profile": "panoramic_person"
+        },
+        "technical": {
+          "frames": 120,
+          "detections": 428,
+          "track_ids": 10,
+          "frames_with_detections": 120,
+          "frames_without_detections": 0,
+          "frame_detection_coverage": 1.0,
+          "mean_detections_per_frame": 3.566666666666667,
+          "mean_track_observations": 42.8,
+          "median_track_observations": 21.0,
+          "longest_track_observations": 120,
+          "short_tracks_lt10_observations": 4,
+          "reacquired_same_id_gaps": 21,
+          "lost_frame_intervals": 108,
+          "fragmentation_proxy_ids_per_100_frames": 8.333333333333332,
+          "confidence_quantiles": [
+            0.3000483512878418,
+            0.40144040435552597,
+            0.4990347772836685,
+            0.56240513920784,
+            0.6976132392883301
+          ]
+        },
+        "processing_seconds": 21.05834600000071,
+        "processing_fps": 5.698453240344515,
+        "processing_to_video_duration": 4.387155416666815,
+        "failures": [],
+        "ground_truth": null,
+        "raw_detections": 456,
+        "scene_filter": {
+          "input_boxes": 456,
+          "accepted_boxes": 456,
+          "available_frames": 0,
+          "unknown_frames": 0
+        },
+        "camera_motion": {
+          "status": "no_motion_detected",
+          "valid_pairs": 23,
+          "sample_pairs": 23,
+          "max_shift_working_px": 0.399,
+          "max_scale_change": 0.00026,
+          "max_rotation_degrees": 0.01,
+          "method": "masked sparse optical flow / RANSAC affine veto at 5 Hz, max width 640"
+        },
+        "timestamps_reliable": true,
+        "actual_video_processor": true,
+        "observed_peak_rss_bytes": 474882048,
+        "continuity": {
+          "policy": "none",
+          "status": "disabled",
+          "links": []
+        },
+        "continuity_code_sha256": "da37df21fdc7385c9bd3a8ff771f72886dd550cbb90d8eafac757ac8a60937cc",
+        "memory_method": "psutil RSS sampled after each frame; includes model, not a continuous peak"
+      },
+      "publisher": {
+        "provenance": "Official TeamTrack released MOT-format target boxes and anonymous IDs; frames start at 1, IDs at 0; final -1 fields unspecified, not roles. Detailed player/GK/referee roles unavailable; 23 publisher targets per selected frame.",
+        "gt_sha256": "6afeb37050a62d612e5eddcae363dbe11e42bcc6c3f161cef16bfd1b98108110",
+        "tracking": {
+          "labelled_frames": 120,
+          "iou_threshold": 0.5,
+          "tp": 194,
+          "fp": 234,
+          "fn": 2566,
+          "precision": 0.4532710280373832,
+          "recall": 0.07028985507246377,
+          "f1": 0.12170639899623588,
+          "id_switches": 2,
+          "fragmentations": 20,
+          "events": [
+            {
+              "kind": "fragmentation",
+              "frame": 8,
+              "gt_id": "15"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 15,
+              "gt_id": "18"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 16,
+              "gt_id": "15"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 20,
+              "gt_id": "13"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 22,
+              "gt_id": "15"
+            },
+            {
+              "kind": "id_switch",
+              "frame": 61,
+              "gt_id": "7",
+              "previous_id": 11,
+              "new_id": 24
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 61,
+              "gt_id": "7"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 64,
+              "gt_id": "15"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 68,
+              "gt_id": "15"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 70,
+              "gt_id": "15"
+            },
+            {
+              "kind": "id_switch",
+              "frame": 71,
+              "gt_id": "13",
+              "previous_id": 10,
+              "new_id": 25
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 71,
+              "gt_id": "13"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 73,
+              "gt_id": "15"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 73,
+              "gt_id": "18"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 79,
+              "gt_id": "15"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 82,
+              "gt_id": "15"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 84,
+              "gt_id": "15"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 87,
+              "gt_id": "13"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 90,
+              "gt_id": "18"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 99,
+              "gt_id": "13"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 111,
+              "gt_id": "13"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 111,
+              "gt_id": "21"
+            }
+          ],
+          "identity_coverage": {
+            "0": 0.0,
+            "1": 0.0,
+            "2": 0.0,
+            "3": 0.0,
+            "4": 0.0,
+            "5": 0.0,
+            "6": 0.0,
+            "7": 0.041666666666666664,
+            "8": 0.008333333333333333,
+            "9": 0.0,
+            "10": 0.025,
+            "11": 0.0,
+            "12": 0.0,
+            "13": 0.2833333333333333,
+            "14": 0.0,
+            "15": 0.25833333333333336,
+            "16": 0.0,
+            "17": 0.0,
+            "18": 0.058333333333333334,
+            "19": 0.0,
+            "20": 0.0,
+            "21": 0.9416666666666667,
+            "22": 0.0
+          },
+          "ground_point_error_px": {}
+        },
+        "detection": {
+          "tp": 213,
+          "fp": 243,
+          "fn": 2547,
+          "precision": 0.46710526315789475,
+          "recall": 0.07717391304347826,
+          "f1": 0.13246268656716417
+        },
+        "small_players": {
+          "reference_max_side": 1280,
+          "small_area_max_px": 1024,
+          "bins": {
+            "small": {
+              "tp": 213,
+              "fn": 2547,
+              "recall": 0.07717391304347826
+            },
+            "other": {
+              "tp": 0,
+              "fn": 0,
+              "recall": null
+            }
+          }
+        },
+        "gt_observations": 2760
+      },
+      "link_audit": {
+        "links": [],
+        "counts": {},
+        "definition": "Every IoU>=.5 matched GT identity in both entire source tracklets must be the same single identity to verify a link. Disjoint nonempty support is a false merge; mixed/unmatched support is indeterminate, never counted as verified."
+      }
+    },
+    "conservative": {
+      "summary": {
+        "video": "C:\\Users\\FLANTE\\Documents\\Vscode\\Scout.AI\\test-artifacts\\player-filtering\\sealed-teamtrack\\window\\clip.avi",
+        "video_sha256": "5374d382f6f1cee23afd6e3b9f469322cba41552755d8adf70f459663e264d40",
+        "metadata": {
+          "fps": 25.0,
+          "frame_count": 120,
+          "width": 6500,
+          "height": 1000,
+          "duration_seconds": 4.8
+        },
+        "model_sha256": "0ebbc80d4a7680d14987a577cd21342b65ecfd94632bd9a8da63ae6417644ee1",
+        "ultralytics": "8.4.26",
+        "torch": "2.10.0+cpu",
+        "device": "cpu",
+        "experiment": "frozen-teamtrack-holdout",
+        "timestamp_utc": "2026-10-02T17:59:07.641888+00:00",
+        "git_commit": "6dbf40104b6cb7453a10fb2a975e70b3526c3126",
+        "git_dirty": false,
+        "harness_sha256": "0edb26330486f0ac526bd69e34449a7937358bd1ae42fb717eae60105cc3c07f",
+        "processor_sha256": "aaff59a7de5dcfc661e586ec8d30e8c55eae4a5b485873082d01e1e02a87a3cb",
+        "model": "C:\\Users\\FLANTE\\Documents\\Vscode\\Scout.AI\\backend\\weights\\yolo11n.pt",
+        "model_task": "detect",
+        "config": {
+          "continuity": "conservative",
+          "tracker": "C:\\Users\\FLANTE\\Documents\\Vscode\\Scout.AI\\backend\\app\\cv\\botsort.yaml",
+          "conf": 0.3,
+          "iou": 0.5,
+          "imgsz": "native max dimension, rounded to 32, clipped 640..1280",
+          "start": 0,
+          "end": null,
+          "scene_filter": "none",
+          "tiling": null,
+          "production_profile": "panoramic_person"
+        },
+        "technical": {
+          "frames": 120,
+          "detections": 428,
+          "track_ids": 10,
+          "frames_with_detections": 120,
+          "frames_without_detections": 0,
+          "frame_detection_coverage": 1.0,
+          "mean_detections_per_frame": 3.566666666666667,
+          "mean_track_observations": 42.8,
+          "median_track_observations": 21.0,
+          "longest_track_observations": 120,
+          "short_tracks_lt10_observations": 4,
+          "reacquired_same_id_gaps": 21,
+          "lost_frame_intervals": 108,
+          "fragmentation_proxy_ids_per_100_frames": 8.333333333333332,
+          "confidence_quantiles": [
+            0.3000483512878418,
+            0.40144040435552597,
+            0.4990347772836685,
+            0.56240513920784,
+            0.6976132392883301
+          ]
+        },
+        "processing_seconds": 19.375915200000236,
+        "processing_fps": 6.193255841664632,
+        "processing_to_video_duration": 4.0366490000000494,
+        "failures": [],
+        "ground_truth": null,
+        "raw_detections": 456,
+        "scene_filter": {
+          "input_boxes": 456,
+          "accepted_boxes": 456,
+          "available_frames": 0,
+          "unknown_frames": 0
+        },
+        "camera_motion": {
+          "status": "no_motion_detected",
+          "valid_pairs": 23,
+          "sample_pairs": 23,
+          "max_shift_working_px": 0.399,
+          "max_scale_change": 0.00026,
+          "max_rotation_degrees": 0.01,
+          "method": "masked sparse optical flow / RANSAC affine veto at 5 Hz, max width 640"
+        },
+        "timestamps_reliable": true,
+        "actual_video_processor": true,
+        "observed_peak_rss_bytes": 474042368,
+        "continuity": {
+          "policy": "conservative",
+          "status": "evaluated",
+          "links": [],
+          "thresholds": {
+            "max_gap_seconds": 0.5,
+            "max_displacement_heights": 1.25,
+            "max_prediction_error_heights": 0.5,
+            "min_direction_cosine": 0.5,
+            "min_appearance_cosine": 0.9,
+            "direction_deadband_heights_per_second": 0.5,
+            "scale_ratio_min": 0.8,
+            "scale_ratio_max": 1.25,
+            "min_observations": 3,
+            "endpoint_samples": 5
+          }
+        },
+        "continuity_code_sha256": "da37df21fdc7385c9bd3a8ff771f72886dd550cbb90d8eafac757ac8a60937cc",
+        "memory_method": "psutil RSS sampled after each frame; includes model, not a continuous peak"
+      },
+      "publisher": {
+        "provenance": "Official TeamTrack released MOT-format target boxes and anonymous IDs; frames start at 1, IDs at 0; final -1 fields unspecified, not roles. Detailed player/GK/referee roles unavailable; 23 publisher targets per selected frame.",
+        "gt_sha256": "6afeb37050a62d612e5eddcae363dbe11e42bcc6c3f161cef16bfd1b98108110",
+        "tracking": {
+          "labelled_frames": 120,
+          "iou_threshold": 0.5,
+          "tp": 194,
+          "fp": 234,
+          "fn": 2566,
+          "precision": 0.4532710280373832,
+          "recall": 0.07028985507246377,
+          "f1": 0.12170639899623588,
+          "id_switches": 2,
+          "fragmentations": 20,
+          "events": [
+            {
+              "kind": "fragmentation",
+              "frame": 8,
+              "gt_id": "15"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 15,
+              "gt_id": "18"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 16,
+              "gt_id": "15"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 20,
+              "gt_id": "13"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 22,
+              "gt_id": "15"
+            },
+            {
+              "kind": "id_switch",
+              "frame": 61,
+              "gt_id": "7",
+              "previous_id": 11,
+              "new_id": 24
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 61,
+              "gt_id": "7"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 64,
+              "gt_id": "15"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 68,
+              "gt_id": "15"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 70,
+              "gt_id": "15"
+            },
+            {
+              "kind": "id_switch",
+              "frame": 71,
+              "gt_id": "13",
+              "previous_id": 10,
+              "new_id": 25
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 71,
+              "gt_id": "13"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 73,
+              "gt_id": "15"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 73,
+              "gt_id": "18"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 79,
+              "gt_id": "15"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 82,
+              "gt_id": "15"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 84,
+              "gt_id": "15"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 87,
+              "gt_id": "13"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 90,
+              "gt_id": "18"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 99,
+              "gt_id": "13"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 111,
+              "gt_id": "13"
+            },
+            {
+              "kind": "fragmentation",
+              "frame": 111,
+              "gt_id": "21"
+            }
+          ],
+          "identity_coverage": {
+            "0": 0.0,
+            "1": 0.0,
+            "2": 0.0,
+            "3": 0.0,
+            "4": 0.0,
+            "5": 0.0,
+            "6": 0.0,
+            "7": 0.041666666666666664,
+            "8": 0.008333333333333333,
+            "9": 0.0,
+            "10": 0.025,
+            "11": 0.0,
+            "12": 0.0,
+            "13": 0.2833333333333333,
+            "14": 0.0,
+            "15": 0.25833333333333336,
+            "16": 0.0,
+            "17": 0.0,
+            "18": 0.058333333333333334,
+            "19": 0.0,
+            "20": 0.0,
+            "21": 0.9416666666666667,
+            "22": 0.0
+          },
+          "ground_point_error_px": {}
+        },
+        "detection": {
+          "tp": 213,
+          "fp": 243,
+          "fn": 2547,
+          "precision": 0.46710526315789475,
+          "recall": 0.07717391304347826,
+          "f1": 0.13246268656716417
+        },
+        "small_players": {
+          "reference_max_side": 1280,
+          "small_area_max_px": 1024,
+          "bins": {
+            "small": {
+              "tp": 213,
+              "fn": 2547,
+              "recall": 0.07717391304347826
+            },
+            "other": {
+              "tp": 0,
+              "fn": 0,
+              "recall": null
+            }
+          }
+        },
+        "gt_observations": 2760
+      },
+      "link_audit": {
+        "links": [],
+        "counts": {},
+        "definition": "Every IoU>=.5 matched GT identity in both entire source tracklets must be the same single identity to verify a link. Disjoint nonempty support is a false merge; mixed/unmatched support is indeterminate, never counted as verified."
+      }
+    }
+  },
+  "decision": "REJECT conservative continuity for production: no held-out improvement, switches2->2/fragments20->20/no links; retain original BoT-SORT grouping. ROI and kit heuristics also rejected on DEV.",
+  "scorer_correction": "Initial class1 filter incorrectly excluded released -1 placeholders and yielded zero GT observations. Those empty-GT metrics are invalid/discarded. Fixed only GT schema interpretation, recomputed metrics on already saved identical inference outputs; no candidate/parameter change or inference rerun. Regression test added. Roles remain unavailable; these are 23 publisher-target IDs, not a role-specific 22-player score."
+}

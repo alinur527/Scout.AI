@@ -1,6 +1,6 @@
 """Evaluate released one-based TeamTrack MOT labels with existing metrics.
 
-Keep publisher class-1 targets; no invented goalkeeper/referee/staff role labels.
+Keep publisher targets; -1 fields are unspecified placeholders, not role labels.
 Frame indexing differs from SoccerTrack v2's zero-based challenge format.
 """
 
@@ -23,7 +23,7 @@ def load_labels(gt, indices):
     with Path(gt).open() as stream:
         for row in csv.reader(stream):
             frame = int(row[0]) - 1
-            if frame not in indexed or int(float(row[6])) != 1 or int(float(row[7])) != 1:
+            if frame not in indexed or int(float(row[6])) != 1:
                 continue
             x, y, w, h = map(float, row[2:6])
             if not np.isfinite([x, y, w, h]).all() or min(w, h) <= 0:
@@ -43,7 +43,7 @@ def main():
     labels = load_labels(args.gt, [f["frame"] for f in tracks])
     detection = evaluate_labels(raw, labels)
     result = {
-        "provenance": "Official TeamTrack MOT-format class-1 target boxes and anonymous IDs; frame numbering starts at 1; detailed roles unavailable",
+        "provenance": "Official TeamTrack released MOT-format target boxes and anonymous IDs; frames start at 1, IDs at 0; final -1 fields unspecified, not roles. Detailed player/GK/referee roles unavailable; 23 publisher targets per selected frame.",
         "gt_sha256": hashlib.sha256(args.gt.read_bytes()).hexdigest(),
         "tracking": evaluate_labels(tracks, labels),
         "detection": {k: detection[k] for k in ("tp", "fp", "fn", "precision", "recall", "f1")},

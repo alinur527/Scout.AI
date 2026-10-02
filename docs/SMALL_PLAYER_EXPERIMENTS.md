@@ -1,5 +1,7 @@
 # Small-player experiment protocol (2026-10-02)
 
+This is the historical PR#3 stage, now merged as `e423ae6dd4d8d046c58c17304fa0094100bd3151` after green final-head CI37039995800. The subsequent [player-filtering/continuity round](PLAYER_FILTERING_CONTINUITY.md) preserved all three small-player recalls and raw/tracked metrics exactly. It added an independent TeamTrack fisheye sealed source; DEV stitching gains were not confirmed there and all new production candidates were rejected. Historical118576 is an opened regression, not a new sealed holdout.
+
 ## Integration baseline
 
 PR #1 was open, mergeable, targeted main and had successful run36928035973 at e65bbfd. It was merged using a merge commit d03a2700317c751ea50bbb050a584801fd215d77. PR #2 was retargeted from revive/scout-ai to main without rewriting commits; the diff remained five commits /39 files. Its hypothetical merge tree equalled its existing head tree. After retargeting, 58 pytest tests, Ruff, compileall, frontend ci/lint/build, demo E2E, real CPU smoke and all three opt-in football reruns passed. Raw/tracked TP/FP/FN matched the previous report exactly. Successful CI run36933062448 remained associated with its unchanged head. PR #2 was merged as24a389bad4aa2b777f04eb8fe25c1b895e680b07. Main was clean and identical in content to44c4558; historical branches were retained.
@@ -132,7 +134,7 @@ Same DEV117093 frame0/crop, publisher boxes in yellow and saved raw detections i
 
 ## Reproduce and next step
 
-Remote CI for full implementation/evidence head `0d0b74be59a1816a97114b59ccdea86d284848b6`: [run37039654120](https://github.com/alinur527/Scout.AI/actions/runs/37039654120), backend/frontend/demo E2E all SUCCESS. [PR#3](https://github.com/alinur527/Scout.AI/pull/3) is independent against main and remains unmerged. This documentation-only follow-up records the executed result; the PR shows final-head checks.
+Remote CI for implementation/evidence head `0d0b74be59a1816a97114b59ccdea86d284848b6`: [run37039654120](https://github.com/alinur527/Scout.AI/actions/runs/37039654120), backend/frontend/demo E2E all SUCCESS. Final-head CI37039995800 also passed. [PR#3](https://github.com/alinur527/Scout.AI/pull/3) was subsequently verified and merged for the continuity round; its historical results are preserved here.
 
 ```powershell
 .\.venv\Scripts\python.exe scripts/download_soccertrack_samples.py

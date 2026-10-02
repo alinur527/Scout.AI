@@ -110,17 +110,13 @@ def main():
     parser.add_argument("--annotations", type=Path)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--save-every", type=int, default=25)
-    parser.add_argument("--continuity", choices=("none", "conservative"), help="Production default or explicit anonymous continuity diagnostic")
+    parser.add_argument("--continuity", choices=("none", "conservative"), default="none", help="Explicit offline continuity diagnostic; production grouping stays unchanged")
     parser.add_argument(
         "--production",
         action="store_true",
         help="Run actual VideoProcessor and camera veto; full clip only",
     )
     args = parser.parse_args()
-    if args.continuity is None:
-        from app.core.config import Settings
-
-        args.continuity = Settings.model_fields["cv_track_continuity"].default if args.production else "none"
     production_profile = "explicit_model" if args.model else None
     if args.model is None and args.production:
         from types import SimpleNamespace
@@ -369,8 +365,8 @@ def main():
         raise
     finally:
         capture.release()
-        # Retain native tracker output for link auditing. The exact same linking
-        # function and camera/timestamp gates are used by the application service.
+        # Retain native output for the frozen candidate's offline link audit.
+        # Production integration was rejected after the sealed evaluation.
         (args.output / "tracker_tracks.json").write_text(json.dumps(frames), encoding="utf-8")
         aliases, continuity = continuity_result(
             endpoints, camera.summary()["status"] if camera else "unknown",

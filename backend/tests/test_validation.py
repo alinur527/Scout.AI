@@ -83,3 +83,14 @@ def test_soccertrack_challenge_zero_based_placeholders_are_not_dropped(tmp_path)
     path.write_text("0,1,10,20,30,40,-1,-1,-1,-1\n1,1,11,21,30,40,-1,-1,-1,-1\n")
     labels = loader(path, [0])
     assert labels["frames"] == [{"frame": 0, "objects": [{"id": 1, "box": [10, 20, 40, 60]}]}]
+
+
+def test_teamtrack_one_based_frame_zero_id_and_unspecified_roles_are_kept(tmp_path):
+    import runpy
+    from pathlib import Path
+
+    loader = runpy.run_path(str(Path(__file__).resolve().parents[2] / "scripts/score_teamtrack.py"))["load_labels"]
+    path = tmp_path / "gt.txt"
+    path.write_text("1,0,10,20,30,40,1,-1,-1,-1\n2,0,11,21,30,40,1,-1,-1,-1\n")
+    labels = loader(path, [0])
+    assert labels["frames"] == [{"frame": 0, "objects": [{"id": 0, "box": [10, 20, 40, 60]}]}]
