@@ -13,6 +13,40 @@ def iou(a, b):
     return intersection / union if union > 0 else 0.0
 
 
+def match_boxes(truth, predictions, threshold=0.5):
+    candidates = sorted(
+        [(iou(t["box"], p["box"]), ti, pi) for ti, t in enumerate(truth) for pi, p in enumerate(predictions)],
+        reverse=True,
+    )
+    used_t, used_p, matches = set(), set(), {}
+    for overlap, ti, pi in candidates:
+        if overlap >= threshold and ti not in used_t and pi not in used_p:
+            used_t.add(ti)
+            used_p.add(pi)
+            matches[ti] = predictions[pi]
+    return matches
+
+
+def size_recall(frames, annotation, source_size, reference_max_side=1280):
+    """GT-size recall after full-scene matching; no prediction-size precision claim."""
+    indexed = {frame["frame"]: frame["detections"] for frame in frames}
+    scale = reference_max_side / max(source_size)
+    bins = {name: {"tp": 0, "fn": 0} for name in ("small", "other")}
+    for label in annotation["frames"]:
+        if label["frame"] not in indexed:
+            continue
+        truth = label["objects"]
+        matches = match_boxes(truth, indexed[label["frame"]])
+        for ti, item in enumerate(truth):
+            x1, y1, x2, y2 = item["box"]
+            name = "small" if (x2 - x1) * (y2 - y1) * scale**2 <= 32**2 else "other"
+            bins[name]["tp" if ti in matches else "fn"] += 1
+    for row in bins.values():
+        total = row["tp"] + row["fn"]
+        row["recall"] = row["tp"] / total if total else None
+    return {"reference_max_side": reference_max_side, "small_area_max_px": 32**2, "bins": bins}
+
+
 def evaluate_labels(frames, annotation, threshold=0.5):
     """Descending-IoU one-to-one matching in an exhaustively annotated ROI.
 
@@ -42,20 +76,7 @@ def evaluate_labels(frames, annotation, threshold=0.5):
                     and roi[1] <= (p["box"][1] + p["box"][3]) / 2 <= roi[3]
                 )
             ]
-        candidates = sorted(
-            [
-                (iou(t["box"], p["box"]), ti, pi)
-                for ti, t in enumerate(truth)
-                for pi, p in enumerate(predictions)
-            ],
-            reverse=True,
-        )
-        used_t, used_p, matches = set(), set(), {}
-        for overlap, ti, pi in candidates:
-            if overlap >= threshold and ti not in used_t and pi not in used_p:
-                used_t.add(ti)
-                used_p.add(pi)
-                matches[ti] = predictions[pi]
+        matches = match_boxes(truth, predictions, threshold)
         tp += len(matches)
         fp += len(predictions) - len(matches)
         fn += len(truth) - len(matches)
