@@ -1,7 +1,7 @@
 # ScoutAI
 
-[![ScoutAI checks](https://github.com/alinur527/Scout.AI/actions/workflows/ci.yml/badge.svg?branch=release%2Fportfolio-v1)](https://github.com/alinur527/Scout.AI/actions/workflows/ci.yml)
-[Release status](https://github.com/alinur527/Scout.AI/releases) · [Demo script](docs/PORTFOLIO.md) · [Validation](docs/VALIDATION.md)
+[![ScoutAI checks](https://github.com/alinur527/Scout.AI/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/alinur527/Scout.AI/actions/workflows/ci.yml?query=branch%3Amain)
+[ScoutAI v1.0](https://github.com/alinur527/Scout.AI/releases/tag/v1.0.0) · [AGPL-3.0-only](LICENSE) · [Demo script](docs/PORTFOLIO.md) · [Validation](docs/VALIDATION.md)
 
 ScoutAI is a local football video workspace: upload a clip, choose an anonymous player track, and explore its trajectory, heatmap and saved report. Players control whether scouts can discover their profile and completed reports. Restored from team prototypes, the application combines a React interface with a persistent Python CV worker.
 
@@ -24,10 +24,10 @@ ScoutAI is a local football video workspace: upload a clip, choose an anonymous 
 
 Prerequisites: Git, Python **3.12** with the Windows `py` launcher, Node **22.12+** and npm. CI uses Node 22. No GPU, Docker, weights or external database are required for DEMO.
 
-The v1 candidate is on `release/portfolio-v1`; public release is held for the [rights confirmation](docs/PROVENANCE.md#publication-status).
+Use `main` for the maintained source or the [v1.0.0 tag](https://github.com/alinur527/Scout.AI/tree/v1.0.0) for the exact portfolio release.
 
 ```powershell
-git clone --branch release/portfolio-v1 https://github.com/alinur527/Scout.AI.git
+git clone --branch main https://github.com/alinur527/Scout.AI.git
 Set-Location Scout.AI
 powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\setup.ps1
 powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\start.ps1
@@ -139,4 +139,12 @@ All current [screenshots](docs/screenshots) show synthetic DEMO data from the ac
 
 Research is retained, including negative outcomes: [football validation](docs/FOOTBALL_VALIDATION.md), [small-player experiments](docs/SMALL_PLAYER_EXPERIMENTS.md), [rejected filtering/continuity](docs/PLAYER_FILTERING_CONTINUITY.md). This release does not change production detector/tracker policies or reopen those experiments.
 
-Restored from [Isaksend/ai-scouter](https://github.com/Isaksend/ai-scouter) and [Isaksend/scout_ai_front](https://github.com/Isaksend/scout_ai_front); original authorship is retained in [provenance](docs/PROVENANCE.md). See [third-party notices](docs/THIRD_PARTY_NOTICES.md), [changelog](CHANGELOG.md), [operations](docs/OPERATIONS.md) and [release checklist](docs/RELEASE_CHECKLIST.md). No source license is invented for imported contributions; publication remains pending documented rights and the applicable Ultralytics licensing path.
+Restored from [Isaksend/ai-scouter](https://github.com/Isaksend/ai-scouter) and [Isaksend/scout_ai_front](https://github.com/Isaksend/scout_ai_front); original authorship and the owner's confirmed team-source permission are recorded in [provenance](docs/PROVENANCE.md). See [changelog](CHANGELOG.md), [operations](docs/OPERATIONS.md) and [release checklist](docs/RELEASE_CHECKLIST.md).
+
+## License and corresponding source
+
+ScoutAI project source is **AGPL-3.0-only**, without warranty; see the full [LICENSE](LICENSE) and retained copyright/modification [NOTICE](NOTICE). This public, fully open-source application follows the [official Ultralytics AGPL route](https://www.ultralytics.com/license). ScoutAI does not claim ownership of Ultralytics code or models.
+
+The complete [v1.0.0 source](https://github.com/alinur527/Scout.AI/tree/v1.0.0), including dependency declarations, migrations, configuration templates and build/run scripts, is freely available as a [source archive](https://github.com/alinur527/Scout.AI/archive/refs/tags/v1.0.0.zip). The UI links to this corresponding source and serves license/notice copies without authentication. Modified deployments must offer the source of their actual running version and update `frontend/src/release.js` and NOTICE before building. Build/run instructions are above and in [OPERATIONS.md](docs/OPERATIONS.md).
+
+Third-party software, model weights, datasets and research images retain their original terms and ownership. The project AGPL grant does not relicense those independent assets. Their notices, dataset attribution and change disclosures are preserved in [THIRD_PARTY_NOTICES.md](docs/THIRD_PARTY_NOTICES.md) and the linked research reports. No weights or raw videos are distributed in the release.

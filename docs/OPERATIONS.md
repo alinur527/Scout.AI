@@ -19,6 +19,8 @@ Runtime identities and per-run logs live under ignored `.runtime/`. Never commit
 
 The browser uses the built frontend. After source or build-time API URL changes, run `npm run build` in `frontend/`, then restart. Native preview is a local demonstration server. Compose serves the same production assets with Nginx.
 
+The v1.0.0 UI offers its complete corresponding source and public license/notices. For a modified deployment, publish the source of the actual running version, update `frontend/src/release.js` and the root NOTICE, then build. Keep that source freely available to users, together with build/run instructions and all applicable upstream notices. Do not substitute a moving or unrelated source version. Models and independent dataset/image assets retain their original terms; see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+
 ## Configuration
 
 `backend/.env` is created once with an independent random signing secret. API and worker read the same configuration; process environment overrides the file. Do not print or commit `.env`. Changing the signing secret invalidates existing sessions. Setup never silently switches an existing REAL environment to DEMO.

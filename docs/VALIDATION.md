@@ -1,6 +1,6 @@
 # Validation record
 
-## Portfolio v1 candidate — 3 October 2026
+## Portfolio v1 — 3 October 2026
 
 Release preparation starts after [PR #4](https://github.com/alinur527/Scout.AI/pull/4), verified at `40351dd18faca0ba9d3136ed83c5773fccbbf9fd` with [Actions 37045893830](https://github.com/alinur527/Scout.AI/actions/runs/37045893830) and merged as `445a400c77ce343f84ad4fc648c4bd6b633577e2`. Fresh baseline: 106 tests, Ruff, frontend install/lint/build and reachable-history scan passed. No baseline test failures were found.
 
@@ -29,7 +29,11 @@ Browser checks include registration/login/profile, synthetic sample or real uplo
 
 Read-only agent reviews checked access/export, migration adoption, native process identity, cleanup, Compose and notices. Concrete findings (CI missing build, person-only doctor requirement, orphan cleanup, cached-revocation coverage and migration constraints) were fixed and verified. This is agent review, not human approval. The initial print-action test exposed a test-expression side effect; it was corrected and rerun. An initial Docker build hit Debian network errors; the final image uses the same OpenCV version's headless wheel without unnecessary GUI libraries and built successfully. Failed attempts are retained in local artifacts and are not counted as PASS.
 
-Unverified: CUDA, live PostgreSQL, public hosting, industrial load and physical measurement accuracy. Upstream inference deprecation warnings remain. Audits/scanners are bounded checks, not security certification. Final remote candidate CI and publication status are recorded in the PR/release draft; historical CI below is not evidence for the candidate. Public v1 remains held for [rights confirmation](PROVENANCE.md#publication-status).
+Unverified: CUDA, live PostgreSQL, public hosting, industrial load and physical measurement accuracy. Upstream inference deprecation warnings remain. Audits/scanners are bounded checks, not security certification. Team-source permission is [confirmed](PROVENANCE.md#publication-status), and project source uses AGPL-3.0-only with separate upstream asset terms. Exact final-head/main CI, merge and tag are recorded in [PR #5](https://github.com/alinur527/Scout.AI/pull/5) and the [v1.0.0 Release](https://github.com/alinur527/Scout.AI/releases/tag/v1.0.0); historical CI below is not evidence for the final release.
+
+### Final release rerun after permission confirmation
+
+On 2026-10-03, the final licensing/package changes passed all 117 backend tests (0 skips), Ruff, compileall, pip check, clean npm install, frontend lint/build and npm audit (0 vulnerabilities). Pip audit again found 0 among audited packages with the two documented CPU-wheel exclusions. The production DEMO E2E passed in `test-artifacts/e2e/20261003T180811490784Z-demo/`, including the public legal/source offer, byte-identical served project license/notices, retained dependency notices, consent/revocation/export and responsive/print flows. Current portfolio screenshots come from this run. Relative documentation links and main/v1 README references passed. CI evidence uploads are limited to synthetic screenshots and results JSON; runtime logs, videos and export payloads are excluded. The exact commit security scan and remote PR/main CI results are recorded in the linked PR and Release. No REAL/CV code changed in this final licensing step.
 
 ## Player filtering and continuity phase (historical)
 

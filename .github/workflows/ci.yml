@@ -56,7 +56,9 @@ jobs:
         if: always()
         with:
           name: browser-evidence
-          path: test-artifacts/e2e/
+          path: |
+            test-artifacts/e2e/**/*.png
+            test-artifacts/e2e/**/results.json
           retention-days: 7
   compose:
     runs-on: ubuntu-latest
@@ -83,5 +85,7 @@ jobs:
         if: always()
         with:
           name: compose-browser-evidence
-          path: test-artifacts/e2e/
+          path: |
+            test-artifacts/e2e/**/*.png
+            test-artifacts/e2e/**/results.json
           retention-days: 7

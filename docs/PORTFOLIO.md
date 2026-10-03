@@ -4,13 +4,13 @@
 
 ScoutAI — локальное full-stack приложение для просмотра движения выбранного игрока на футбольном видео. Пользователь загружает ролик, выбирает анонимный track ID, получает траекторию, тепловую карту и сохранённый отчёт, экспортирует JSON или печатает страницу. Профиль приватен по умолчанию; игрок явно разрешает скаутам доступ и может отозвать его.
 
-Проект восстановлен из командных React/CV-прототипов с сохранением авторства и истории происхождения. Режим DEMO показывает весь сценарий на синтетических данных; REAL использует готовые YOLO-модели и BoT-SORT на CPU. Это интеграция и инженерная доработка, а не обучение собственной нейросети. Публичный релиз ожидает подтверждения прав, описанного в [PROVENANCE.md](PROVENANCE.md).
+Проект восстановлен из командных React/CV-прототипов с сохранением авторства и истории происхождения. Режим DEMO показывает весь сценарий на синтетических данных; REAL использует готовые YOLO-модели и BoT-SORT на CPU. Это интеграция и инженерная доработка, а не обучение собственной нейросети. Исходный код проекта распространяется по AGPL-3.0-only; подтверждение владельцем прав на командный код записано в [PROVENANCE.md](PROVENANCE.md).
 
 ## English description
 
 ScoutAI is a local full-stack football video workspace. A player uploads a clip, selects an anonymous track, and explores a saved trajectory, heatmap and report with JSON export and browser printing. Profiles are private by default; players explicitly grant and revoke scout access.
 
-The project restores and integrates team React/CV prototypes while retaining source attribution. DEMO exercises the full workflow with synthetic data; REAL uses pretrained YOLO models and BoT-SORT on CPU. The work concerns application integration, persistence, authorization, reproducible setup and validation—not training a proprietary neural network. Public release remains pending the documented source-rights confirmation.
+The project restores and integrates team React/CV prototypes while retaining source attribution. DEMO exercises the full workflow with synthetic data; REAL uses pretrained YOLO models and BoT-SORT on CPU. The work concerns application integration, persistence, authorization, reproducible setup and validation—not training a proprietary neural network. Project source is available under AGPL-3.0-only, with owner-confirmed team-source permission recorded in [PROVENANCE.md](PROVENANCE.md).
 
 ## Three resume bullets
 
@@ -65,7 +65,7 @@ See [football evidence](FOOTBALL_VALIDATION.md), [small-player results](SMALL_PL
 
 ```markdown
 ### [ScoutAI](https://github.com/alinur527/Scout.AI)
-Local football video workspace built with React, FastAPI, SQLite and a persistent Python CV worker. Private profiles, player-selected trajectories/heatmaps, saved reports, consent-based scouting and protected export. Includes synthetic DEMO, pretrained YOLO/BoT-SORT CPU inference, migrations, reproducible setup and browser tests. Restored from attributed team prototypes; physical accuracy is not validated. Public v1 release is pending source-rights confirmation.
+Local football video workspace built with React, FastAPI, SQLite and a persistent Python CV worker. Private profiles, player-selected trajectories/heatmaps, saved reports, consent-based scouting and protected export. Includes synthetic DEMO, pretrained YOLO/BoT-SORT CPU inference, migrations, reproducible setup and browser tests. Restored from attributed team prototypes; physical accuracy is not validated. Open-source under AGPL-3.0-only; upstream models and dataset assets retain their original terms.
 ```
 
 Other repositories and the owner's profile README were not modified.

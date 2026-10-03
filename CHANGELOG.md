@@ -1,8 +1,8 @@
 # Changelog
 
-## v1.0.0 — Portfolio release candidate (2026-10-03)
+## v1.0.0 — Portfolio Release (2026-10-03)
 
-Publication is held for [source-rights confirmation](docs/PROVENANCE.md#publication-status). This entry records the prepared candidate, not an assertion that a tag or public release exists.
+Team-source publication permission is [confirmed by the owner](docs/PROVENANCE.md#publication-status). Project source uses AGPL-3.0-only with retained upstream notices and a visible versioned corresponding-source offer. Independent models/datasets/images retain their original terms. Exact merge, tag and CI results are recorded in the [GitHub Release](https://github.com/alinur527/Scout.AI/releases/tag/v1.0.0).
 
 - Private-by-default new and existing player profiles; explicit scout publication and revocation enforced on list/search/detail/report/export.
 - Persistent paginated analysis history, clear DEMO/REAL onboarding and authenticated synthetic sample flow without seeded users.

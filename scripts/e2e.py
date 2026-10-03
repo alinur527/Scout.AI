@@ -105,6 +105,24 @@ with sync_playwright() as p:
     try:
         page.goto(BASE_URL)
         page.wait_for_load_state("networkidle")
+        legal = page.get_by_role("contentinfo", name="Legal notices")
+        expect(legal).to_contain_text("No warranty")
+        expect(legal.get_by_role("link", name="AGPL-3.0-only")).to_have_attribute("href", "/LICENSE.txt")
+        expect(legal.get_by_role("link", name="Source code", exact=True)).to_have_attribute(
+            "href", "https://github.com/alinur527/Scout.AI/tree/v1.0.0"
+        )
+        for route, original in (
+            ("LICENSE.txt", ROOT / "LICENSE"),
+            ("NOTICE.txt", ROOT / "NOTICE"),
+            ("THIRD_PARTY_NOTICES.txt", ROOT / "docs/THIRD_PARTY_NOTICES.md"),
+        ):
+            response = context.request.get(f"{BASE_URL}/{route}")
+            assert response.ok and response.body() == original.read_bytes(), route
+        source_offer = context.request.get(f"{BASE_URL}/SOURCE.txt")
+        assert source_offer.ok and "/tree/v1.0.0" in source_offer.text()
+        dependencies = context.request.get(f"{BASE_URL}/third-party-licenses.txt")
+        assert dependencies.ok and "MIT License" in dependencies.text()
+        steps.append("public license/notices served verbatim + versioned corresponding-source offer")
         # Reconnaissance precedes actions; retain rendered DOM and accessible control labels.
         (ARTIFACTS / "initial-dom.html").write_text(page.content(), encoding="utf-8")
         print(
@@ -113,6 +131,7 @@ with sync_playwright() as p:
         check_layout(page, "login")
         register(page, player, "player")
         login(page, player)
+        expect(legal).to_be_visible()
         owner_token = page.evaluate("sessionStorage.getItem('scout_token')")
         owner_headers = {"Authorization": f"Bearer {owner_token}"}
         owner_id = context.request.get(f"{API_URL}/profile/me", headers=owner_headers).json()["user"]["id"]

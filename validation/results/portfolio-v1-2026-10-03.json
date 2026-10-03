@@ -2,7 +2,7 @@
   "date": "2026-10-03",
   "artifact_timestamps": "UTC; local release date is Asia/Qyzylorda",
   "scope": "Portfolio v1; production CV algorithms and thresholds unchanged",
-  "publication": "Pending source-rights and licensing confirmation; no published v1 claimed",
+  "publication": "Owner confirmed team-source permission on 2026-10-03; AGPL-3.0-only project source, separate upstream asset terms. Final publication state: https://github.com/alinur527/Scout.AI/releases/tag/v1.0.0",
   "backend": {
     "pytest_passed": 117,
     "pytest_skipped": 0,
@@ -278,5 +278,26 @@
   ],
   "new_video_and_model_download_bytes": 0,
   "screenshots": "docs/screenshots: five actual synthetic DEMO captures",
-  "review": "Read-only agent review, not human approval; findings fixed and checked"
+  "review": "Read-only agent review, not human approval; findings fixed and checked",
+  "final_release_checks": {
+    "date": "2026-10-03",
+    "scope": "Final PR5 source and license packaging; no CV changes",
+    "pytest_passed": 117,
+    "pytest_skipped": 0,
+    "ruff": "PASS",
+    "compileall": "PASS",
+    "pip_check": "PASS",
+    "npm_ci_lint_build": "PASS",
+    "npm_audit_vulnerabilities": 0,
+    "pip_audit_vulnerabilities": 0,
+    "pip_audit_skipped": [
+      "torch 2.10.0+cpu",
+      "torchvision 0.25.0+cpu"
+    ],
+    "demo_e2e": "PASS",
+    "evidence_directory": "test-artifacts/e2e/20261003T180811490784Z-demo",
+    "license_checks": "PASS: public license and notices served byte-for-byte; versioned source link visible before/after authentication; dependency texts retained",
+    "documentation_links": "PASS",
+    "security_scan": "Recorded on exact final commit in PR5 and GitHub Release"
+  }
 }

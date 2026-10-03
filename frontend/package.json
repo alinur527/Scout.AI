@@ -2,12 +2,13 @@
   "name": "scout-ai-frontend",
   "private": true,
   "version": "1.0.0",
+  "license": "AGPL-3.0-only",
   "engines": {
     "node": ">=22.12.0"
   },
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "node scripts/license-notices.mjs && vite",
     "build": "node scripts/license-notices.mjs && vite build",
     "lint": "eslint .",
     "preview": "vite preview"

@@ -1127,3 +1127,20 @@ details[open] > summary {
     scroll-behavior: auto !important;
   }
 }
+.legal-notice {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem 1rem;
+  padding: 1rem 1.5rem;
+  border-top: 1px solid #26354e;
+  color: #aab8cf;
+  font-size: 0.8rem;
+  line-height: 1.5;
+}
+
+.legal-notice a {
+  color: #62e6eb;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}

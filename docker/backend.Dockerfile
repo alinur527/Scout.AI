@@ -7,6 +7,8 @@ RUN sed -i 's/^opencv-python==/opencv-python-headless==/' requirements.txt && pi
 COPY backend/app ./app
 COPY backend/migrations ./migrations
 COPY backend/alembic.ini ./alembic.ini
+COPY LICENSE NOTICE /app/
+COPY docs/THIRD_PARTY_NOTICES.md /app/docs/THIRD_PARTY_NOTICES.md
 RUN useradd --uid 10001 --create-home scoutai && mkdir -p /data/uploads && chown -R scoutai:scoutai /data
 USER scoutai
 CMD ["python", "-m", "uvicorn", "app.main:create_app", "--factory", "--host", "0.0.0.0", "--port", "8000"]

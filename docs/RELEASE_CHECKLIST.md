@@ -1,6 +1,6 @@
 # Portfolio v1 release checklist
 
-Scope: finish the existing full-stack application; CV models, thresholds and research are frozen. This is the single continuation checklist. Current branch: `release/portfolio-v1`.
+Scope: finish the existing full-stack application; CV models, thresholds and research are frozen. Release source: `main` / `v1.0.0`; exact final commit and publication checks are recorded in [PR #5](https://github.com/alinur527/Scout.AI/pull/5) and the [GitHub Release](https://github.com/alinur527/Scout.AI/releases/tag/v1.0.0).
 
 | Task | Status | Verification / evidence |
 |---|---|---|
@@ -13,11 +13,12 @@ Scope: finish the existing full-stack application; CV models, thresholds and res
 | Compose and production frontend | PASS LOCAL | Local build, three healthy services, full browser flow and restart row-digest preservation; CI job added |
 | Full verification | PASS LOCAL | 117 pytest/0 skips, Ruff/compileall/build/lint; npm audit0; pip audit0 with two CPU-wheel skips; DEMO + panorama/broadcast REAL + CPU smoke; [evidence](../validation/results/portfolio-v1-2026-10-03.json) |
 | README, portfolio, operations, changelog, notices | DONE | Research/provenance retained; relative file links checked; no local-user links; browser dependency notices generated |
-| Publication rights | PENDING OWNER | Upstream lacks LICENSE; ai-scouter says All rights reserved. Clarification asked; engineering continues. No license assigned without confirmation |
+| Publication rights and license | RESOLVED | Owner confirmed co-author permission on 2026-10-03; AGPL-3.0-only project source follows current Ultralytics terms; original notices and separate asset terms retained; no private proof included |
 | Final read-only review | DONE | Access/startup/license agents reviewed current diff; concrete findings fixed and rechecked; not human approval |
-| Release PR and final-head CI | PUBLICATION HANDOFF | Push candidate as draft; actual final SHA/check links recorded in PR/release draft, not recursively embedded here |
-| Merge, annotated tag, public release | HELD | No existing v1/tag at preflight. Owner rights/licensing confirmation required before advancing draft; no bypass |
-| Handoff and closure | FINAL HANDOFF | OS-temp handoff references this checklist and actual remote state; finish bounded candidate work, no new CV phase |
+| Final local release rerun | PASS | 117 tests, Ruff, compileall, frontend ci/lint/build/audit, pip check/audit and DEMO E2E including served legal/source offer; see VALIDATION.md |
+| Release PR and final-head CI | REMOTE RECORD | Exact final SHA and required job results recorded in PR #5; merge requires passing checks |
+| Merge, annotated tag, public release | REMOTE RECORD | Owner authorized final publication; verify merged main and its CI before annotated v1.0.0 and publishing the prepared Release. Actual final state is recorded on GitHub, without a self-referential documentation commit |
+| Scope closure | FINAL RELEASE ONLY | No further feature branch, roadmap or CV/research phase |
 
 Read-only initial reviews identified unrestricted scout access, missing migrations/export/history pagination, stale denied data in the UI, cleanup failure before job commit, and missing managed startup/production frontend. Baseline had no test failures. Agents edit no files.
 
