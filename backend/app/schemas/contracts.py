@@ -24,6 +24,7 @@ class ProfileUpdate(BaseModel):
     age: int | None = Field(default=None, ge=5, le=100)
     team: str = Field(default="", max_length=100)
     bio: str = Field(default="", max_length=1000)
+    scout_visible: bool = False
 
 
 class Selection(BaseModel):

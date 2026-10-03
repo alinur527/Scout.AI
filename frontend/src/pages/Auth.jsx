@@ -1,12 +1,13 @@
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { api, errorMessage } from '../api/client'
 import { ErrorBox } from '../components/Common'
 
-export default function Auth({ register = false, onLogin }) {
+export default function Auth({ register = false, onLogin, demo }) {
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
   const navigate = useNavigate()
+  const location = useLocation()
   async function submit(event) {
     event.preventDefault()
     setBusy(true)
@@ -36,14 +37,21 @@ export default function Auth({ register = false, onLogin }) {
           <i />
         </span>
         <h1>
-          Every movement
+          Your footage.
           <br />
-          tells a story.
+          A clearer match report.
         </h1>
         <p>
-          Bring your match footage into focus. Build your player profile and explore the movement
-          behind your game.
+          Upload a football clip, choose an anonymous track and explore its path, heatmap and saved
+          report. Share with scouts only when you choose.
         </p>
+        <div className="first-run-guide">
+          <h2>{demo ? 'Try the complete demo' : 'Analyze with local computer vision'}</h2>
+          <p>{demo
+            ? 'Create a player account, then use the synthetic sample on the upload page. DEMO shows the full workflow with sample results; it does not assess football performance.'
+            : 'Use a short, steady clip with visible players. REAL runs local detection and tracking; identities can split and officials may be detected.'}</p>
+          <p>Physical accuracy is not validated. Moving cameras or missing calibration keep distance, speed and sprints unavailable in REAL mode.</p>
+        </div>
         <div className="tactical-art" aria-hidden="true">
           <div className="centre-circle" />
           <div className="centre-line" />
@@ -53,16 +61,17 @@ export default function Auth({ register = false, onLogin }) {
             </i>
           ))}
         </div>
-        <span className="story-note">Football intelligence. Built from your footage.</span>
+        <span className="story-note">A football video workspace. Private by default.</span>
       </section>
       <section className="auth-panel">
         <div>
-          <p className="muted">Your next chapter starts here</p>
+          <p className="muted">{demo ? 'DEMO workspace · Synthetic results' : 'REAL workspace · Local inference'}</p>
           <h2>{register ? 'Join the squad' : 'Welcome back'}</h2>
           <p>
             {register ? 'Create a player or scout account.' : 'Log in to your ScoutAI workspace.'}
           </p>
           <ErrorBox message={error} />
+          {!register && location.state?.registered && <p role="status" className="notice">Account created. Log in to start your private workspace.</p>}
           <form onSubmit={submit}>
             <label>
               Username

@@ -9,6 +9,39 @@
   --cyan: #62e6eb;
   --violet: #a99aff;
 }
+.first-run-guide { max-width: 48ch; }
+.first-run-guide h2 { font-size: 20px; }
+.first-run-guide p { font-size: 15px; line-height: 1.6; }
+.sharing-choice { border: 1px solid var(--line); border-radius: 8px; padding: 18px; min-width: 0; }
+.sharing-choice legend { padding: 0 8px; font-weight: 600; }
+.sharing-choice p, .sample-choice p { color: var(--muted); line-height: 1.6; }
+.privacy-state strong { color: var(--cyan); }
+.sample-choice { border-bottom: 1px solid var(--line); padding-bottom: 24px; }
+.sample-choice h2 { margin-top: 0; }
+.report-actions { justify-content: flex-end; margin-bottom: 24px; flex-wrap: wrap; }
+.print-title { display: none; }
+
+@media print {
+  :root, body { background: white !important; color: #111827 !important; --muted: #374151; }
+  p, small, blockquote, .print-title, .pitch-legend { color: #111827 !important; }
+  .sidebar, .skip-link, .report-actions, .segmented, .account, .pagination,
+  .mode-banner, .workspace > .notice, .page-heading .button { display: none !important; }
+  .app-shell { display: block !important; }
+  .workspace { margin: 0 !important; padding: 0 !important; max-width: none !important; }
+  .print-title { display: block; font-weight: 700; }
+  .report-grid { display: block !important; }
+  .report-notes, .notice, .metrics, .report-footnotes, details { background: white !important; color: #111827 !important; }
+  .report-notes { padding: 12px 0 !important; }
+  .report-notes dl { columns: 2; }
+  .pitch { max-height: 90mm; width: 100%; print-color-adjust: exact; }
+  .metrics, .map-panel, .report-notes, .report-footnotes { break-inside: avoid; }
+  .metrics strong, .metrics span, .metrics small, .report-notes dt, .report-notes dd { color: #111827 !important; }
+  details > * { display: block !important; }
+  .preview { max-height: 70mm; object-fit: contain; }
+  .saved-report { border: 0 !important; }
+  a { color: #111827 !important; }
+  @page { margin: 14mm; }
+}
 * {
   box-sizing: border-box;
 }
@@ -1093,4 +1126,21 @@ details[open] > summary {
     transition: none !important;
     scroll-behavior: auto !important;
   }
+}
+.legal-notice {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem 1rem;
+  padding: 1rem 1.5rem;
+  border-top: 1px solid #26354e;
+  color: #aab8cf;
+  font-size: 0.8rem;
+  line-height: 1.5;
+}
+
+.legal-notice a {
+  color: #62e6eb;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
 }

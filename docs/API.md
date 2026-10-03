@@ -8,8 +8,9 @@ Base URL: `VITE_API_BASE_URL`; default local API is `http://localhost:8000`. Int
 | POST | `/auth/register` | public | username (3–40 ASCII letters/digits/underscore), password (8–128), role player/scout; 201 public user |
 | POST | `/auth/login` | public | username/password; access_token, token_type, user |
 | GET | `/profile/me` | any authenticated | `{user, profile}`; scouts have null profile |
-| PUT | `/profile/me` | player | full_name, position, optional age, team, bio; full profile replacement |
-| GET | `/analyses` | player | newest 100 owned job summaries |
+| PUT | `/profile/me` | player | full_name, position, optional age, team, bio, scout_visible (default false); full profile replacement |
+| GET | `/analyses?offset=0&limit=20` | player | newest owned job summaries; limit 1–100, nonnegative offset |
+| GET | `/demo/sample` | player in DEMO | generated synthetic AVI; no account/result is seeded |
 | POST | `/analyses` | player | multipart `video`; 202 persisted queued job |
 | GET | `/analyses/{id}` | owner | job summary |
 | GET | `/analyses/{id}/status` | owner | same job summary, polling every 1.2 s in UI |
@@ -17,10 +18,15 @@ Base URL: `VITE_API_BASE_URL`; default local API is `http://localhost:8000`. Int
 | PATCH | `/analyses/{id}/player` | owner | `{player_id: integer}` while awaiting_selection |
 | POST | `/analyses/{id}/run` | owner | `{calibration:null}` or calibration below; 202 queued reporting |
 | GET | `/analyses/{id}/result` | owner | selected-player report after completion |
-| GET | `/players?q=&offset=0` | scout/admin | up to 50 real player records, profiles, latest completed report |
-| GET | `/players/{user_id}` | scout/admin | profile and last 10 completed reports |
+| GET | `/analyses/{id}/export` | owner or scout/admin with current publication consent | completed report JSON attachment; schema_version, safe metadata, report, limitations; 409 until completed |
+| GET | `/players?q=&offset=0` | scout/admin | up to 50 explicitly shared profiles and latest completed report |
+| GET | `/players/{user_id}` | scout/admin | currently shared profile and last 10 completed reports; otherwise 404 |
 
-Public registration of admin returns 403. Username normalization is lowercase. Player positions: Goalkeeper, Defender, Midfielder, Forward. Raw uploads, storage paths, passwords and JWT secrets are never returned. Scouts receive completed reports through player endpoints, not access to another user's raw job/gallery endpoints. All registered player profiles are discoverable by registered scouts; no private-profile toggle exists yet.
+Public registration of admin returns 403. Username normalization is lowercase. Player positions: Goalkeeper, Defender, Midfielder, Forward. Raw uploads, storage paths, passwords and JWT secrets are never returned. Scouts receive completed reports through player endpoints, not access to another user's raw job/gallery endpoints.
+
+New and migrated profiles are private by default. The owner explicitly sets `scout_visible=true`; setting false immediately denies subsequent scout list/detail/export requests. Sending an older full-profile replacement without that field defaults to false. All API responses use `Cache-Control: no-store`; open scout detail pages revalidate every 10 seconds and on focus, clearing a denied report. Already downloaded or printed copies cannot be recalled. Own history polls every 10 seconds; live job status every 1.2 seconds.
+
+JSON export omits raw media, base64 previews, stored filenames, job internals and arbitrary top-level result keys. It preserves null physical metrics, mode, warnings and tracking limitations. The UI requests export from the server at click time so revocation is rechecked. Browser printing retains mode and warnings without a server PDF service.
 
 ## Job contract and stages
 
@@ -36,7 +42,7 @@ queued / detection / 0
   → completed / done / 100
 ```
 
-Any processing failure becomes `failed / done` with a persisted error. `awaiting_selection` intentionally remains processing until the user selects and runs; it is not a stalled inference. Refresh and browser navigation do not lose progress. The mode is captured on job creation; changing server mode never silently changes an existing job. An API and worker must share the same database and upload directory.
+Inference/report exceptions become `failed / done` with a persisted error. Restart recovery and retention expiry also set `status=failed` but may retain the previous stage; clients treat status as authoritative for terminal failure. `awaiting_selection` intentionally remains processing until the user selects and runs; it is not a stalled inference. Refresh and browser navigation do not lose progress. The mode is captured on job creation; changing server mode never silently changes an existing job. An API and worker must share the same database and upload directory.
 
 ## Calibration
 

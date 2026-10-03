@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { api, errorMessage } from '../api/client'
 
 export function Metrics({ metrics }) {
   const values = [
@@ -25,10 +26,35 @@ export function Metrics({ metrics }) {
 }
 export default function Report({ result }) {
   const [layer, setLayer] = useState('heatmap')
+  const [busy, setBusy] = useState(false)
+  const [error, setError] = useState('')
+  async function exportJson() {
+    setBusy(true)
+    setError('')
+    try {
+      const { data } = await api.get(`/analyses/${result.analysis_id}/export`)
+      const url = URL.createObjectURL(new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' }))
+      const link = document.createElement('a')
+      link.href = url
+      link.download = 'scoutai-report.json'
+      link.click()
+      setTimeout(() => URL.revokeObjectURL(url), 1000)
+    } catch (failure) {
+      setError(errorMessage(failure))
+    } finally {
+      setBusy(false)
+    }
+  }
   const peak = Math.max(1, ...result.heatmap.flat())
   const field = result.coordinate_space === 'field' || result.demo
   return (
     <section className="report">
+      <div className="actions report-actions">
+        <button disabled={busy} onClick={exportJson}>{busy ? 'Exporting…' : 'Export JSON'}</button>
+        <button onClick={() => window.print()}>Print / save PDF</button>
+      </div>
+      {error && <p className="error" role="alert">{error}</p>}
+      <p className="print-title">ScoutAI · {result.demo ? 'DEMO synthetic report' : 'REAL video report'} · Track #{result.player_id}</p>
       {result.demo && (
         <p className="notice">
           Demo report · Sample metrics and synthetic movement. This is not an assessment of the
@@ -115,7 +141,7 @@ export default function Report({ result }) {
             <dd>{result.duration_seconds.toFixed(1)} s</dd>
             <dt>Observations</dt>
             <dd>{result.observations}</dd>
-            <dt>Processed frames</dt>
+            <dt>{result.demo ? 'Synthetic samples' : 'Processed frames'}</dt>
             <dd>{result.frames_processed}</dd>
             <dt>Processing</dt>
             <dd>{result.device}</dd>
@@ -155,7 +181,8 @@ export default function Report({ result }) {
       <div className="report-footnotes">
         {!result.demo && (
           <p>
-            Observed frames measure visibility of this ID, not detection accuracy. Physical accuracy
+            A track ID is not a verified identity. Observed frames measure visibility of this ID,
+            not detection accuracy. Image-space paths include camera movement. Physical accuracy
             has not been validated.
           </p>
         )}

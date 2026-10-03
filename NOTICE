@@ -1,0 +1,34 @@
+ScoutAI v1.0 — Portfolio Release
+Copyright (c) 2026 ScoutAI Project and contributors.
+
+ScoutAI project source is licensed under the GNU Affero General Public License,
+version 3 only (SPDX: AGPL-3.0-only). You may modify and redistribute it under
+that license. This program comes WITHOUT ANY WARRANTY, including the implied
+warranties of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+See LICENSE for the complete terms.
+
+Team-source attribution and modification notice
+The original ScoutAI team prototypes are credited in docs/PROVENANCE.md at
+their pinned upstream revisions. Their historical copyright notice is retained:
+“© 2026 ScoutAI Project. All rights reserved.”
+The project owner confirmed permission from the relevant co-authors to publish,
+modify, distribute and deploy the shared source on 2026-10-03. The current
+AGPL grant applies to that project source; the historical notice does not impose
+an additional restriction on this grant. Private correspondence is not included.
+
+The imported prototypes were modified for the ScoutAI restoration and portfolio
+release, through 2026-10-03: application integration, CV safety/validation,
+authentication and consent, persistence and migrations, UI/reporting, startup,
+tests, documentation and release packaging. See CHANGELOG.md and Git history.
+
+Corresponding source and build instructions for this release:
+https://github.com/alinur527/Scout.AI/tree/v1.0.0
+https://github.com/alinur527/Scout.AI/archive/refs/tags/v1.0.0.zip
+See README.md and docs/OPERATIONS.md for dependency installation/build/run steps.
+Modified deployments must offer the corresponding source of their own running
+version and update the source offer in frontend/src/release.js and this notice.
+
+Third-party code, datasets, research images and model weights retain their
+original copyrights, notices and licenses. This project does not claim ownership
+of Ultralytics code or models and does not relicense third-party assets under
+AGPL. See docs/THIRD_PARTY_NOTICES.md and the cited dataset attribution records.

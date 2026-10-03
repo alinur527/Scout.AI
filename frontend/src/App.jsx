@@ -8,6 +8,7 @@ import Profile from './pages/Profile'
 import Upload from './pages/Upload'
 import Analysis from './pages/Analysis'
 import Scouting, { PlayerDetail } from './pages/Scouting'
+import { SOURCE_URL } from './release'
 
 export default function App() {
   const [user, setUser] = useState(null)
@@ -158,6 +159,7 @@ export default function App() {
               path="/login"
               element={
                 <Auth
+                  demo={health.data?.demo_mode}
                   onLogin={(value) => {
                     setUser(value)
                     setSessionError('')
@@ -165,11 +167,19 @@ export default function App() {
                 />
               }
             />
-            <Route path="/register" element={<Auth register />} />
+            <Route path="/register" element={<Auth register demo={health.data?.demo_mode} />} />
             <Route path="*" element={<Navigate to="/login" replace />} />
           </Routes>
         </main>
       )}
+      <footer className="legal-notice" aria-label="Legal notices">
+        <span>© 2026 ScoutAI Project and contributors. No warranty.</span>
+        <span>Redistribution under <a href="/LICENSE.txt">AGPL-3.0-only</a>.</span>
+        <a href={SOURCE_URL}>Source code</a>
+        <a href="/NOTICE.txt">Project notice</a>
+        <a href="/third-party-licenses.txt">Dependency licenses</a>
+        <a href="/THIRD_PARTY_NOTICES.txt">Third-party notices</a>
+      </footer>
     </BrowserRouter>
   )
 }

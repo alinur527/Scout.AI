@@ -1,7 +1,7 @@
 from datetime import datetime, timezone
 from uuid import uuid4
 
-from sqlalchemy import JSON, DateTime, ForeignKey, Integer, String, Text
+from sqlalchemy import JSON, Boolean, DateTime, ForeignKey, Integer, String, Text, false
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 
@@ -30,6 +30,7 @@ class PlayerProfile(Base):
     age: Mapped[int | None] = mapped_column(Integer, nullable=True)
     team: Mapped[str] = mapped_column(String(100), default="")
     bio: Mapped[str] = mapped_column(Text, default="")
+    scout_visible: Mapped[bool] = mapped_column(Boolean, default=False, server_default=false())
 
 
 class AnalysisJob(Base):

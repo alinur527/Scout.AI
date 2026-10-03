@@ -5,6 +5,7 @@ from pathlib import Path
 import secrets
 import sys
 import tempfile
+from datetime import datetime, timezone
 
 import cv2
 import numpy as np
@@ -22,7 +23,7 @@ from app.services.inference import report  # noqa: E402
 
 
 def main():
-    artifacts = ROOT / "test-artifacts/real"
+    artifacts = ROOT / "test-artifacts/real" / f"{datetime.now(timezone.utc):%Y%m%dT%H%M%S%fZ}-cpu-smoke"
     artifacts.mkdir(parents=True, exist_ok=True)
     source = Path(ultralytics.__file__).parent / "assets/bus.jpg"
     frame = cv2.imread(str(source))
@@ -114,6 +115,22 @@ def main():
                 client.get(f"/analyses/{jid}", headers=auth).json()["status"]
                 == "completed"
             )
+            # Actual inference on blank frames must fail clearly, never become DEMO.
+            blank = artifacts / "no-people.avi"
+            writer = cv2.VideoWriter(str(blank), cv2.VideoWriter_fourcc(*"MJPG"), 12, (320, 240))
+            if not writer.isOpened():
+                raise RuntimeError("Blank safety fixture writer failed")
+            for _ in range(12):
+                writer.write(np.zeros((240, 320, 3), dtype=np.uint8))
+            writer.release()
+            response = client.post("/analyses", headers=auth, files={"video": ("blank.avi", blank.read_bytes(), "video/x-msvideo")})
+            assert response.status_code == 202
+            blank_id = response.json()["id"]
+            assert process_next(app.state.sessions, settings)
+            blank_state = client.get(f"/analyses/{blank_id}", headers=auth).json()
+            assert blank_state["status"] == "failed" and blank_state["demo"] is False
+            assert blank_state["error"].startswith("No trackable people found")
+            assert client.get(f"/analyses/{blank_id}/export", headers=auth).status_code == 409
             summary = {
                 "status": "PASS",
                 "fixture": "Ultralytics bundled bus.jpg shifted across 24 MJPG frames",
@@ -125,6 +142,7 @@ def main():
                 "selected_track_observations": result["observations"],
                 "calibrated": False,
                 "completed": True,
+                "no_detections": "PASS: actual blank-frame inference failed clearly; no DEMO fallback or export",
                 "metric_and_radar_code_smoke": "PASS on artificial projection; no accuracy claim",
             }
             (artifacts / "result.json").write_text(

@@ -1,4 +1,6 @@
 .venv/
+.runtime/
+*.migration.lock
 __pycache__/
 *.py[cod]
 .pytest_cache/
@@ -8,6 +10,11 @@ __pycache__/
 !.env.example
 node_modules/
 dist/
+frontend/public/third-party-licenses.txt
+frontend/public/LICENSE.txt
+frontend/public/NOTICE.txt
+frontend/public/SOURCE.txt
+frontend/public/THIRD_PARTY_NOTICES.txt
 data/
 uploads/
 weights/

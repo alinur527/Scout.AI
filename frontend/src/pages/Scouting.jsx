@@ -15,7 +15,7 @@ export default function Scouting() {
     <>
       <Heading
         title="The scouting room"
-        text="Discover saved player profiles and their latest match reports."
+        text="Explore profiles and reports that players have chosen to share."
       />
       <form
         className="search"
@@ -73,7 +73,7 @@ export default function Scouting() {
           <p>
             {search
               ? 'Try another name or username.'
-              : 'Registered players will appear here. Their reports are added after analysis.'}
+              : 'Players appear here only after they explicitly share their profile. Private accounts stay private.'}
           </p>
         </div>
       )}
@@ -90,7 +90,7 @@ export default function Scouting() {
 }
 export function PlayerDetail() {
   const { id } = useParams()
-  const { data, loading, error, reload } = useLoad(`/players/${id}`)
+  const { data, loading, error, reload } = useLoad(`/players/${id}`, 10000)
   if (loading) return <Loading />
   if (!data) return <ErrorBox message={error} retry={reload} />
   return (
